@@ -161,20 +161,22 @@ public class LocalLibrary extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 4; // Number of tabs (pages)
+            return 5; // Number of tabs (pages)
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "PLAYLIST";
                 case 1:
-                    return "SECTION 2";
+                    return "SONG";
                 case 2:
-                    return "SECTION 3";
+                    return "ARTIST";
                 case 3:
-                    return "SECTION 4";
+                    return "ALBUM";
+                case 4:
+                    return "GENRE";
             }
             return null;
         }
