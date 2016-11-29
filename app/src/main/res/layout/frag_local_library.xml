@@ -3,4 +3,11 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <fragment
+        android:id="@+id/song_fragment"
+        android:name="hc3.m4.LocalLibrary$SongList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
+
 </LinearLayout>
