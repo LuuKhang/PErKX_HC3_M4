@@ -1,11 +1,15 @@
 package hc3.m4;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -13,8 +17,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,10 +89,30 @@ public class LocalLibrary extends AppCompatActivity {
     }
 
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_local_library, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+
+        // Listener for search bar
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // Function called on submit
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(LocalLibrary.this, query, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            // Function called while typing
+            @Override
+            public boolean onQueryTextChange(String searchQuery) {
+                Toast.makeText(LocalLibrary.this, searchQuery, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
         return true;
     }
 
