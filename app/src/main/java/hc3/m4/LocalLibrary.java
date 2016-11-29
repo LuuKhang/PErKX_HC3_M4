@@ -1,6 +1,7 @@
 package hc3.m4;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +20,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.support.v4.app.ListFragment;
+import android.widget.ListView;
+import android.widget.Toast;
+
 
 public class LocalLibrary extends AppCompatActivity {
 
@@ -43,9 +48,10 @@ public class LocalLibrary extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acti_local_library);
 
+        // Initialize toolbar (top most portion of screen)
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("PErKX - Local Library");
+        getSupportActionBar().setTitle("PErKX - Local Library"); // Set toolbar title
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -81,7 +87,8 @@ public class LocalLibrary extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Toast.makeText(LocalLibrary.this, "Test", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -109,40 +116,8 @@ public class LocalLibrary extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public PlaceholderFragment() {
-        }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.frag_local_library, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -158,7 +133,7 @@ public class LocalLibrary extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return SongList.newInstance(position + 1);
         }
 
         @Override
@@ -181,6 +156,156 @@ public class LocalLibrary extends AppCompatActivity {
                     return "GENRE";
             }
             return null;
+        }
+    }
+
+    // Our ListFragment class, shows the items on each tab of Local Library
+    public static class SongList extends ListFragment {
+        // Define the items in each tab's list
+        String[] playlists = new String[] {
+                "Playlist A",
+                "Playlist B",
+                "Playlist C",
+                "Playlist D",
+                "Playlist E"
+        };
+        String[] songs = new String[]{
+                "Song 1",
+                "Song 2",
+                "Song 3",
+                "Song 4",
+                "Song 5",
+                "Song 6",
+                "Song 7",
+                "Song 8",
+                "Song 9",
+                "Song 10",
+                "Song 11",
+                "Song 12",
+                "Song 13",
+                "Song 14"
+        };
+        String[] artists = new String[]{
+                "Artist 1",
+                "Artist 2",
+                "Artist 3",
+                "Artist 4",
+                "Artist 5",
+                "Artist 6",
+                "Artist 7",
+                "Artist 8",
+                "Artist 9",
+                "Artist 10",
+                "Artist 11",
+                "Artist 12",
+                "Artist 13",
+                "Artist 14"
+        };
+        String[] albums = new String[]{
+                "Album 1",
+                "Album 2",
+                "Album 3",
+                "Album 4",
+                "Album 5",
+                "Album 6",
+                "Album 7",
+                "Album 8",
+                "Album 9",
+                "Album 10",
+                "Album 11",
+                "Album 12",
+                "Album 13",
+                "Album 14"
+        };
+        String[] genres = new String[]{
+                "Genre A",
+                "Genre B",
+                "Genre C",
+                "Genre D",
+                "Genre E",
+                "Genre F"
+        };
+
+        // Key defined, for id of current tab
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        // Returns a new instance of this fragment for the given section number.
+        public static SongList newInstance(int sectionNumber) {
+            SongList fragment = new SongList();
+
+            // Arguments/parameters that each tab/section/fragment will have, example: ID
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            // Creating an array adapter to store the list of items
+            ArrayAdapter<String> adapter = null;
+
+            // ID number of the current section (label and id mapping may change)
+            //  Playlist = 1
+            //  Song = 2
+            //  Artist = 3
+            //  Album = 4
+            //  Genre = 5
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                case 1:
+                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, playlists);
+                    break;
+
+                case 2:
+                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, songs);
+                    break;
+
+                case 3:
+                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, artists);
+                    break;
+
+                case 4:
+                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, albums);
+                    break;
+
+                case 5:
+                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, genres);
+                    break;
+            }
+
+            // Setting the list adapter for the ListFragment
+            if (adapter != null) setListAdapter(adapter);
+
+            return super.onCreateView(inflater, container, savedInstanceState);
+        }
+
+        // Function called when a tab's list view item is clicked
+        @Override
+        public void onListItemClick(ListView listview, View view, int pos, long id) {
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            switch (sectionNumber) { // Depending current tab, different action
+                case 1:
+                    Toast.makeText(getActivity(), "PLAYLIST " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    break;
+
+                case 2:
+                    Toast.makeText(getActivity(), "SONG " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    break;
+
+                case 3:
+                    Toast.makeText(getActivity(), "ARTIST " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    break;
+
+                case 4:
+                    Toast.makeText(getActivity(), "ALBUM " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    break;
+
+                case 5:
+                    Toast.makeText(getActivity(), "GENRE " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    break;
+            }
         }
     }
 }

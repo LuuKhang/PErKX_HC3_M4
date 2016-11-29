@@ -28,14 +28,15 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable" />
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="358dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
@@ -59,7 +60,8 @@
             android:rowCount="2"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:id="@+id/gridLayout">
 
             <Button
                 android:text="Local"
@@ -85,6 +87,7 @@
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1" />
         </GridLayout>
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
