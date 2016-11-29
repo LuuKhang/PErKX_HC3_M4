@@ -59,7 +59,8 @@
             android:rowCount="2"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:id="@+id/gridLayout">
 
             <Button
                 android:text="Local"
@@ -85,6 +86,7 @@
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1" />
         </GridLayout>
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -19,7 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.support.v4.app.ListFragment;
+
 
 public class LocalLibrary extends AppCompatActivity {
 
@@ -109,25 +111,76 @@ public class LocalLibrary extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
+//    /**
+//     * A placeholder fragment containing a simple view.
+//     */
+//    public static class PlaceholderFragment extends Fragment {
+//        /**
+//         * The fragment argument representing the section number for this
+//         * fragment.
+//         */
+//        private static final String ARG_SECTION_NUMBER = "section_number";
+//
+//        public PlaceholderFragment() {
+//        }
+//
+//        /**
+//         * Returns a new instance of this fragment for the given section
+//         * number.
+//         */
+//        public static PlaceholderFragment newInstance(int sectionNumber) {
+//            PlaceholderFragment fragment = new PlaceholderFragment();
+//            Bundle args = new Bundle();
+//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//            fragment.setArguments(args);
+//            return fragment;
+//        }
+//
+////        @Override
+////        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+////                                 Bundle savedInstanceState) {
+////            View rootView = inflater.inflate(R.layout.frag_local_library, container, false);
+////            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+////            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+////            return rootView;
+////        }
+//
+//    }
+    public static class SongList extends ListFragment {
+
+        String[] countries = new String[] {
+                "India",
+                "Pakistan",
+                "Sri Lanka",
+                "China",
+                "Bangladesh",
+                "Nepal",
+                "Afghanistan",
+                "North Korea",
+                "South Korea",
+                "Japan",
+                "India",
+                "Pakistan",
+                "Sri Lanka",
+                "China",
+                "Bangladesh",
+                "Nepal",
+                "Afghanistan",
+                "North Korea",
+                "South Korea",
+                "Japan"
+        };
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public PlaceholderFragment() {
+        public SongList() {
         }
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static SongList newInstance(int sectionNumber) {
+            SongList fragment = new SongList();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -135,13 +188,17 @@ public class LocalLibrary extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.frag_local_library, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            /** Creating an array adapter to store the list of countries **/
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, countries);
+
+            /** Setting the list adapter for the ListFragment */
+            setListAdapter(adapter);
+
+            return super.onCreateView(inflater, container, savedInstanceState);
         }
+
+
     }
 
     /**
@@ -158,7 +215,7 @@ public class LocalLibrary extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return SongList.newInstance(position + 1);
         }
 
         @Override
@@ -183,4 +240,5 @@ public class LocalLibrary extends AppCompatActivity {
             return null;
         }
     }
+
 }
