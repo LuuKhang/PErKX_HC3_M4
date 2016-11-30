@@ -30,6 +30,8 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ArrayAdapter;
 import android.support.v4.app.ListFragment;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -94,31 +96,6 @@ public class LocalLibrary extends AppCompatActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_local_library, menu);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-
-        // Listener for search bar
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // Function called on submit
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(LocalLibrary.this, query, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            // Function called while typing
-            @Override
-            public boolean onQueryTextChange(String searchQuery) {
-                Toast.makeText(LocalLibrary.this, searchQuery, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
-
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -132,7 +109,6 @@ public class LocalLibrary extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
 
@@ -262,6 +238,8 @@ public class LocalLibrary extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            setHasOptionsMenu(true);
+
             // Creating an array adapter to store the list of items
             SongAdapter adapter = null;
 
@@ -280,15 +258,15 @@ public class LocalLibrary extends AppCompatActivity {
                 case 2:
                     adapter = new SongAdapter(inflater.getContext(), songs);
                     break;
-//
+
                 case 3:
                     adapter = new SongAdapter(inflater.getContext(), artists);
                     break;
-//
+
                 case 4:
                     adapter = new SongAdapter(inflater.getContext(), albums);
                     break;
-//
+
                 case 5:
                     adapter = new SongAdapter(inflater.getContext(), genres);
                     break;
@@ -326,9 +304,33 @@ public class LocalLibrary extends AppCompatActivity {
                     break;
             }
         }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            inflater.inflate(R.menu.menu_local_library, menu);
+            SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+
+            // Listener for search bar
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                // Function called on submit
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                // Function called while typing
+                @Override
+                public boolean onQueryTextChange(String searchQuery) {
+                    Toast.makeText(getContext(), searchQuery, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+
+            super.onCreateOptionsMenu(menu, inflater);
+        }
     }
 
-    public static class SongAdapter extends BaseAdapter {
+    public static class SongAdapter extends BaseAdapter implements Filterable {
 
         private Context context;
         private String[] data;
@@ -406,6 +408,13 @@ public class LocalLibrary extends AppCompatActivity {
             }
 
             return convertView;
+        }
+
+        @Override
+        public Filter getFilter() {
+            //test
+            Log.d("TEST", "test");
+            return null;
         }
     }
 }
