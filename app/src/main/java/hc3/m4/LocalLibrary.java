@@ -1,5 +1,6 @@
 package hc3.m4;
 
+import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
@@ -19,10 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ArrayAdapter;
 import android.support.v4.app.ListFragment;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -152,6 +156,7 @@ public class LocalLibrary extends AppCompatActivity {
     public static class SongList extends ListFragment {
         // Define the items in each tab's list
         String[] playlists = new String[] {
+                "Add Playlist",
                 "Playlist A",
                 "Playlist B",
                 "Playlist C",
@@ -159,6 +164,7 @@ public class LocalLibrary extends AppCompatActivity {
                 "Playlist E"
         };
         String[] songs = new String[]{
+                "Shuffle All",
                 "Song 1",
                 "Song 2",
                 "Song 3",
@@ -233,7 +239,7 @@ public class LocalLibrary extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Creating an array adapter to store the list of items
-            ArrayAdapter<String> adapter = null;
+            SongAdapter adapter = null;
 
             // ID number of the current section (label and id mapping may change)
             //  Playlist = 1
@@ -244,23 +250,23 @@ public class LocalLibrary extends AppCompatActivity {
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
-                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, playlists);
+                    adapter = new SongAdapter(inflater.getContext(), playlists);
                     break;
 
                 case 2:
-                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, songs);
+                    adapter = new SongAdapter(inflater.getContext(), songs);
                     break;
-
+//
                 case 3:
-                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, artists);
+                    adapter = new SongAdapter(inflater.getContext(), artists);
                     break;
-
+//
                 case 4:
-                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, albums);
+                    adapter = new SongAdapter(inflater.getContext(), albums);
                     break;
-
+//
                 case 5:
-                    adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, genres);
+                    adapter = new SongAdapter(inflater.getContext(), genres);
                     break;
             }
 
@@ -295,6 +301,87 @@ public class LocalLibrary extends AppCompatActivity {
                     Toast.makeText(getActivity(), "GENRE " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
                     break;
             }
+        }
+    }
+
+    public static class SongAdapter extends BaseAdapter {
+
+        private Context context;
+        private String[] data;
+//        private static LayoutInflater inflater = null;
+//        public ImageLoader imageLoader;
+
+        public SongAdapter(Context c, String[] d) {
+            context = c;
+            data = d;
+        }
+
+        @Override
+        public int getCount() {
+            return data.length;
+        }
+
+
+        @Override
+        public Object getItem(int position) {
+            return data[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+            }
+
+            TextView title = (TextView) convertView.findViewById(R.id.title); // title
+            TextView artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+            // Setting all values in listview
+
+
+            if (data[position] == "Shuffle All") {
+                float scale = context.getResources().getDisplayMetrics().density;
+                int pixels = (int) (25 * scale + 0.5f);
+
+                // Gets layout params of ImageView to resize
+                ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
+                ViewGroup.LayoutParams params = layout.getLayoutParams();
+                params.height = pixels;
+                params.width = pixels;
+                layout.setLayoutParams(params);
+
+                // Gets layout params of TextView to resize
+                TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
+                artist_text.setTextSize(0);
+
+                title.setText(data[position]);
+                artist.setText("");
+            } else {
+                float scale = context.getResources().getDisplayMetrics().density;
+                int pixels = (int) (50 * scale + 0.5f);
+
+                // Gets layout params of ImageView to resize
+                ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
+                ViewGroup.LayoutParams params = layout.getLayoutParams();
+                params.height = pixels;
+                params.width = pixels;
+                layout.setLayoutParams(params);
+
+                // Gets layout params of TextView to resize
+                TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
+                artist_text.setTextSize(15);
+
+                title.setText(data[position]);
+                artist.setText(data[position]);
+            }
+
+            return convertView;
         }
     }
 }
