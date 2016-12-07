@@ -1,5 +1,6 @@
 package hc3.m4;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +11,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     // All Static variables
+    private static Context context;
     // Database Version
     private static final int DATABASE_VERSION = 1;
 
@@ -33,15 +36,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        boolean dbExist = checkDataBase();
-        if(dbExist){
+//        boolean dbExist = checkDataBase();
+//        Log.d("Name: ", String.valueOf(dbExist));
+//        if(dbExist){
             //do nothing - database already exist
-        }else{
+//        }else{
 
             //By calling this method and empty database will be created into the default system path
             //of your application so we are gonna be able to overwrite that database with our database.
@@ -52,7 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     + KEY_ARTIST + " TEXT," + KEY_ALBUM + " TEXT,"
                     + KEY_ALBUM_ART + " TEXT," + KEY_GENRE + " TEXT" + ")";
             db.execSQL(CREATE_SONGS_TABLE);
-        }
+//        }
 
     }
 
@@ -61,18 +66,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @return true if it exists, false if it doesn't
      */
     private boolean checkDataBase(){
-        SQLiteDatabase checkDB = null;
-        try{
+//        SQLiteDatabase checkDB = null;
+//        try{
             String myPath = DB_PATH + DATABASE_NAME;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-        }catch(SQLiteException e){
-            //database does't exist yet.
-        }
-
-        if(checkDB != null){
-            checkDB.close();
-        }
-        return checkDB != null ? true : false;
+//            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+//            checkDB.close();
+//        }catch(SQLiteException e){
+//            //database does't exist yet.
+//        }
+        File dbFile = context.getDatabasePath(myPath);
+        return dbFile.exists();
+//        return checkDB != null ? true : false;
     }
 
     // Upgrading database
