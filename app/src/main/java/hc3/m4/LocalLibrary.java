@@ -37,6 +37,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 
 public class LocalLibrary extends AppCompatActivity {
 
@@ -92,8 +94,30 @@ public class LocalLibrary extends AppCompatActivity {
                 startActivity(new Intent(LocalLibrary.this, OnlineSection.class)); // Opens Online Section
             }
         });
-    }
 
+        // Database handler
+        DatabaseHandler db = new DatabaseHandler(this);
+
+        /**
+         * CRUD Operations
+         * */
+        // Inserting Songs
+//        Log.d("Insert: ", "Inserting ..");
+//        db.addSong(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+//        db.addSong(new Song("SongTitle2", "SongArtist2", "SongAlbum2", "SongArt2", "SongGenre2"));
+//        db.addSong(new Song("SongTitle3", "SongArtist3", "SongAlbum3", "SongArt3", "SongGenre3"));
+//        db.addSong(new Song("SongTitle4", "SongArtist4", "SongAlbum4", "SongArt4", "SongGenre4"));
+
+        // Reading all contacts
+//        Log.d("Reading: ", "Reading all contacts..");
+//        List<Song> songs = db.getAllSongs();
+
+//        for (Song cn : songs) {
+//            String log = "Id: " + cn.getID() + " ,Name: " + cn.getTitle() + " ,Artist: " + cn.getArtist();
+//            // Writing Contacts to log
+//            Log.d("Name: ", log);
+//        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -155,6 +179,7 @@ public class LocalLibrary extends AppCompatActivity {
     // Our ListFragment class, shows the items on each tab of Local Library
     public static class SongList extends ListFragment {
         // Define the items in each tab's list
+
         String[] playlists = new String[] {
                 "Add Playlist",
                 "Playlist A",
@@ -162,39 +187,6 @@ public class LocalLibrary extends AppCompatActivity {
                 "Playlist C",
                 "Playlist D",
                 "Playlist E"
-        };
-        String[] songs = new String[]{
-                "Shuffle All",
-                "Song 1",
-                "Song 2",
-                "Song 3",
-                "Song 4",
-                "Song 5",
-                "Song 6",
-                "Song 7",
-                "Song 8",
-                "Song 9",
-                "Song 10",
-                "Song 11",
-                "Song 12",
-                "Song 13",
-                "Song 14"
-        };
-        String[] artists = new String[]{
-                "Artist 1",
-                "Artist 2",
-                "Artist 3",
-                "Artist 4",
-                "Artist 5",
-                "Artist 6",
-                "Artist 7",
-                "Artist 8",
-                "Artist 9",
-                "Artist 10",
-                "Artist 11",
-                "Artist 12",
-                "Artist 13",
-                "Artist 14"
         };
         String[] albums = new String[]{
                 "Album 1",
@@ -243,6 +235,10 @@ public class LocalLibrary extends AppCompatActivity {
             // Creating an array adapter to store the list of items
             SongAdapter adapter = null;
 
+            DatabaseHandler db = new DatabaseHandler(inflater.getContext());
+
+//            List<Song> songs = db.getAllSongs();
+
             // ID number of the current section (label and id mapping may change)
             //  Playlist = 1
             //  Song = 2
@@ -252,23 +248,23 @@ public class LocalLibrary extends AppCompatActivity {
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
-                    adapter = new SongAdapter(inflater.getContext(), playlists);
+//                    adapter = new SongAdapter(inflater.getContext(), playlists);
                     break;
-
                 case 2:
-                    adapter = new SongAdapter(inflater.getContext(), songs);
+                    List<Song> songs = db.getAllSongs();
+                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, songs);
                     break;
-
                 case 3:
-                    adapter = new SongAdapter(inflater.getContext(), artists);
+                    List<Song> artists = db.getAllArtists();
+                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, artists);
                     break;
-
                 case 4:
-                    adapter = new SongAdapter(inflater.getContext(), albums);
+                    List<Song> albums = db.getAllAlbums();
+                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, albums);
                     break;
-
                 case 5:
-                    adapter = new SongAdapter(inflater.getContext(), genres);
+                    List<Song> genres = db.getAllGenres();
+                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, genres);
                     break;
             }
 
@@ -282,25 +278,26 @@ public class LocalLibrary extends AppCompatActivity {
         @Override
         public void onListItemClick(ListView listview, View view, int pos, long id) {
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            TextView title = (TextView) view.findViewById(R.id.title);
             switch (sectionNumber) { // Depending current tab, different action
                 case 1:
                     Toast.makeText(getActivity(), "PLAYLIST " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
                     break;
 
                 case 2:
-                    Toast.makeText(getActivity(), "SONG " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "SONG " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     break;
 
                 case 3:
-                    Toast.makeText(getActivity(), "ARTIST " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "ARTIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     break;
 
                 case 4:
-                    Toast.makeText(getActivity(), "ALBUM " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "ALBUM " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     break;
 
                 case 5:
-                    Toast.makeText(getActivity(), "GENRE " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "GENRE " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -327,94 +324,6 @@ public class LocalLibrary extends AppCompatActivity {
             });
 
             super.onCreateOptionsMenu(menu, inflater);
-        }
-    }
-
-    public static class SongAdapter extends BaseAdapter implements Filterable {
-
-        private Context context;
-        private String[] data;
-//        private static LayoutInflater inflater = null;
-//        public ImageLoader imageLoader;
-
-        public SongAdapter(Context c, String[] d) {
-            context = c;
-            data = d;
-        }
-
-        @Override
-        public int getCount() {
-            return data.length;
-        }
-
-
-        @Override
-        public Object getItem(int position) {
-            return data[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
-            }
-
-            TextView title = (TextView) convertView.findViewById(R.id.title); // title
-            TextView artist = (TextView) convertView.findViewById(R.id.artist); // artist
-
-            // Setting all values in listview
-
-
-            if (data[position] == "Shuffle All") {
-                float scale = context.getResources().getDisplayMetrics().density;
-                int pixels = (int) (25 * scale + 0.5f);
-
-                // Gets layout params of ImageView to resize
-                ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
-                ViewGroup.LayoutParams params = layout.getLayoutParams();
-                params.height = pixels;
-                params.width = pixels;
-                layout.setLayoutParams(params);
-
-                // Gets layout params of TextView to resize
-                TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
-                artist_text.setTextSize(0);
-
-                title.setText(data[position]);
-                artist.setText("");
-            } else {
-                float scale = context.getResources().getDisplayMetrics().density;
-                int pixels = (int) (50 * scale + 0.5f);
-
-                // Gets layout params of ImageView to resize
-                ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
-                ViewGroup.LayoutParams params = layout.getLayoutParams();
-                params.height = pixels;
-                params.width = pixels;
-                layout.setLayoutParams(params);
-
-                // Gets layout params of TextView to resize
-                TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
-                artist_text.setTextSize(15);
-
-                title.setText(data[position]);
-                artist.setText(data[position]);
-            }
-
-            return convertView;
-        }
-
-        @Override
-        public Filter getFilter() {
-            //test
-            Log.d("TEST", "test");
-            return null;
         }
     }
 }
