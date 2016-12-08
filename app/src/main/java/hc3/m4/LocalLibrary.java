@@ -97,16 +97,17 @@ public class LocalLibrary extends AppCompatActivity {
 
         // Database handler
         DatabaseHandler db = new DatabaseHandler(this);
+        db.createDataBase();
 
         /**
          * CRUD Operations
          * */
         // Inserting Songs
-        Log.d("Insert: ", "Inserting ..");
-        db.addSong(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        db.addSong(new Song("SongTitle2", "SongArtist2", "SongAlbum2", "SongArt2", "SongGenre2"));
-        db.addSong(new Song("SongTitle3", "SongArtist3", "SongAlbum3", "SongArt3", "SongGenre3"));
-        db.addSong(new Song("SongTitle4", "SongArtist4", "SongAlbum4", "SongArt4", "SongGenre4"));
+//        Log.d("Insert: ", "Inserting ..");
+//        db.addSong(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+//        db.addSong(new Song("SongTitle2", "SongArtist2", "SongAlbum2", "SongArt2", "SongGenre2"));
+//        db.addSong(new Song("SongTitle3", "SongArtist3", "SongAlbum3", "SongArt3", "SongGenre3"));
+//        db.addSong(new Song("SongTitle4", "SongArtist4", "SongAlbum4", "SongArt4", "SongGenre4"));
 
         // Reading all contacts
 //        Log.d("Reading: ", "Reading all contacts..");
