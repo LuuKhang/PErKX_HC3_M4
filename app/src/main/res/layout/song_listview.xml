@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="60dip"
     android:background="@drawable/list_selector"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dip"
+    android:onClick="songSelected">
 
     <!--  ListRow Left side Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
@@ -23,14 +24,21 @@
 
     </LinearLayout>
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_centerVertical="true">
     <!-- Title Of Song-->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/thumbnail"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text="Love The Way You Lie"
+
+        android:gravity="center"
+        android:text="Song"
         android:textColor="#040404"
         android:typeface="sans"
         android:textSize="20dip"
@@ -39,14 +47,13 @@
      <!--Artist Name-->
     <TextView
         android:id="@+id/artist"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
         android:textColor="#343434"
         android:textSize="15dip"
         android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text="Rihanna" />
+        android:text="Artist" />
 
     <!-- Rightend Duration -->
     <!--<TextView-->
@@ -68,5 +75,5 @@
         <!--android:src="@drawable/arrow"-->
         <!--android:layout_alignParentRight="true"-->
         <!--android:layout_centerVertical="true"/>-->
-
+    </RelativeLayout>
 </RelativeLayout>
