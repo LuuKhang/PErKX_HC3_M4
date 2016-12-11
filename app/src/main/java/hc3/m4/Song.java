@@ -8,6 +8,7 @@ public class Song {
     private String artist;
     private String album;
     private String genre;
+    private int local;
 
     public Song() {
         id = -1;
@@ -16,6 +17,7 @@ public class Song {
         artist = "";
         album = "";
         genre = "";
+        local = 0;
     }
 
     public Song(long songID, String songTitle, String songArtist, String songAlbum, String songArt, String songGenre) {
@@ -35,12 +37,32 @@ public class Song {
         genre = songGenre;
     }
 
+    public Song(long songID, String songTitle, String songArtist, String songAlbum, String songArt, String songGenre, int songLocal) {
+        id = songID;
+        art = songArt;
+        title = songTitle;
+        artist = songArtist;
+        album = songAlbum;
+        genre = songGenre;
+        local = songLocal;
+    }
+
+    public Song(String songTitle, String songArtist, String songAlbum, String songArt, String songGenre, int songLocal) {
+        art = songArt;
+        title = songTitle;
+        artist = songArtist;
+        album = songAlbum;
+        genre = songGenre;
+        local = songLocal;
+    }
+
     public long getID(){return id;}
     public String getArt(){return art;}
     public String getTitle(){return title;}
     public String getArtist(){return artist;}
     public String getAlbum(){return album;}
     public String getGenre(){return genre;}
+    public int getLocal(){return local;}
 
     public void setID(long id){this.id = id;}
     public void setArt(String art){this.art = art;}
@@ -48,4 +70,5 @@ public class Song {
     public void setArtist(String artist){this.artist = artist;}
     public void setAlbum(String album){this.album = album;}
     public void setGenre(String genre){this.genre = genre;}
+    public void setLocal(int local){this.local = local;}
 }

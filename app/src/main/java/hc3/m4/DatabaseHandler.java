@@ -40,6 +40,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_ALBUM = "album";
     private static final String KEY_ALBUM_ART = "album_art";
     private static final String KEY_GENRE = "genre";
+    private static final String KEY_LOCAL = "local";
     private static final String KEY_PLAYLIST_NAME = "name";
     private static final String KEY_PLAYLIST_ID = "playlist_id";
     private static final String KEY_SONG_ID = "song_id";
@@ -227,7 +228,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_SONGS_TABLE = "CREATE TABLE " + TABLE_SONGS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TITLE + " TEXT,"
                 + KEY_ARTIST + " TEXT," + KEY_ALBUM + " TEXT,"
-                + KEY_ALBUM_ART + " TEXT," + KEY_GENRE + " TEXT" + ")";
+                + KEY_ALBUM_ART + " TEXT," + KEY_GENRE + " TEXT,"
+                + KEY_LOCAL + " NUMERIC" + ")";
         db.execSQL(CREATE_SONGS_TABLE);
         String CREATE_PLAYLISTS_TABLE = "CREATE TABLE " + TABLE_PLAYLISTS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PLAYLIST_NAME + " TEXT"
@@ -265,7 +267,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_ARTIST, song.getArtist()); // Artist
         values.put(KEY_ALBUM, song.getAlbum()); // Album
         values.put(KEY_ALBUM_ART, song.getAlbum()); // Album Art
-        values.put(KEY_GENRE, song.getGenre()); // Genre
+        values.put(KEY_GENRE, song.getGenre()); //
+        values.put(KEY_LOCAL, song.getLocal());
 
         // Inserting Row
         db.insert(TABLE_SONGS, null, values);
@@ -333,6 +336,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 song.setAlbum(cursor.getString(3));
                 song.setArt(cursor.getString(4));
                 song.setGenre(cursor.getString(5));
+                //song.setLocal(Integer.parseInt(cursor.getString(6)));
+                // Adding song to list
+                songList.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return songList;
+    }
+
+    // Getting All Local Songs
+    public List<Song> getAllLocalSongs() {
+        List<Song> songList = new ArrayList<Song>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE local = 1 ORDER BY LOWER(title)";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setTitle(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setAlbum(cursor.getString(3));
+                song.setArt(cursor.getString(4));
+                song.setGenre(cursor.getString(5));
+                //song.setLocal(Integer.parseInt(cursor.getString(6)));
                 // Adding song to list
                 songList.add(song);
             } while (cursor.moveToNext());
