@@ -56,6 +56,7 @@ public class LocalLibrary extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private int currentPage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,31 @@ public class LocalLibrary extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            // This method will be invoked when a new page becomes selected.
+            @Override
+            public void onPageSelected(int position) {
+                SongList fragment = (SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
+                if (fragment != null) {
+                    fragment.update();
+                }
+                currentPage = position;
+            }
+
+            // This method will be invoked when the current page is scrolled
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // Code goes here
+            }
+
+            // Called when the scroll state changes:
+            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Code goes here
+            }
+        });
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -99,25 +125,6 @@ public class LocalLibrary extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(this);
         db.createDataBase();
 
-        /**
-         * CRUD Operations
-         * */
-        // Inserting Songs
-//        Log.d("Insert: ", "Inserting ..");
-//        db.addSong(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-//        db.addSong(new Song("SongTitle2", "SongArtist2", "SongAlbum2", "SongArt2", "SongGenre2"));
-//        db.addSong(new Song("SongTitle3", "SongArtist3", "SongAlbum3", "SongArt3", "SongGenre3"));
-//        db.addSong(new Song("SongTitle4", "SongArtist4", "SongAlbum4", "SongArt4", "SongGenre4"));
-
-        // Reading all contacts
-//        Log.d("Reading: ", "Reading all contacts..");
-//        List<Song> songs = db.getAllSongs();
-
-//        for (Song cn : songs) {
-//            String log = "Id: " + cn.getID() + " ,Name: " + cn.getTitle() + " ,Artist: " + cn.getArtist();
-//            // Writing Contacts to log
-//            Log.d("Name: ", log);
-//        }
     }
 
     @Override
@@ -133,6 +140,13 @@ public class LocalLibrary extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void backButton(View view) {
+        SongList fragment = (SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        if (fragment != null) {
+            fragment.update();
+        }
     }
 
 
@@ -179,43 +193,11 @@ public class LocalLibrary extends AppCompatActivity {
 
     // Our ListFragment class, shows the items on each tab of Local Library
     public static class SongList extends ListFragment {
-        // Define the items in each tab's list
-
-        String[] playlists = new String[] {
-                "Add Playlist",
-                "Playlist A",
-                "Playlist B",
-                "Playlist C",
-                "Playlist D",
-                "Playlist E"
-        };
-        String[] albums = new String[]{
-                "Album 1",
-                "Album 2",
-                "Album 3",
-                "Album 4",
-                "Album 5",
-                "Album 6",
-                "Album 7",
-                "Album 8",
-                "Album 9",
-                "Album 10",
-                "Album 11",
-                "Album 12",
-                "Album 13",
-                "Album 14"
-        };
-        String[] genres = new String[]{
-                "Genre A",
-                "Genre B",
-                "Genre C",
-                "Genre D",
-                "Genre E",
-                "Genre F"
-        };
 
         // Key defined, for id of current tab
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private static int level = 0;
+        private static LayoutInflater inflater;
 
         // Returns a new instance of this fragment for the given section number.
         public static SongList newInstance(int sectionNumber) {
@@ -231,15 +213,24 @@ public class LocalLibrary extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            this.inflater = inflater;
+            update();
+
+
+            return super.onCreateView(inflater, container, savedInstanceState);
+        }
+
+        public void update() {
             setHasOptionsMenu(true);
 
             // Creating an array adapter to store the list of items
-            SongAdapter adapter = null;
+            SongAdapter songAdapter = null;
+            PlaylistAdapter playlistAdapter = null;
 
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
 //            List<Song> songs = db.getAllSongs();
-
+            Log.d("level: ", String.valueOf(level));
             // ID number of the current section (label and id mapping may change)
             //  Playlist = 1
             //  Song = 2
@@ -249,35 +240,52 @@ public class LocalLibrary extends AppCompatActivity {
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
-//                    adapter = new SongAdapter(inflater.getContext(), playlists);
+                    List<Playlist> playlists = db.getAllPlaylists();
+                    playlistAdapter = new PlaylistAdapter(inflater.getContext(), playlists);
+                    if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                    level = 0;
+                    Log.d("page: ", "playlist");
                     break;
                 case 2:
                     List<Song> songs = db.getAllSongs();
-                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, songs);
+                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, songs);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 0;
+                    Log.d("page: ", "song");
                     break;
                 case 3:
                     List<Song> artists = db.getAllArtists();
-                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, artists);
+                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, artists);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 0;
+                    Log.d("page: ", "artist");
                     break;
                 case 4:
                     List<Song> albums = db.getAllAlbums();
-                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, albums);
+                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, albums);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 0;
+                    Log.d("page: ", "album");
                     break;
                 case 5:
                     List<Song> genres = db.getAllGenres();
-                    adapter = new SongAdapter(inflater.getContext(), sectionNumber, genres);
+                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, genres);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 0;
+                    Log.d("page: ", "genre");
                     break;
             }
 
-            // Setting the list adapter for the ListFragment
-            if (adapter != null) setListAdapter(adapter);
-
-            return super.onCreateView(inflater, container, savedInstanceState);
         }
 
         // Function called when a tab's list view item is clicked
         @Override
         public void onListItemClick(ListView listview, View view, int pos, long id) {
+            DatabaseHandler db = new DatabaseHandler(view.getContext());
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             TextView title = (TextView) view.findViewById(R.id.title);
             switch (sectionNumber) { // Depending current tab, different action
@@ -291,14 +299,53 @@ public class LocalLibrary extends AppCompatActivity {
 
                 case 3:
                     Toast.makeText(getActivity(), "ARTIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
+                    if (level == 0) {
+                        // get all songs from artist name
+                        String artist = title.getText().toString();
+                        List<Song> artistSongList = db.getAllSongsFromArtist(artist);
+                        // create and set adapter
+                        SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
+                        if (songAdapter != null) setListAdapter(songAdapter);
+                        level = 1;
+                    } else if (level == 1) {
+                        if (pos == 0) {
+                            // if back button was pressed?
+                        }
+                    }
                     break;
 
                 case 4:
                     Toast.makeText(getActivity(), "ALBUM " + title.getText().toString(), Toast.LENGTH_SHORT).show();
+                    if (level == 0) {
+                        // get all songs from album name
+                        String album = title.getText().toString();
+                        List<Song> albumSongList = db.getAllSongsFromAlbum(album);
+                        // create and set adapter
+                        SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
+                        if (songAdapter != null) setListAdapter(songAdapter);
+                        level = 1;
+                    } else if (level == 1) {
+                        if (pos == 0) {
+                            // if back button was pressed?
+                        }
+                    }
                     break;
 
                 case 5:
                     Toast.makeText(getActivity(), "GENRE " + title.getText().toString(), Toast.LENGTH_SHORT).show();
+                    if (level == 0) {
+                        // get all songs from artist name
+                        String genre = title.getText().toString();
+                        List<Song> genreSongList = db.getAllSongsFromGenre(genre);
+                        // create and set adapter
+                        SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
+                        if (songAdapter != null) setListAdapter(songAdapter);
+                        level = 1;
+                    } else if (level == 1) {
+                        if (pos == 0) {
+                            // if back button was pressed?
+                        }
+                    }
                     break;
             }
         }
