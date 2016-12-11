@@ -27,6 +27,7 @@ public class Song {
         artist = songArtist;
         album = songAlbum;
         genre = songGenre;
+        local = 0;
     }
 
     public Song(String songTitle, String songArtist, String songAlbum, String songArt, String songGenre) {
@@ -35,6 +36,7 @@ public class Song {
         artist = songArtist;
         album = songAlbum;
         genre = songGenre;
+        local = 0;
     }
 
     public Song(long songID, String songTitle, String songArtist, String songAlbum, String songArt, String songGenre, int songLocal) {

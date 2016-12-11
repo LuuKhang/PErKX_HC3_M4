@@ -247,7 +247,7 @@ public class LocalLibrary extends AppCompatActivity {
                     Log.d("page: ", "playlist");
                     break;
                 case 2:
-                    List<Song> songs = db.getAllSongs();
+                    List<Song> songs = db.getAllSongs(1);
                     songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, songs);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
@@ -255,7 +255,7 @@ public class LocalLibrary extends AppCompatActivity {
                     Log.d("page: ", "song");
                     break;
                 case 3:
-                    List<Song> artists = db.getAllArtists();
+                    List<Song> artists = db.getAllArtists(1);
                     songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, artists);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
@@ -263,7 +263,7 @@ public class LocalLibrary extends AppCompatActivity {
                     Log.d("page: ", "artist");
                     break;
                 case 4:
-                    List<Song> albums = db.getAllAlbums();
+                    List<Song> albums = db.getAllAlbums(1);
                     songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, albums);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
@@ -271,7 +271,7 @@ public class LocalLibrary extends AppCompatActivity {
                     Log.d("page: ", "album");
                     break;
                 case 5:
-                    List<Song> genres = db.getAllGenres();
+                    List<Song> genres = db.getAllGenres(1);
                     songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, genres);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
@@ -302,7 +302,7 @@ public class LocalLibrary extends AppCompatActivity {
                     if (level == 0) {
                         // get all songs from artist name
                         String artist = title.getText().toString();
-                        List<Song> artistSongList = db.getAllSongsFromArtist(artist);
+                        List<Song> artistSongList = db.getAllSongsFromArtist(artist, 1);
                         // create and set adapter
                         SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
                         if (songAdapter != null) setListAdapter(songAdapter);
@@ -319,7 +319,7 @@ public class LocalLibrary extends AppCompatActivity {
                     if (level == 0) {
                         // get all songs from album name
                         String album = title.getText().toString();
-                        List<Song> albumSongList = db.getAllSongsFromAlbum(album);
+                        List<Song> albumSongList = db.getAllSongsFromAlbum(album, 1);
                         // create and set adapter
                         SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
                         if (songAdapter != null) setListAdapter(songAdapter);
@@ -336,7 +336,7 @@ public class LocalLibrary extends AppCompatActivity {
                     if (level == 0) {
                         // get all songs from artist name
                         String genre = title.getText().toString();
-                        List<Song> genreSongList = db.getAllSongsFromGenre(genre);
+                        List<Song> genreSongList = db.getAllSongsFromGenre(genre, 1);
                         // create and set adapter
                         SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
                         if (songAdapter != null) setListAdapter(songAdapter);
