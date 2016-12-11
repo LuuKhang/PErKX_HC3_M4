@@ -1,9 +1,12 @@
 package hc3.m4;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +29,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.MediaController.MediaPlayerControl;
+
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ArrayAdapter;
@@ -37,10 +42,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class LocalLibrary extends AppCompatActivity {
+public class LocalLibrary extends AppCompatActivity implements MediaPlayerControl {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -57,6 +63,17 @@ public class LocalLibrary extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private int currentPage = 0;
+
+
+    // Music service, to play music in the background ---------------------------
+    private MusicService musicService;
+    private MusicController musicController;
+    private ArrayList<Song> songsToPlay;
+    private boolean musicBound = false;
+    private Intent playIntent;
+    private boolean paused = false, playbackPaused = false;
+    // -------------------------------------------------------------------------
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +127,10 @@ public class LocalLibrary extends AppCompatActivity {
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LocalLibrary.this, PlayPage.class)); // Opens Play Page
+                Intent playPage = new Intent(LocalLibrary.this, PlayPage.class);
+                playPage.putExtra("playlistSize", songsToPlay.size());
+                playPage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                startActivity(playPage); // Opens Play Page
             }
         });
         Button btn_online = (Button) findViewById(R.id.btn_online);
@@ -125,6 +145,12 @@ public class LocalLibrary extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(this);
         db.createDataBase();
 
+
+
+        // Music Controller set up --------------------------------------------
+        getSongList();
+        setController();
+        // ---------------------------------------------------------------
     }
 
     @Override
@@ -148,6 +174,151 @@ public class LocalLibrary extends AppCompatActivity {
             fragment.update();
         }
     }
+
+
+
+    // Music Controller classes, to play/pause/control ------------------------
+    public void getSongList() {
+        songsToPlay = new ArrayList<Song>();
+        // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
+        songsToPlay.add(new Song("almost_easy", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("master_of_puppets", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("insomnia", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("lets_see_it", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+    }
+    public void songSelected(View view){
+        //musicService.setSong(Integer.parseInt(view.getTag().toString()));
+        musicService.setSong(0);
+        musicService.playSong();
+        if(playbackPaused){
+            setController();
+            playbackPaused=false;
+        }
+        musicController.show(0);
+    }
+    //connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
+            //get service
+            musicService = binder.getService();
+            //pass list
+            musicService.setList(songsToPlay);
+            musicBound = true;
+
+            musicController.show(0);
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicBound = false;
+        }
+    };
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(playIntent==null){
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+    }
+    private void setController() {
+        musicController = new MusicController(this);
+        musicController.setMediaPlayer(this);
+        musicController.setAnchorView(findViewById(R.id.localLibraryRelativeLayout));
+        musicController.setEnabled(true);
+        musicController.setPrevNextListeners(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playNext();
+            }
+        }, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPrev();
+            }
+        });
+    }
+    @Override
+    public void start() {
+        musicService.go();
+    }
+    @Override
+    public void pause() {
+        playbackPaused=true;
+        musicService.pausePlayer();
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        paused=true;
+    }
+    @Override
+    public int getDuration() {
+        if(musicService!=null && musicBound && musicService.isPng())
+            return musicService.getDur();
+        else return 0;
+    }
+    @Override
+    public int getCurrentPosition() {
+        return musicService.getPosn();
+    }
+    @Override
+    public void seekTo(int pos) {
+        musicService.seek(pos);
+    }
+    @Override
+    public boolean isPlaying() {
+        if(musicService!=null && musicBound)
+            return musicService.isPng();
+        return false;
+    }
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
+    @Override
+    protected void onDestroy() {
+        stopService(playIntent);
+        musicService=null;
+        super.onDestroy();
+        System.exit(0);
+    }
+    //play next
+    private void playNext(){
+        musicService.playNext();
+        if(playbackPaused){
+            setController();
+            playbackPaused=false;
+        }
+        musicController.show(0);
+    }
+    private void playPrev(){
+        musicService.playPrev();
+        if(playbackPaused){
+            setController();
+            playbackPaused=false;
+        }
+        musicController.show(0);
+    }
+    // ----------------------------------------------------------------------------------------
 
 
 
