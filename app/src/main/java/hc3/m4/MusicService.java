@@ -105,7 +105,7 @@ public class MusicService extends Service implements
                 .setTicker("Test name")
                 .setOngoing(true)
                 .setContentTitle("Playing")
-        .setContentText(songTitle);
+                .setContentText(songTitle);
         Notification not = builder.build();
 
         startForeground(NOTIFY_ID, not);
@@ -113,6 +113,9 @@ public class MusicService extends Service implements
 
     public void setSong(int songIndex){
         songPosn=songIndex;
+    }
+    public int getCurrentTrackNumber() {
+        return songPosn;
     }
     public void playSong(){
         player.reset();
@@ -130,18 +133,18 @@ public class MusicService extends Service implements
             //player.setDataSource(getApplicationContext(), trackUri);
 
             // Currently hard coded in a specific song, can be changed with an actual list
-            String path = "android.resource://" + this.getPackageName() + "/raw/almost_easy";
+            String path = "android.resource://" + this.getPackageName() + "/raw/"+songTitle;
             player.setDataSource(getApplicationContext(), Uri.parse(path));
 
+            player.prepareAsync();
 
-            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer player) {
-                    player.start();
-                }
-            });
-            //player.PrepareAsync();
-            player.prepare();
+//            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//                @Override
+//                public void onPrepared(MediaPlayer player) {
+//                    player.start();
+//                }
+//            });
+//            player.prepare();
         }
         catch(Exception e){
             Log.e("MUSIC SERVICE", "Error setting data source", e);

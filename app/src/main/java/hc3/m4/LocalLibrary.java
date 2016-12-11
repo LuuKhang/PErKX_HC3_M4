@@ -91,7 +91,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LocalLibrary.this, PlayPage.class)); // Opens Play Page
+                Intent playPage = new Intent(LocalLibrary.this, PlayPage.class);
+                playPage.putExtra("playlistSize", songsToPlay.size());
+                playPage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                startActivity(playPage); // Opens Play Page
+
             }
         });
         Button btn_online = (Button) findViewById(R.id.btn_online);
@@ -156,10 +160,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     public void getSongList() {
         songsToPlay = new ArrayList<Song>();
         // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
-        songsToPlay.add(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("SongTitle1", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("almost_easy", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("master_of_puppets", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("insomnia", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("lets_see_it", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
     }
     public void songSelected(View view){
         //musicService.setSong(Integer.parseInt(view.getTag().toString()));
@@ -181,6 +185,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             //pass list
             musicService.setList(songsToPlay);
             musicBound = true;
+
+            musicController.show(0);
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
