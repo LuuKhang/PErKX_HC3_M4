@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,16 +17,20 @@ import android.support.v7.widget.MenuItemHoverListener;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
 
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.ToggleButton;
+
 import java.util.ArrayList;
 
 import hc3.m4.coverflow.CoverFlow;
@@ -33,7 +38,7 @@ import hc3.m4.coverflow.LinkagePager;
 import hc3.m4.coverflow.PageItemClickListener;
 import hc3.m4.coverflow.PagerContainer;
 
-public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
+public class PlayPage extends AppCompatActivity implements MediaPlayerControl, SeekBar.OnSeekBarChangeListener {
     // Music service, to play music in the background ---------------------------
     private MusicService musicService;
     private MusicController musicController;
@@ -69,6 +74,64 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
 
 
         // Music Controller set up --------------------------------------------
+        final ToggleButton playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);
+
+        playPauseButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on clicks
+                if (playPauseButton.isChecked()) { // Checked - Pause icon visible
+                    start();
+                } else { // Unchecked - Play icon visible
+                    pause();
+                }
+            }
+        });
+
+        final SeekBar musicSeekBar = (SeekBar) findViewById(R.id.musicSeekBar);
+        musicSeekBar.setOnSeekBarChangeListener(this);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int currentPosition = 0;
+//                while (!musicThreadFinished) {
+//                    try {
+//                        Thread.sleep(1000);
+//                        currentPosition = getCurrentPosition();
+//                    } catch (InterruptedException e) {
+//                        return;
+//                    } catch (Exception e) {
+//                        return;
+//                    }
+//                    final int total = getDuration();
+//                    final String totalTime = getAsTime(total);
+//                    final String curTime = getAsTime(currentPosition);
+//
+//                    musicSeekBar.setMax(total); //song duration
+//                    musicSeekBar.setProgress(currentPosition);  //for current song progress
+//                    musicSeekBar.setSecondaryProgress(getBufferPercentage());   // for buffer progress
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (isPlaying()) {
+//                                if (!playPauseButton.isChecked()) {
+//                                    playPauseButton.setChecked(true);
+//                                }
+//                            } else {
+//                                if (playPauseButton.isChecked()) {
+//                                    playPauseButton.setChecked(false);
+//                                }
+//                            }
+//                            musicDuration.setText(totalTime);
+//                            musicCurLoc.setText(curTime);
+//                        }
+//                    });
+//                }
+            }
+        }).start();
+
+
         getSongList();
         setController();
         // ---------------------------------------------------------------
@@ -125,6 +188,7 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
             pager.setPageMargin(30);
         }
     }
+
     private class MyPagerAdapter extends PagerAdapter {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
@@ -325,6 +389,24 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
 
         currentTrack = musicService.getCurrentTrackNumber();
         pager.setCurrentItem(currentTrack);
+    }
+
+
+
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
     // ----------------------------------------------------------------------------------------
 

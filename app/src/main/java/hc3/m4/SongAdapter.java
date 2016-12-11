@@ -22,6 +22,8 @@ public class SongAdapter extends BaseAdapter implements Filterable {
     private Context context;
     private List<Song> data;
     private int sectionNumber;
+    private int level = 0;
+    private String levelName;
 
     public SongAdapter(Context context, int sectionNumber, List<Song> data) {
         this.context = context;
@@ -29,20 +31,41 @@ public class SongAdapter extends BaseAdapter implements Filterable {
         this.sectionNumber = sectionNumber;
     }
 
+    public SongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
+        this.context = context;
+        this.data = data;
+        this.sectionNumber = sectionNumber;
+        this.level = level;
+        this.levelName = name;
+    }
+
     @Override
     public int getCount() {
-        switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+        switch (level) {
+            case 0:
+                switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                    case 2:
+                        return data.size()+1;
+                    case 3:
+                    case 4:
+                    case 5:
+                        return data.size();
+                    default:
+                        return 0;
+                }
             case 1:
-                return 3;
-            case 2:
-                return data.size()+1;
-            case 3:
-            case 4:
-            case 5:
-                return data.size();
+                switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                    case 3:
+                    case 4:
+                    case 5:
+                        return data.size()+2;
+                    default:
+                        return 0;
+                }
             default:
                 return 0;
         }
+
     }
 
 
@@ -58,92 +81,128 @@ public class SongAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
-        }
-
-        TextView title = (TextView) convertView.findViewById(R.id.title); // title
-        TextView artist = (TextView) convertView.findViewById(R.id.artist); // artist
+        TextView title;
+        TextView artist;
 
         // Setting all values in listview
-        switch (sectionNumber) { // Switch case to populate list, depends on category of tab
-            case 1:
-                break;
-            case 2:
-                if (position == 0) {
-                    float scale = context.getResources().getDisplayMetrics().density;
-                    int pixels = (int) (25 * scale + 0.5f);
+        switch (level) {
+            case 0:
+                switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                    // song
+                    case 2:
+                        if (position == 0) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
 
-                    // Gets layout params of ImageView to resize
-                    ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
-                    ViewGroup.LayoutParams params = layout.getLayoutParams();
-                    params.height = pixels;
-                    params.width = pixels;
-                    layout.setLayoutParams(params);
+                        } else {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
-                    // Gets layout params of TextView to resize
-                    TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
-                    artist_text.setTextSize(0);
+                            title = (TextView) convertView.findViewById(R.id.title); // title
+                            artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                    title.setText("Shuffle All");
-                    artist.setText("");
-                } else {
-                    float scale = context.getResources().getDisplayMetrics().density;
-                    int pixels = (int) (50 * scale + 0.5f);
+                            title.setText(data.get(position-1).getTitle());
+                            artist.setText(data.get(position-1).getArtist());
+                        }
+                        break;
+                    // artist
+                    case 3:
+                        convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
-                    // Gets layout params of ImageView to resize
-                    ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
-                    ViewGroup.LayoutParams params = layout.getLayoutParams();
-                    params.height = pixels;
-                    params.width = pixels;
-                    layout.setLayoutParams(params);
+                        title = (TextView) convertView.findViewById(R.id.title); // title
 
-                    // Gets layout params of TextView to resize
-                    TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
-                    artist_text.setTextSize(15);
+                        title.setText(data.get(position).getArtist());
+                        break;
+                    // album
+                    case 4:
+                        convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
-                    title.setText(data.get(position-1).getTitle());
-                    artist.setText(data.get(position-1).getArtist());
+                        title = (TextView) convertView.findViewById(R.id.title); // title
+                        artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+                        title.setText(data.get(position).getAlbum());
+                        artist.setText(data.get(position).getArtist());
+                        break;
+                    // genre
+                    case 5:
+                        convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
+
+                        title = (TextView) convertView.findViewById(R.id.title); // title
+
+                        title.setText(data.get(position).getGenre());
+                        break;
+                    default:
+                        break;
                 }
                 break;
-            case 3:
-                // Gets layout params of TextView to resize
-                TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
-                artist_text.setTextSize(0);
+            case 1:
+                switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                    // artist
+                    case 3:
+                        if (position == 0) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.albumname_back_listview, null);
 
-                title.setText(data.get(position).getArtist());
-                artist.setText("");
-                break;
-            case 4:
-//                float scale = context.getResources().getDisplayMetrics().density;
-//                int pixels = (int) (50 * scale + 0.5f);
-//
-//                // Gets layout params of ImageView to resize
-//                ImageView layout = (ImageView) convertView.findViewById(R.id.list_image);
-//                ViewGroup.LayoutParams params = layout.getLayoutParams();
-//                params.height = pixels;
-//                params.width = pixels;
-//                layout.setLayoutParams(params);
+                            title = (TextView) convertView.findViewById(R.id.title); // title
 
-                // Gets layout params of TextView to resize
-//                TextView artist_text = (TextView) convertView.findViewById(R.id.artist);
-//                artist_text.setTextSize(0);
+                            title.setText(levelName);
+                        } else if (position == 1) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
+                        } else {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
-                title.setText(data.get(position).getAlbum());
-                artist.setText(data.get(position).getArtist());
-                break;
-            case 5:
-                // Gets layout params of TextView to resize
-                artist_text = (TextView) convertView.findViewById(R.id.artist);
-                artist_text.setTextSize(0);
+                            title = (TextView) convertView.findViewById(R.id.title); // title
+                            artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                title.setText(data.get(position).getGenre());
-                artist.setText("");
+                            title.setText(data.get(position-2).getTitle());
+                            artist.setText(data.get(position-2).getArtist());
+                        }
+                        break;
+                    // album
+                    case 4:
+                        if (position == 0) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.albumname_back_listview, null);
+
+                            title = (TextView) convertView.findViewById(R.id.title); // title
+
+                            title.setText(levelName);
+                        } else if (position == 1) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
+                        } else {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                            title = (TextView) convertView.findViewById(R.id.title); // title
+                            artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+                            title.setText(data.get(position-2).getTitle());
+                            artist.setText(data.get(position-2).getArtist());
+                        }
+                        break;
+                    // genre
+                    case 5:
+                        if (position == 0) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.albumname_back_listview, null);
+
+                            title = (TextView) convertView.findViewById(R.id.title); // title
+
+                            title.setText(levelName);
+                        } else if (position == 1) {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
+                        } else {
+                            convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                            title = (TextView) convertView.findViewById(R.id.title); // title
+                            artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+                            title.setText(data.get(position-2).getTitle());
+                            artist.setText(data.get(position-2).getArtist());
+                        }
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;
         }
+
 
 
 
