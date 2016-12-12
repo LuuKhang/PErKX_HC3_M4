@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 
 import android.widget.BaseAdapter;
@@ -41,6 +42,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,11 +69,15 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
     // Music service, to play music in the background ---------------------------
     private MusicService musicService;
-    private MusicController musicController;
+    private MediaController musicController;
     private ArrayList<Song> songsToPlay;
     private boolean musicBound = false;
     private Intent playIntent;
     private boolean paused = false, playbackPaused = false;
+
+    private TextView curSongTitle;
+    private TextView curArtist;
+    private ToggleButton playPauseButton;
     // -------------------------------------------------------------------------
 
 
@@ -123,16 +129,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
 
         // Common navigation buttons along buttom
-        Button btn_play = (Button) findViewById(R.id.btn_play);
-        btn_play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent playPage = new Intent(LocalLibrary.this, PlayPage.class);
-                playPage.putExtra("playlistSize", songsToPlay.size());
-                playPage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
-                startActivity(playPage); // Opens Play Page
-            }
-        });
         Button btn_online = (Button) findViewById(R.id.btn_online);
         btn_online.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +144,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
 
         // Music Controller set up --------------------------------------------
+        curSongTitle = (TextView) findViewById(R.id.songTitle);
+        curArtist = (TextView) findViewById(R.id.artistName);
+        playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);
+
         getSongList();
         setController();
         // ---------------------------------------------------------------
@@ -181,10 +181,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     public void getSongList() {
         songsToPlay = new ArrayList<Song>();
         // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
-        songsToPlay.add(new Song("almost_easy", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("master_of_puppets", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("insomnia", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("lets_see_it", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("almost_easy", "Avenged Sevefold", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("master_of_puppets", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("insomnia", "Kamelot", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("lets_see_it", "We Are Scientists", "SongAlbum1", "SongArt1", "SongGenre1"));
     }
     public void songSelected(View view){
         //musicService.setSong(Integer.parseInt(view.getTag().toString()));
@@ -194,7 +194,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             setController();
             playbackPaused=false;
         }
-        musicController.show(0);
+
+        updateCurTrack(true);
+
+        //musicController.show(0);
     }
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -207,7 +210,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             musicService.setList(songsToPlay);
             musicBound = true;
 
-            musicController.show(0);
+            updateCurTrack(false);
+
+            //musicController.show(0);
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -224,7 +229,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         }
     }
     private void setController() {
-        musicController = new MusicController(this);
+        musicController = new MediaController(this);
         musicController.setMediaPlayer(this);
         musicController.setAnchorView(findViewById(R.id.localLibraryRelativeLayout));
         musicController.setEnabled(true);
@@ -302,21 +307,40 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         System.exit(0);
     }
     //play next
-    private void playNext(){
+    public void playNext(){
         musicService.playNext();
         if(playbackPaused){
             setController();
             playbackPaused=false;
         }
-        musicController.show(0);
+        //musicController.show(0);
     }
-    private void playPrev(){
+    public void playPrev(){
         musicService.playPrev();
         if(playbackPaused){
             setController();
             playbackPaused=false;
         }
-        musicController.show(0);
+        //musicController.show(0);
+    }
+
+
+    // Function used to show play page
+    // Current set to open new activity, but I think that's horrible practice. Might switch to play page = fragment
+    public void openPlayPage() {
+        Intent playPage = new Intent(LocalLibrary.this, PlayPage.class);
+        playPage.putExtra("playlistSize", songsToPlay.size());
+        playPage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+        startActivity(playPage); // Opens Play Page
+    }
+    public void updateCurTrack(boolean forSureIsPlaying) {
+        curArtist.setText("By: " + musicService.getArtist());
+        curSongTitle.setText(musicService.getSongTitle());
+
+        if (forSureIsPlaying)
+            playPauseButton.setChecked(true);
+        else
+            playPauseButton.setChecked(musicService.isPng());
     }
     // ----------------------------------------------------------------------------------------
 

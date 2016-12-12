@@ -30,6 +30,7 @@ public class MusicService extends Service implements
     private final IBinder musicBind = new MusicBinder();
 
     private String songTitle="";
+    private String artistName="";
     private static final int NOTIFY_ID=1;
 
     @Override
@@ -117,11 +118,15 @@ public class MusicService extends Service implements
     public int getCurrentTrackNumber() {
         return songPosn;
     }
+
+
     public void playSong(){
         player.reset();
         //get song
         Song playSong = songs.get(songPosn);
         songTitle=playSong.getTitle();
+        artistName = playSong.getArtist();
+
         //get id
         long currSong = playSong.getID();
         //set uri
@@ -157,6 +162,32 @@ public class MusicService extends Service implements
 
     public int getDur(){
         return player.getDuration();
+    }
+
+    public String getStringDuration() {
+        int secDur = player.getDuration() / 1000;
+        int minDur = secDur / 60;
+
+        return String.valueOf(minDur) + ":" + String.valueOf(secDur%60);
+    }
+
+    public int getCurrentProgress() {
+        return player.getCurrentPosition();
+    }
+
+    public String getStringProgress() {
+        int secDur = player.getCurrentPosition() / 1000;
+        int minDur = secDur / 60;
+
+        return String.valueOf(minDur) + ":" + String.valueOf(secDur%60);
+    }
+
+    public String getSongTitle(){
+        return songTitle;
+    }
+
+    public String getArtist(){
+        return artistName;
     }
 
     public boolean isPng(){
