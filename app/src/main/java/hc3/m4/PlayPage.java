@@ -4,49 +4,54 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.MenuItemHoverListener;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.MediaController.MediaPlayerControl;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View.OnClickListener;
-
-import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ToggleButton;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
 import hc3.m4.coverflow.CoverFlow;
-import hc3.m4.coverflow.LinkagePager;
-import hc3.m4.coverflow.PageItemClickListener;
 import hc3.m4.coverflow.PagerContainer;
 
-public class PlayPage extends AppCompatActivity implements MediaPlayerControl, SeekBar.OnSeekBarChangeListener {
+public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
     // Music service, to play music in the background ---------------------------
     private MusicService musicService;
-    private MusicController musicController;
+    private MediaController musicController;
     private ArrayList<Song> songsToPlay;
     private boolean musicBound = false;
     private Intent playIntent;
     private boolean paused = false, playbackPaused = false;
     private int currentTrack;
+
+    private int curTimeInt;
+    private TextView songTitle;
+    private TextView artistName;
+    private TextView songCurTime;
+    private TextView songTotalTime;
+    private ToggleButton playPauseButton;
+    private SeekBar seekbar;
+
+    private Handler updateProgressThread = new Handler();
     // -------------------------------------------------------------------------
 
     // For Coverflow ------------------------------------------------------------
@@ -74,66 +79,49 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
 
 
         // Music Controller set up --------------------------------------------
-        final ToggleButton playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);
+        getSongList();
+        setController();
 
-        playPauseButton.setOnClickListener(new OnClickListener() {
+        // Thread that continously runs to update the progress bar
+        PlayPage.this.runOnUiThread(new Runnable() {
             @Override
-            public void onClick(View v) {
-                // Perform action on clicks
-                if (playPauseButton.isChecked()) { // Checked - Pause icon visible
-                    start();
-                } else { // Unchecked - Play icon visible
-                    pause();
+            public void run() {
+                if(musicService != null && isPlaying()){
+                    seekbar.setMax(musicService.getDur());
+                    seekbar.setProgress(musicService.getCurrentProgress());
+                    songCurTime.setText(musicService.getStringProgress());
+
+                    // This is pretty bad... updating the labels everytime, but on song switch, im not sure how to set the listener
+                    updateCurTrack(false);
                 }
+                updateProgressThread.postDelayed(this, 1000);
             }
         });
 
-        final SeekBar musicSeekBar = (SeekBar) findViewById(R.id.musicSeekBar);
-        musicSeekBar.setOnSeekBarChangeListener(this);
-
-        new Thread(new Runnable() {
+        songTitle = (TextView) findViewById(R.id.songTitle);
+        artistName = (TextView) findViewById(R.id.artistName);
+        songCurTime = (TextView) findViewById(R.id.songCurTime);
+        songTotalTime = (TextView) findViewById(R.id.songTotalTime);
+        playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);
+        seekbar = (SeekBar) findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void run() {
-                int currentPosition = 0;
-//                while (!musicThreadFinished) {
-//                    try {
-//                        Thread.sleep(1000);
-//                        currentPosition = getCurrentPosition();
-//                    } catch (InterruptedException e) {
-//                        return;
-//                    } catch (Exception e) {
-//                        return;
-//                    }
-//                    final int total = getDuration();
-//                    final String totalTime = getAsTime(total);
-//                    final String curTime = getAsTime(currentPosition);
-//
-//                    musicSeekBar.setMax(total); //song duration
-//                    musicSeekBar.setProgress(currentPosition);  //for current song progress
-//                    musicSeekBar.setSecondaryProgress(getBufferPercentage());   // for buffer progress
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (isPlaying()) {
-//                                if (!playPauseButton.isChecked()) {
-//                                    playPauseButton.setChecked(true);
-//                                }
-//                            } else {
-//                                if (playPauseButton.isChecked()) {
-//                                    playPauseButton.setChecked(false);
-//                                }
-//                            }
-//                            musicDuration.setText(totalTime);
-//                            musicCurLoc.setText(curTime);
-//                        }
-//                    });
-//                }
+            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
+                if (musicService != null && fromUser) {
+                    musicService.seek(progresValue);
+                    songCurTime.setText(musicService.getStringProgress());
+                }
             }
-        }).start();
-
-
-        getSongList();
-        setController();
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                Log.d("test", "touched down");
+                // may change scrub speed, if we have time
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d("test", "released touch");
+            }
+        });
         // ---------------------------------------------------------------
 
 
@@ -151,10 +139,12 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
                 if (position > currentTrack) {
                     musicService.playNext();
                     currentTrack = position;
+                    updateCurTrack(true);
                 }
                 else if (position < currentTrack) {
                     musicService.playPrev();
                     currentTrack = position;
+                    updateCurTrack(true);
                 }
             }
 
@@ -167,14 +157,6 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
         });
         currentTrack = getIntent().getIntExtra("currentTrackNumber", 0);
         pager.setCurrentItem(currentTrack);
-
-//        container.setPageItemClickListener(new PageItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//                pause();
-//                Toast.makeText(PlayPage.this,"position:" + position,Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         boolean showTransformer = getIntent().getBooleanExtra("showTransformer",false);
         if(showTransformer){
@@ -192,13 +174,6 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
     private class MyPagerAdapter extends PagerAdapter {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-//            TextView view = new TextView(PlayPage.this);
-//            view.setText("Item "+position);
-//            view.setGravity(Gravity.CENTER);
-//            view.setBackgroundColor(Color.argb(255, position * 50, position * 10, position * 50));
-//            container.addView(view);
-//            return view;
-
             // Depending on input position, can load index of an array to get the images of albums
             ImageView view = new ImageView(PlayPage.this);
             view.setImageResource(R.drawable.cross);
@@ -207,13 +182,15 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
             view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (paused) {
-                        paused = false;
-                        start();
+                    if (!paused) {
+                        paused = true;
+                        playPauseButton.setChecked(false);
+                        pause();
                     }
                     else {
-                        paused = true;
-                        pause();
+                        paused = false;
+                        playPauseButton.setChecked(true);
+                        start();
                     }
                 }
             });
@@ -247,20 +224,10 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
     public void getSongList() {
         songsToPlay = new ArrayList<Song>();
         // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
-        songsToPlay.add(new Song("almost_easy", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("master_of_puppets", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("insomnia", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("lets_see_it", "SongArtist1", "SongAlbum1", "SongArt1", "SongGenre1"));
-    }
-    public void songSelected(View view){
-        //musicService.setSong(Integer.parseInt(view.getTag().toString()));
-        musicService.setSong(0);
-        musicService.playSong();
-        if(playbackPaused){
-            setController();
-            playbackPaused=false;
-        }
-        musicController.show(0);
+        songsToPlay.add(new Song("almost_easy", "Avenged Sevefold", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("master_of_puppets", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("insomnia", "Kamelot", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("lets_see_it", "We Are Scientists", "SongAlbum1", "SongArt1", "SongGenre1"));
     }
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -273,7 +240,9 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
             musicService.setList(songsToPlay);
             musicBound = true;
 
-            musicController.show(0);
+            //musicController.show(0);
+            paused = !musicService.isPng();
+            updateCurTrack(false);
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -290,7 +259,7 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
         }
     }
     private void setController() {
-        musicController = new MusicController(this);
+        musicController = new MediaController(this);
         musicController.setMediaPlayer(this);
         musicController.setAnchorView(findViewById(R.id.playPageRelativeLayout));
         musicController.setEnabled(true);
@@ -368,45 +337,74 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
         System.exit(0);
     }
     //play next
-    private void playNext(){
+    public void playNext(){
         musicService.playNext();
         if(playbackPaused){
             setController();
             playbackPaused=false;
         }
-        musicController.show(0);
+        updateCurTrack(true);
+        //musicController.show(0);
 
         currentTrack = musicService.getCurrentTrackNumber();
         pager.setCurrentItem(currentTrack);
     }
-    private void playPrev(){
+    public void playPrev(){
         musicService.playPrev();
         if(playbackPaused){
             setController();
             playbackPaused=false;
         }
-        musicController.show(0);
+        updateCurTrack(true);
+        //musicController.show(0);
 
         currentTrack = musicService.getCurrentTrackNumber();
         pager.setCurrentItem(currentTrack);
     }
-
-
-
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
+    public void fastForward() {
+        if (!paused) {
+            int newPos = musicService.getCurrentProgress() + 10000; // move forward 10 seconds
+            int maxPos = musicService.getDur();
+            if (newPos > maxPos)
+                musicService.seek(maxPos);
+            else
+                musicService.seek(newPos);
+        }
+    }
+    public void rewind() {
+        if (!paused) {
+            int newPos = musicService.getCurrentProgress() - 10000; // move back 10 seconds
+            int minPos = 0;
+            if (newPos < minPos)
+                musicService.seek(minPos);
+            else
+                musicService.seek(newPos);
+        }
     }
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
+    public void updateCurTrack(final boolean forSureIsPlaying) {
+        // This is probably terrible coding practice
+        // But if we don't run it with a slight delay, the threads clash (playing music and updating labels)
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                curTimeInt = musicService.getCurrentProgress();
+                artistName.setText("By: " + musicService.getArtist());
+                songTitle.setText(musicService.getSongTitle());
+                songTotalTime.setText(musicService.getStringDuration());
+                songCurTime.setText(musicService.getStringProgress());
 
-    }
+                currentTrack = musicService.getCurrentTrackNumber();
+                pager.setCurrentItem(currentTrack);
 
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (forSureIsPlaying) {
+                    playPauseButton.setChecked(true);
+                    paused = false;
+                }
+                else
+                    playPauseButton.setChecked(musicService.isPng());
+            }
+        }, 100);
     }
     // ----------------------------------------------------------------------------------------
 
@@ -416,46 +414,13 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl, S
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
-                finish();
+                startActivity(new Intent(PlayPage.this, LocalLibrary.class)); // Opens Local Library
+                //finish(); // Functions similar to back button
+                // finish blows everything up... clearly I implemented the music player badly, but too late to fix... my bad
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-
-    // For detecting swipe
-    private float x1, x2;
-    static final int MIN_DISTANCE = 150;
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-
-            // On touch, records x position
-            case MotionEvent.ACTION_DOWN:
-                x1 = event.getX();
-                break;
-
-            // On finger release, record how far finger moved and calculate swipe
-            case MotionEvent.ACTION_UP:
-                x2 = event.getX();
-                float deltaX = x2 - x1;
-
-                // Swipe right
-                if (deltaX > MIN_DISTANCE) {
-                    Toast.makeText(this, "Swipe RIGHT", Toast.LENGTH_SHORT).show();
-                }
-
-                // Swipe left
-                else if (deltaX < MIN_DISTANCE * -1) {
-                    Toast.makeText(this, "Swipe LEFT", Toast.LENGTH_SHORT).show();
-                }
-
-                // Tap
-                else {
-                    Toast.makeText(this, "TAP", Toast.LENGTH_SHORT).show();
-                }
-        }
-        return super.onTouchEvent(event);
-    }
 }
