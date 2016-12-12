@@ -25,7 +25,10 @@
         <activity
             android:name=".OnlineSection"
             android:label="@string/title_activity_online_section"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".NewReleases" />
+        <activity android:name=".RecommendedForYou" />
+        <activity android:name=".Top100Songs"></activity>
     </application>
 
 </manifest>
