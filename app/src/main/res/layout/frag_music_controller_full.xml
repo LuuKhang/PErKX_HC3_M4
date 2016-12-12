@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="225dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/musicControllerLayout"
+        >
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="225dp"
+            android:id="@+id/linearLayout"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="15dp"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/songTitle"
+                android:text="Track Title"
+                android:textStyle="normal|bold"
+                android:textSize="30sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/artistName"
+                android:layout_marginBottom="15dp"
+                android:text="Artist"
+                android:textSize="20sp" />
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBar"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:thumb="@drawable/slider_circle"
+                />
+
+           <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp">
+
+               <TextView
+                   android:layout_width="50dp"
+                   android:layout_height="match_parent"
+                   android:id="@+id/songCurTime"
+                   android:layout_alignParentLeft="true"
+                   android:text="0:00" />
+
+               <TextView
+                   android:layout_width="50dp"
+                   android:layout_height="match_parent"
+                   android:id="@+id/songTotalTime"
+                   android:layout_alignParentRight="true"
+                   android:text="0:00" />
+
+           </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/prevButton"
+                    android:src="@android:drawable/ic_media_previous"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/rewindButton"
+                    android:scaleType="fitXY"
+                    android:background="@android:color/white"
+                    />
+
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/rewindButton"
+                    android:src="@android:drawable/ic_media_rew"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/playPauseButton"
+                    android:scaleType="fitXY"
+                    android:background="@android:color/white"
+                    />
+
+                <ToggleButton
+                    android:id="@+id/playPauseButton"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:background="@drawable/ic_play_pause"
+                    android:textOff=""
+                    android:textOn=""
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    >
+                </ToggleButton>
+
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/forwardButton"
+                    android:src="@android:drawable/ic_media_ff"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/playPauseButton"
+                    android:scaleType="fitXY"
+                    android:background="@android:color/white"
+                    />
+
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/nextButton"
+                    android:src="@android:drawable/ic_media_next"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/forwardButton"
+                    android:scaleType="fitXY"
+                    android:background="@android:color/white"
+                    />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+</RelativeLayout>
+

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/musicControllerLayout"
+        >
+
+
+        <ImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="15dp"
+            android:id="@+id/albumArt"
+            android:src="@drawable/cross"
+            />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/linearLayout"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/albumArt"
+            android:layout_toStartOf="@+id/prevButton"
+            android:layout_marginTop="15dp"
+            >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:text="Track Name"
+                android:id="@+id/songTitle"
+                android:textStyle="normal|bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:text="Artist Name"
+                android:id="@+id/artistName" />
+        </LinearLayout>
+
+
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/prevButton"
+            android:src="@android:drawable/ic_media_previous"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/playPauseButton"
+            android:scaleType="fitXY"
+            android:layout_marginTop="35dp"
+            android:background="@android:color/white"
+            />
+
+        <ToggleButton
+            android:id="@+id/playPauseButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/ic_play_pause"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/nextButton"
+            android:layout_marginTop="20dp"
+            android:textOff=""
+            android:textOn=""
+            >
+        </ToggleButton>
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/nextButton"
+            android:src="@android:drawable/ic_media_next"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:scaleType="fitXY"
+            android:layout_marginTop="35dp"
+            android:background="@android:color/white"
+            />
+
+    </RelativeLayout>
+</RelativeLayout>
+
