@@ -182,7 +182,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         songsToPlay = new ArrayList<Song>();
         // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
         songsToPlay.add(new Song("almost_easy", "Avenged Sevefold", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("master_of_puppets", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("cyanide", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
         songsToPlay.add(new Song("insomnia", "Kamelot", "SongAlbum1", "SongArt1", "SongGenre1"));
         songsToPlay.add(new Song("lets_see_it", "We Are Scientists", "SongAlbum1", "SongArt1", "SongGenre1"));
     }
