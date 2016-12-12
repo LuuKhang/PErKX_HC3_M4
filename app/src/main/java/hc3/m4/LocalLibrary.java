@@ -412,7 +412,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
                     List<Playlist> playlists = db.getAllPlaylists();
-                    playlistAdapter = new PlaylistAdapter(inflater.getContext(), playlists);
+                    playlistAdapter = new PlaylistAdapter(inflater.getContext(), 0, playlists);
                     if (playlistAdapter != null) setListAdapter(playlistAdapter);
                     level = 0;
                     Log.d("page: ", "playlist");
@@ -461,7 +461,23 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             TextView title = (TextView) view.findViewById(R.id.title);
             switch (sectionNumber) { // Depending current tab, different action
                 case 1:
-                    Toast.makeText(getActivity(), "PLAYLIST " + (String)listview.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "PLAYLIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
+//                    Log.d("pos:", String.valueOf(pos));
+                    if (level == 0) {
+                        if (pos == 0) {
+                            // add playlist page
+                            List<Playlist> playlists = new ArrayList<Playlist>();
+                            PlaylistAdapter playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlists);
+                            if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                        } else {
+                            // existing playlist page
+                        }
+
+                    } else if (level == 1) {
+                        if (pos == 1) { // add songs button
+
+                        }
+                    }
                     break;
 
                 case 2:
