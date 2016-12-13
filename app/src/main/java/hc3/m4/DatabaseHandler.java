@@ -521,4 +521,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return count
         return cursor.getCount();
     }
+
+
+    // Search function (this is real bad... but I did not account for SQL injection, but fk it)
+    public List<Song> searchSongs(String category, String keyword) {
+        List<Song> songList = new ArrayList<Song>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE " + category + " like \"%" + keyword + "%\"" +
+                " GROUP BY " + category + " ORDER BY LOWER(" + category +")";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setTitle(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setAlbum(cursor.getString(3));
+                song.setArt(cursor.getString(4));
+                song.setGenre(cursor.getString(5));
+                // Adding song to list
+                songList.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return songList;
+    }
 }

@@ -17,7 +17,7 @@ import hc3.m4.DatabaseHandler;
 import hc3.m4.R;
 import hc3.m4.Song;
 
-public class SongAdapter extends BaseAdapter implements Filterable {
+public class SongAdapter extends BaseAdapter {
 
     private Context context;
     private List<Song> data;
@@ -37,6 +37,11 @@ public class SongAdapter extends BaseAdapter implements Filterable {
         this.sectionNumber = sectionNumber;
         this.level = level;
         this.levelName = name;
+    }
+
+    // Function called to update the current list
+    public void updateSongList(List<Song> newSongs) {
+        this.data = newSongs;
     }
 
     @Override
@@ -99,8 +104,8 @@ public class SongAdapter extends BaseAdapter implements Filterable {
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                            title.setText(data.get(position-1).getTitle());
-                            artist.setText(data.get(position-1).getArtist());
+                            title.setText(data.get(position - 1).getTitle());
+                            artist.setText(data.get(position - 1).getArtist());
                         }
                         break;
                     // artist
@@ -151,8 +156,8 @@ public class SongAdapter extends BaseAdapter implements Filterable {
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                            title.setText(data.get(position-2).getTitle());
-                            artist.setText(data.get(position-2).getArtist());
+                            title.setText(data.get(position - 2).getTitle());
+                            artist.setText(data.get(position - 2).getArtist());
                         }
                         break;
                     // album
@@ -171,8 +176,8 @@ public class SongAdapter extends BaseAdapter implements Filterable {
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                            title.setText(data.get(position-2).getTitle());
-                            artist.setText(data.get(position-2).getArtist());
+                            title.setText(data.get(position - 2).getTitle());
+                            artist.setText(data.get(position - 2).getArtist());
                         }
                         break;
                     // genre
@@ -191,8 +196,8 @@ public class SongAdapter extends BaseAdapter implements Filterable {
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                            title.setText(data.get(position-2).getTitle());
-                            artist.setText(data.get(position-2).getArtist());
+                            title.setText(data.get(position - 2).getTitle());
+                            artist.setText(data.get(position - 2).getArtist());
                         }
                         break;
                     default:
@@ -204,15 +209,6 @@ public class SongAdapter extends BaseAdapter implements Filterable {
         }
 
 
-
-
         return convertView;
-    }
-
-    @Override
-    public Filter getFilter() {
-        //test
-        Log.d("TEST", "test");
-        return null;
     }
 }
