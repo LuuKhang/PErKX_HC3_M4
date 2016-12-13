@@ -494,20 +494,27 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             TextView title = (TextView) view.findViewById(R.id.title);
             switch (sectionNumber) { // Depending current tab, different action
+                // Selecting a playlist
                 case 1:
-                    Toast.makeText(getActivity(), "PLAYLIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
-//                    Log.d("pos:", String.valueOf(pos));
                     if (level == 0) {
                         if (pos == 0) {
                             // add playlist page
                             List<Playlist> playlists = new ArrayList<Playlist>();
                             PlaylistAdapter playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlists);
                             if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                            level = 1;
                         } else {
                             // existing playlist page
+                            String playlistName = title.getText().toString();
+                            List<Song> playlistSongs = db.getAllSongsInPlaylist(pos-1);
+                            PlaylistAdapter playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistName);
+                            if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                            level = 1;
                         }
 
-                    } else if (level == 1) {
+                    }
+
+                    else if (level == 1) {
                         if (pos == 1) { // add songs button
 
                         }
@@ -581,17 +588,14 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 // Function called on submit
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    //Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+                    // Nothing happens on submit besides closing the keyboard, filter handled while typing
                     return false;
                 }
                 // Function called while typing
                 @Override
                 public boolean onQueryTextChange(String searchQuery) {
-                    //Toast.makeText(getContext(), searchQuery, Toast.LENGTH_SHORT).show();
-
                     SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
                     fragment.search(currentFilter, searchQuery);
-
                     return true;
                 }
             });
@@ -600,16 +604,20 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         }
 
 
+        // Search function called when typing in the search bar (magnifying glass)
+        // Note, currently does not work for playlists and detailed lists
         public void search(int sectionNumber, String keyword) {
-            Log.d("Section", String.valueOf(sectionNumber));
-
             PlaylistAdapter playlistAdapter = null;
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
             List<Song> results;
 
+            // Query and adapter differs for each section
             switch (sectionNumber) {
+                // Playlists
                 case 0:
                     break;
+
+                // Songs
                 case 1:
                     results = db.searchSongs("title", keyword);
                     if (songAdapterSongs != null) {
@@ -617,6 +625,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapterSongs.notifyDataSetChanged();
                     }
                     break;
+
+                // Artists
                 case 2:
                     results = db.searchSongs("artist", keyword);
                     if (songAdapterArtists != null) {
@@ -624,6 +634,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapterArtists.notifyDataSetChanged();
                     }
                     break;
+
+                // Albums
                 case 3:
                     results = db.searchSongs("album", keyword);
                     if (songAdapterAlbums != null) {
@@ -631,6 +643,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapterAlbums.notifyDataSetChanged();
                     }
                     break;
+
+                // Genres
                 case 4:
                     results = db.searchSongs("genre", keyword);
                     if (songAdapterGenres != null) {
