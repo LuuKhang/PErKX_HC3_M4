@@ -5,7 +5,7 @@
     android:background="@drawable/list_selector"
     android:orientation="horizontal"
     android:padding="5dip"
-    android:onClick="songSelected">
+    android:onClick="songSelected" android:tag="0">
     <!--clicking on a song plays music (might need to be revised)-->
 
     <!--  ListRow Left side Thumbnail image -->
@@ -81,7 +81,7 @@
         <TextView
             android:id="@+id/downloadcompleted"
             android:text="Download Completed"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:textAlignment="viewEnd"
             android:visibility="invisible"

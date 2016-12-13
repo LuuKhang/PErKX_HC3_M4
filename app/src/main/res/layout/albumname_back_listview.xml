@@ -7,23 +7,6 @@
     android:padding="5dip" >
 
     <!--  ListRow Left side Thumbnail image -->
-    <RelativeLayout android:id="@+id/thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="3dip"
-        android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip">
-
-        <ImageButton
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:src="@drawable/back"
-            android:background="@android:color/transparent"
-            android:onClick="backButton" />
-
-
-
-    </RelativeLayout>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
@@ -44,6 +27,24 @@
             android:typeface="sans"
             android:textSize="20dip"
             android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true">
+
+        <ImageButton
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/back"
+            android:background="@android:color/transparent"
+            android:onClick="backButton" />
+
+
 
     </RelativeLayout>
 </RelativeLayout>
