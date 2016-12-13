@@ -1,36 +1,50 @@
 package hc3.m4;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class PlaylistAdapter extends BaseAdapter implements Filterable {
+public class PlaylistAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Playlist> data;
+    private String playlistName;
+    private List<Playlist> playlistList;
+    private List<Song> songsInPlaylist;
     private int level = 0;
 
-    public PlaylistAdapter(Context context, int level, List<Playlist> data) {
+    public PlaylistAdapter(Context context, int level, List<Playlist> playlistLists) {
         this.context = context;
-        this.data = data;
+        this.playlistList = playlistLists;
         this.level = level;
+    }
+
+    public PlaylistAdapter(Context context, int level, List<Song> songs, String playlistName) {
+        this.context = context;
+        this.playlistName = playlistName;
+        this.songsInPlaylist = songs;
+        this.level = level;
+    }
+
+    // Function called to update the current list
+    public void updatePlaylistList(List<Playlist> newPlaylists) {
+        this.playlistList = newPlaylists;
     }
 
     @Override
     public int getCount() {
         switch (level) {
             case 0:
-                return data.size()+1;
+                return playlistList.size()+1;
             case 1:
-                return data.size()+3;
+                if (songsInPlaylist != null)
+                    return songsInPlaylist.size()+3;
+                else
+                    return 3;
             default:
                 return 0;
         }
@@ -38,7 +52,7 @@ public class PlaylistAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public Object getItem(int position) {
-        return data.size();
+        return playlistList.size();
     }
 
     @Override
@@ -46,42 +60,59 @@ public class PlaylistAdapter extends BaseAdapter implements Filterable {
         return position;
     }
 
+    public List<Song> getAllSongs() {
+        return songsInPlaylist;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
         switch (level) {
+            // List showing all playlists
             case 0:
+                // First position is the "Create New Playlist" button
                 if (position == 0) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.create_playlist_listview, null);
-
-                } else {
+                }
+                // Afterwards, lists all playlists
+                else {
                     convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
-
                     title = (TextView) convertView.findViewById(R.id.title); // title
-
-                    title.setText(data.get(position-1).getName());
+                    title.setText(playlistList.get(position-1).getName());
                 }
                 break;
+
+            // Once clicked on a playlist, shows options and songs
             case 1:
+                // First item shown is name row
                 if (position == 0) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlistname, null);
-                } else if (position == 1) {
+                    title = (TextView) convertView.findViewById(R.id.title);
+                    title.setText(playlistName);
+                }
+                // Second, "Add Songs" button
+                else if (position == 1) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.listview_addsongs, null);
-                } else if (position == 2) {
+                }
+                // Third. "Shuffle All" button
+                else if (position == 2) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
-                } else {
+                }
+                // All other positions list the songs in the current playlist
+                else {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
+                    convertView.setTag(position - 3);
+
+                    title = (TextView) convertView.findViewById(R.id.title); // title
+                    artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+                    title.setText(songsInPlaylist.get(position - 3).getTitle());
+                    artist.setText(songsInPlaylist.get(position - 3).getArtist());
                 }
                 break;
         }
         return convertView;
-    }
-
-    @Override
-    public Filter getFilter() {
-        //test
-        Log.d("TEST", "test");
-        return null;
     }
 }

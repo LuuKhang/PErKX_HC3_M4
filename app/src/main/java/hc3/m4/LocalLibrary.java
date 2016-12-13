@@ -46,6 +46,7 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class LocalLibrary extends AppCompatActivity implements MediaPlayerControl {
@@ -71,6 +72,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     private MusicService musicService;
     private MediaController musicController;
     private ArrayList<Song> songsToPlay;
+    private int currentTrack;
     private boolean musicBound = false;
     private Intent playIntent;
     private boolean paused = false, playbackPaused = false;
@@ -89,6 +91,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     static SongAdapter songAdapterAlbums;
     static SongAdapter songAdapterGenres;
     static SongAdapter songAdapter; // General list for detailed inner lists (ex. selecting an artist)
+
+    static PlaylistAdapter playlistAdapter;
 
 
     @Override
@@ -160,7 +164,12 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         curArtist = (TextView) findViewById(R.id.artistName);
         playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);
 
-        getSongList();
+        currentTrack = getIntent().getIntExtra("currentTrackNumber", 0);
+        songsToPlay = new ArrayList<Song>();
+        ArrayList<Song> songsList = (ArrayList<Song>) getIntent().getSerializableExtra("playlistSongs");
+        if ( songsList != null )
+            songsToPlay.addAll( songsList );
+
         setController();
         // ---------------------------------------------------------------
     }
@@ -190,17 +199,47 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
 
     // Music Controller classes, to play/pause/control ------------------------
-    public void getSongList() {
-        songsToPlay = new ArrayList<Song>();
-        // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
-        songsToPlay.add(new Song("almost_easy", "Avenged Sevefold", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("cyanide", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("insomnia", "Kamelot", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("lets_see_it", "We Are Scientists", "SongAlbum1", "SongArt1", "SongGenre1"));
-    }
     public void songSelected(View view){
-        //musicService.setSong(Integer.parseInt(view.getTag().toString()));
-        musicService.setSong(0);
+        // Sets all the shown songs in the music player
+        songsToPlay = new ArrayList<Song>();
+        currentTrack = Integer.parseInt(view.getTag().toString());
+        switch (currentFilter) {
+            case 0:
+                if (playlistAdapter != null) {
+                    songsToPlay.addAll(playlistAdapter.getAllSongs());
+                }
+                break;
+            case 1:
+                if (songAdapterSongs != null) {
+                    songsToPlay.addAll(songAdapterSongs.getAll());
+                }
+                break;
+            case 2:
+                if (songAdapter != null) {
+                    songsToPlay.addAll(songAdapter.getAll());
+                }
+                break;
+            case 3:
+                if (songAdapterAlbums != null) {
+                    songsToPlay.addAll(songAdapterAlbums.getAll());
+                }
+                else if (songAdapter != null) {
+                    songsToPlay.addAll(songAdapter.getAll());
+                }
+                break;
+            case 4:
+                if (songAdapter != null) {
+                    songsToPlay.addAll(songAdapter.getAll());
+                }
+                break;
+        }
+
+        if (currentTrack == -1) { // If shuffle all was selected, start at a random position
+            currentTrack = new Random().nextInt(songsToPlay.size());
+        }
+        musicService.setSong(currentTrack);
+        musicService.setList(songsToPlay);
+
         musicService.playSong();
         if(playbackPaused){
             setController();
@@ -343,6 +382,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         Intent playPage = new Intent(LocalLibrary.this, PlayPage.class);
         playPage.putExtra("playlistSize", songsToPlay.size());
         playPage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+        playPage.putExtra("playlistSongs", songsToPlay);
         startActivity(playPage); // Opens Play Page
     }
     public void updateCurTrack(boolean forSureIsPlaying) {
@@ -429,9 +469,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         public void update() {
             setHasOptionsMenu(true);
 
-            // Creating an array adapter to store the list of items
-            PlaylistAdapter playlistAdapter = null;
-
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
 //            List<Song> songs = db.getAllSongs();
@@ -494,32 +531,39 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             TextView title = (TextView) view.findViewById(R.id.title);
             switch (sectionNumber) { // Depending current tab, different action
+                // Selecting a playlist
                 case 1:
-                    Toast.makeText(getActivity(), "PLAYLIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
-//                    Log.d("pos:", String.valueOf(pos));
                     if (level == 0) {
                         if (pos == 0) {
                             // add playlist page
                             List<Playlist> playlists = new ArrayList<Playlist>();
-                            PlaylistAdapter playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlists);
+                            playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlists);
                             if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                            level = 1;
                         } else {
                             // existing playlist page
+                            String playlistName = title.getText().toString();
+                            List<Song> playlistSongs = db.getAllSongsInPlaylist(pos-1);
+                            playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistName);
+                            if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                            level = 1;
                         }
 
-                    } else if (level == 1) {
+                    }
+
+                    else if (level == 1) {
                         if (pos == 1) { // add songs button
 
                         }
                     }
                     break;
 
+                // Song select, doesn't actually do any thing here, since the song_listview.xml itself handles the onClick
                 case 2:
-                    Toast.makeText(getActivity(), "SONG " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     break;
 
+                // Select artist
                 case 3:
-                    Toast.makeText(getActivity(), "ARTIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     if (level == 0) {
                         // get all songs from artist name
                         String artist = title.getText().toString();
@@ -528,15 +572,17 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
-                    } else if (level == 1) {
+                    }
+                    // Songs inside an artist category
+                    else if (level == 1) {
                         if (pos == 0) {
                             // if back button was pressed?
                         }
                     }
                     break;
 
+                // Select album
                 case 4:
-                    Toast.makeText(getActivity(), "ALBUM " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     if (level == 0) {
                         // get all songs from album name
                         String album = title.getText().toString();
@@ -545,7 +591,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
-                    } else if (level == 1) {
+                    }
+                    // Songs inside an album category
+                    else if (level == 1) {
                         if (pos == 0) {
                             // if back button was pressed?
                         }
@@ -553,7 +601,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     break;
 
                 case 5:
-                    Toast.makeText(getActivity(), "GENRE " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     if (level == 0) {
                         // get all songs from artist name
                         String genre = title.getText().toString();
@@ -562,7 +609,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
-                    } else if (level == 1) {
+                    }
+                    // Songs inside an genre category
+                    else if (level == 1) {
                         if (pos == 0) {
                             // if back button was pressed?
                         }
@@ -581,17 +630,14 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 // Function called on submit
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    //Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+                    // Nothing happens on submit besides closing the keyboard, filter handled while typing
                     return false;
                 }
                 // Function called while typing
                 @Override
                 public boolean onQueryTextChange(String searchQuery) {
-                    //Toast.makeText(getContext(), searchQuery, Toast.LENGTH_SHORT).show();
-
                     SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
                     fragment.search(currentFilter, searchQuery);
-
                     return true;
                 }
             });
@@ -600,16 +646,24 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         }
 
 
+        // Search function called when typing in the search bar (magnifying glass)
+        // Note, currently does not work for playlists and detailed lists
         public void search(int sectionNumber, String keyword) {
-            Log.d("Section", String.valueOf(sectionNumber));
-
-            PlaylistAdapter playlistAdapter = null;
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
             List<Song> results;
 
+            // Query and adapter differs for each section
             switch (sectionNumber) {
+                // Playlists
                 case 0:
+                    List<Playlist> playlistResults = db.searchPlaylists(keyword);
+                    if (playlistAdapter != null) {
+                        playlistAdapter.updatePlaylistList(playlistResults);
+                        playlistAdapter.notifyDataSetChanged();
+                    }
                     break;
+
+                // Songs
                 case 1:
                     results = db.searchSongs("title", keyword);
                     if (songAdapterSongs != null) {
@@ -617,6 +671,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapterSongs.notifyDataSetChanged();
                     }
                     break;
+
+                // Artists
                 case 2:
                     results = db.searchSongs("artist", keyword);
                     if (songAdapterArtists != null) {
@@ -624,6 +680,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapterArtists.notifyDataSetChanged();
                     }
                     break;
+
+                // Albums
                 case 3:
                     results = db.searchSongs("album", keyword);
                     if (songAdapterAlbums != null) {
@@ -631,6 +689,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapterAlbums.notifyDataSetChanged();
                     }
                     break;
+
+                // Genres
                 case 4:
                     results = db.searchSongs("genre", keyword);
                     if (songAdapterGenres != null) {

@@ -44,6 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_PLAYLIST_NAME = "name";
     private static final String KEY_PLAYLIST_ID = "playlist_id";
     private static final String KEY_SONG_ID = "song_id";
+    private static final String KEY_SONG_ORDER = "song_order";
 
     //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/test.test/databases/";
@@ -127,13 +128,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.addSong(new Song("What About Me", "Isac Elliot","What About Me", "SongPic", "Popular", 0));
         this.addSong(new Song("Flirt Right Back", "Blackbear","Cashmere", "SongPic", "Electronic", 0));
         this.addSong(new Song("Touching You Again", "Hot Shade","Touching You Again", "SongPic", "Popular", 1));
-        this.addSong(new Song("Rhythm Inside", "Calum Scott","Rhythm Inside", "SongPic", "Popular", 0));
         this.addSong(new Song("Black Moon", "Amaara","Black Moon", "SongPic", "Hip-Hop", 1));
         this.addSong(new Song("Who Are We?", "Amaal Nuux","Who Are We?", "SongPic", "Rock", 1));
         this.addSong(new Song("Party Monster", "The Weekend","Starboy", "SongPic", "Rock", 1));
         this.addSong(new Song("Better Off Now", "The Katherines","Better Off Now", "SongPic", "Electronic", 0));
         this.addSong(new Song("Distance Future", "Sleepy Tom","Distance Future", "SongPic", "Blues", 1));
         this.addSong(new Song("No Lies", "Sean Paul","No Lie", "SongPic", "Popular", 1));
+
+        this.addPlaylist("Hard coded heavy");
+        this.addPlaylist("Workout set");
+
+        this.addSongToPlaylist(0, 5, 1);
+        this.addSongToPlaylist(0, 9, 2);
+        this.addSongToPlaylist(0, 12, 3);
+        this.addSongToPlaylist(0, 18, 4);
+
+        for (int i = 1; i <= 10; i++) {
+            this.addSongToPlaylist(1, i, i);
+        }
 
     }
 
@@ -191,6 +203,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_PLAYLIST_ID + " INTEGER,"
                 + KEY_SONG_ID + " INTEGER,"
+                + KEY_SONG_ORDER + " INTEGER,"
                 + "FOREIGN KEY (" + KEY_PLAYLIST_ID + ") REFERENCES " + TABLE_PLAYLISTS + "(" + KEY_ID + "),"
                 + "FOREIGN KEY (" + KEY_SONG_ID + ") REFERENCES " + TABLE_SONGS + "(" + KEY_ID + "))";
         db.execSQL(CREATE_PLAYLISTS_SONGS_TABLE);
@@ -225,6 +238,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(TABLE_SONGS, null, values);
         db.close(); // Closing database connection
     }
+    // Add new playlists
+    void addPlaylist(String playlistName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_PLAYLIST_NAME, playlistName);
+        db.insert(TABLE_PLAYLISTS, null, values);
+        db.close();
+    }
+    void addSongToPlaylist (int playlistId, int songId, int songOrder){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_PLAYLIST_ID, playlistId);
+        values.put(KEY_SONG_ID, songId);
+        values.put(KEY_SONG_ORDER, songOrder);
+        db.insert(TABLE_PLAYLISTS_SONGS, null, values);
+        db.close();
+    }
 
     // Getting single song
     Song getSong(int id) {
@@ -241,6 +271,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         // return contact
         return song;
+    }
+
+    // Update single song to local
+    void downloadSong(String title, String artist) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues newValues = new ContentValues();
+        newValues.put(KEY_LOCAL, "1");
+        String[] args = new String[]{title, artist};
+
+        db.update(TABLE_SONGS, newValues, "title=? AND artist=?", args);
+
+//        db.close();
     }
 
     // Getting All Playlists
@@ -266,6 +309,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         // return song list
         return playlistList;
+    }
+
+    // Function to get all songs in a given playlist
+    public List<Song> getAllSongsInPlaylist(int playlistId) {
+        List<Song> playlistSongs = new ArrayList<Song>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " a, " + TABLE_PLAYLISTS_SONGS + " b" +
+                " WHERE a." + KEY_ID + "=b." + KEY_SONG_ID + " AND b." + KEY_PLAYLIST_ID + "=" + playlistId + " ORDER BY b." + KEY_SONG_ORDER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setTitle(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setAlbum(cursor.getString(3));
+                song.setArt(cursor.getString(4));
+                song.setGenre(cursor.getString(5));
+                song.setLocal(Integer.parseInt(cursor.getString(6)));
+                // Adding song to list
+                playlistSongs.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return playlistSongs;
     }
 
     // Getting All Songs
@@ -523,8 +597,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    // Search function (this is real bad... but I did not account for SQL injection, but fk it)
-    public List<Song> searchSongs(String category, String keyword) {
+    // Search function (note: I didn't account for SQL injection, but fk it)
+    public List<Song> searchSongs (String category, String keyword) {
         List<Song> songList = new ArrayList<Song>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE " + category + " like \"%" + keyword + "%\"" +
@@ -551,5 +625,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         // return song list
         return songList;
+    }
+    public List<Playlist> searchPlaylists (String keyword) {
+        List<Playlist> playlistList = new ArrayList<Playlist>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_PLAYLISTS + " WHERE " + KEY_PLAYLIST_NAME + " like \"%" + keyword + "%\" ORDER BY LOWER(" + KEY_PLAYLIST_NAME +")";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Playlist playlist = new Playlist();
+                playlist.setID(Integer.parseInt(cursor.getString(0)));
+                playlist.setName(cursor.getString(1));
+                // Adding song to list
+                playlistList.add(playlist);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return playlistList;
     }
 }

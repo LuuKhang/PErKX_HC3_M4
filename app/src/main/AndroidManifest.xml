@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hc3.m4">
+    <uses-sdk android:minSdkVersion="15"/>
 
     // Permission required to play music outside of current page
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
@@ -37,9 +38,15 @@
             android:name=".OnlineSection"
             android:label="@string/title_activity_online_section"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".NewReleases" />
-        <activity android:name=".RecommendedForYou" />
-        <activity android:name=".Top100Songs"></activity>
+        <activity android:name=".NewReleases"
+            android:label="@string/title_activity_newreleases"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".RecommendedForYou"
+            android:label="@string/title_activity_recommended"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".Top100Songs"
+            android:label="@string/title_activity_top100songs"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -1,6 +1,9 @@
 package hc3.m4;
 
-public class Song {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Song implements Parcelable {
 
     private long id;
     private String art;
@@ -9,6 +12,7 @@ public class Song {
     private String album;
     private String genre;
     private int local;
+    private boolean selected = false;
 
     public Song() {
         id = -1;
@@ -73,4 +77,40 @@ public class Song {
     public void setAlbum(String album){this.album = album;}
     public void setGenre(String genre){this.genre = genre;}
     public void setLocal(int local){this.local = local;}
+
+    public boolean isSelected() { return this.selected; }
+    public void setSelected(boolean selected) { this.selected = selected; }
+
+
+
+    // Functions, creators, and a bunch of stuff copy pasted for Parcelable
+    public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
+        @Override
+        public Song createFromParcel(Parcel source) { return new Song(source); }
+        @Override
+        public Song[] newArray(int size) { return new Song[size]; }
+    };
+    public Song(Parcel in) {
+        id = in.readLong();
+        art = in.readString();
+        title = in.readString();
+        artist = in.readString();
+        album = in.readString();
+        genre = in.readString();
+        local = in.readInt();
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(art);
+        dest.writeString(title);
+        dest.writeString(artist);
+        dest.writeString(album);
+        dest.writeString(genre);
+        dest.writeInt(local);
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

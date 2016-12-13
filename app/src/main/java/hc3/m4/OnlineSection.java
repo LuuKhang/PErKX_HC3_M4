@@ -35,15 +35,29 @@ public class OnlineSection extends AppCompatActivity {
             }
         });
 
-        // For reference
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Online buttons
+        Button btn_newreleases = (Button) findViewById(R.id.btn_newreleases);
+        btn_newreleases.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startActivity(new Intent(OnlineSection.this, NewReleases.class)); // Opens New Releases Page
             }
         });
+        Button btn_top100songs = (Button) findViewById(R.id.btn_top100songs);
+        btn_top100songs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(OnlineSection.this, NewReleases.class)); // Opens New Releases Page
+            }
+        });
+        Button btn_recommended = (Button) findViewById(R.id.btn_recommended);
+        btn_recommended.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(OnlineSection.this, NewReleases.class)); // Opens New Releases Page
+            }
+        });
+
     }
 
 }
