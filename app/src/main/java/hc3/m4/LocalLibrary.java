@@ -81,6 +81,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     // -------------------------------------------------------------------------
 
 
+    private int currentFilter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +106,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             // This method will be invoked when a new page becomes selected.
             @Override
             public void onPageSelected(int position) {
+                currentFilter = position;
+
                 SongList fragment = (SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
                 if (fragment != null) {
                     fragment.update();
@@ -572,6 +577,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+
+                    SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
+
                     return false;
                 }
                 // Function called while typing
