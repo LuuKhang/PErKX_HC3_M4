@@ -128,7 +128,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.addSong(new Song("What About Me", "Isac Elliot","What About Me", "SongPic", "Popular", 0));
         this.addSong(new Song("Flirt Right Back", "Blackbear","Cashmere", "SongPic", "Electronic", 0));
         this.addSong(new Song("Touching You Again", "Hot Shade","Touching You Again", "SongPic", "Popular", 1));
-        this.addSong(new Song("Rhythm Inside", "Calum Scott","Rhythm Inside", "SongPic", "Popular", 0));
         this.addSong(new Song("Black Moon", "Amaara","Black Moon", "SongPic", "Hip-Hop", 1));
         this.addSong(new Song("Who Are We?", "Amaal Nuux","Who Are We?", "SongPic", "Rock", 1));
         this.addSong(new Song("Party Monster", "The Weekend","Starboy", "SongPic", "Rock", 1));
@@ -136,8 +135,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.addSong(new Song("Distance Future", "Sleepy Tom","Distance Future", "SongPic", "Blues", 1));
         this.addSong(new Song("No Lies", "Sean Paul","No Lie", "SongPic", "Popular", 1));
 
-        this.addPlaylist("Playlist 1");
-        this.addPlaylist("Playlist 2");
+        this.addPlaylist("Hard coded heavy");
+        this.addPlaylist("Workout set");
 
         this.addSongToPlaylist(0, 5, 1);
         this.addSongToPlaylist(0, 9, 2);
@@ -601,8 +600,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    // Search function (this is real bad... but I did not account for SQL injection, but fk it)
-    public List<Song> searchSongs(String category, String keyword) {
+    // Search function (note: I didn't account for SQL injection, but fk it)
+    public List<Song> searchSongs (String category, String keyword) {
         List<Song> songList = new ArrayList<Song>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE " + category + " like \"%" + keyword + "%\"" +
@@ -629,5 +628,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         // return song list
         return songList;
+    }
+    public List<Playlist> searchPlaylists (String keyword) {
+        List<Playlist> playlistList = new ArrayList<Playlist>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_PLAYLISTS + " WHERE " + KEY_PLAYLIST_NAME + " like \"%" + keyword + "%\" ORDER BY LOWER(" + KEY_PLAYLIST_NAME +")";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Playlist playlist = new Playlist();
+                playlist.setID(Integer.parseInt(cursor.getString(0)));
+                playlist.setName(cursor.getString(1));
+                // Adding song to list
+                playlistList.add(playlist);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return playlistList;
     }
 }

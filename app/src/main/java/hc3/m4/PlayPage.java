@@ -71,15 +71,22 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(PlayPage.this, LocalLibrary.class)); // Opens Local Library
+                Intent localLibrary = new Intent(PlayPage.this, LocalLibrary.class);
+                localLibrary.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                localLibrary.putExtra("playlistSongs", songsToPlay);
+                startActivity(localLibrary); // Opens Local Library
+
                 //finish(); // Functions similar to back button
+                // finish blows everything up... clearly I implemented the music player badly, but too late to fix... my bad
             }
         });
 
 
 
         // Music Controller set up --------------------------------------------
-        getSongList();
+        songsToPlay = new ArrayList<Song>();
+        songsToPlay.addAll( (ArrayList<Song>) getIntent().getSerializableExtra("playlistSongs") );
+
         setController();
 
         // Thread that continously runs to update the progress bar
@@ -221,14 +228,6 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
 
 
     // Music Controller classes, to play/pause/control ------------------------
-    public void getSongList() {
-        songsToPlay = new ArrayList<Song>();
-        // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
-        songsToPlay.add(new Song("almost_easy", "Avenged Sevefold", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("cyanide", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("insomnia", "Kamelot", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("lets_see_it", "We Are Scientists", "SongAlbum1", "SongArt1", "SongGenre1"));
-    }
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
         @Override
@@ -362,24 +361,20 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
         pager.setCurrentItem(currentTrack);
     }
     public void fastForward() {
-        if (!paused) {
-            int newPos = musicService.getCurrentProgress() + 10000; // move forward 10 seconds
-            int maxPos = musicService.getDur();
-            if (newPos > maxPos)
-                musicService.seek(maxPos);
-            else
-                musicService.seek(newPos);
-        }
+        int newPos = musicService.getCurrentProgress() + 10000; // move forward 10 seconds
+        int maxPos = musicService.getDur();
+        if (newPos > maxPos)
+            musicService.seek(maxPos);
+        else
+            musicService.seek(newPos);
     }
     public void rewind() {
-        if (!paused) {
-            int newPos = musicService.getCurrentProgress() - 10000; // move back 10 seconds
-            int minPos = 0;
-            if (newPos < minPos)
-                musicService.seek(minPos);
-            else
-                musicService.seek(newPos);
-        }
+        int newPos = musicService.getCurrentProgress() - 10000; // move back 10 seconds
+        int minPos = 0;
+        if (newPos < minPos)
+            musicService.seek(minPos);
+        else
+            musicService.seek(newPos);
     }
 
     public void updateCurTrack(final boolean forSureIsPlaying) {
@@ -414,7 +409,11 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
-                startActivity(new Intent(PlayPage.this, LocalLibrary.class)); // Opens Local Library
+                Intent localLibrary = new Intent(PlayPage.this, LocalLibrary.class);
+                localLibrary.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                localLibrary.putExtra("playlistSongs", songsToPlay);
+                startActivity(localLibrary); // Opens Local Library
+
                 //finish(); // Functions similar to back button
                 // finish blows everything up... clearly I implemented the music player badly, but too late to fix... my bad
                 return true;

@@ -138,7 +138,22 @@ public class MusicService extends Service implements
             //player.setDataSource(getApplicationContext(), trackUri);
 
             // Currently hard coded in a specific song, can be changed with an actual list
-            String path = "android.resource://" + this.getPackageName() + "/raw/"+songTitle;
+            String hardcodedSong = "";
+            switch (songPosn%4) {
+                case 0:
+                    hardcodedSong = "almost_easy";
+                    break;
+                case 1:
+                    hardcodedSong = "cyanide";
+                    break;
+                case 2:
+                    hardcodedSong = "insomnia";
+                    break;
+                case 3:
+                    hardcodedSong = "lets_see_it";
+                    break;
+            }
+            String path = "android.resource://" + this.getPackageName() + "/raw/" + hardcodedSong;
             player.setDataSource(getApplicationContext(), Uri.parse(path));
 
             player.prepareAsync();

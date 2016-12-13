@@ -30,6 +30,11 @@ public class PlaylistAdapter extends BaseAdapter {
         this.level = level;
     }
 
+    // Function called to update the current list
+    public void updatePlaylistList(List<Playlist> newPlaylists) {
+        this.playlistList = newPlaylists;
+    }
+
     @Override
     public int getCount() {
         switch (level) {
@@ -53,6 +58,10 @@ public class PlaylistAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public List<Song> getAllSongs() {
+        return songsInPlaylist;
     }
 
     @Override
@@ -93,6 +102,8 @@ public class PlaylistAdapter extends BaseAdapter {
                 // All other positions list the songs in the current playlist
                 else {
                     convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                    convertView.setTag(position - 3);
 
                     title = (TextView) convertView.findViewById(R.id.title); // title
                     artist = (TextView) convertView.findViewById(R.id.artist); // artist
