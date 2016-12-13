@@ -486,6 +486,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 song.setAlbum(cursor.getString(3));
                 song.setArt(cursor.getString(4));
                 song.setGenre(cursor.getString(5));
+                song.setLocal(Integer.parseInt(cursor.getString(6)));
                 // Adding song to list
                 songList.add(song);
             } while (cursor.moveToNext());
@@ -515,6 +516,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 song.setAlbum(cursor.getString(3));
                 song.setArt(cursor.getString(4));
                 song.setGenre(cursor.getString(5));
+                song.setLocal(Integer.parseInt(cursor.getString(6)));
                 // Adding song to list
                 songList.add(song);
             } while (cursor.moveToNext());
@@ -544,6 +546,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 song.setAlbum(cursor.getString(3));
                 song.setArt(cursor.getString(4));
                 song.setGenre(cursor.getString(5));
+                song.setLocal(Integer.parseInt(cursor.getString(6)));
                 // Adding song to list
                 songList.add(song);
             } while (cursor.moveToNext());

@@ -54,7 +54,7 @@ public class OnlineSection extends AppCompatActivity {
         btn_recommended.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(OnlineSection.this, NewReleases.class)); // Opens New Releases Page
+                startActivity(new Intent(OnlineSection.this, RecommendedForYou.class)); // Opens New Releases Page
             }
         });
 

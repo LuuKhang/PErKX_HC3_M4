@@ -85,6 +85,24 @@ public class NewReleases extends AppCompatActivity {
                     fragment.update();
                 }
                 currentPage = position;
+
+                // disable select all row
+                int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
+                linearLayout.getLayoutParams().height = px;
+                linearLayout.setVisibility(View.VISIBLE);
+
+                linearLayout = (LinearLayout) findViewById(R.id.level1);
+                linearLayout.getLayoutParams().height = px;
+                linearLayout.setVisibility(View.VISIBLE);
+
+                // enable cancel button
+                ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
+                ImageButton cancelButton = (ImageButton) findViewById(R.id.cancelbutton);
+                ImageButton backlevel0Button = (ImageButton) findViewById(R.id.backlevel0button);
+                backButton.setVisibility(View.VISIBLE);
+                cancelButton.setVisibility(View.GONE);
+                backlevel0Button.setVisibility(View.GONE);
             }
 
             // This method will be invoked when the current page is scrolled
@@ -104,13 +122,19 @@ public class NewReleases extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-
         // Common navigation buttons along buttom
         Button btn_local = (Button) findViewById(R.id.btn_local);
         btn_local.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(NewReleases.this, LocalLibrary.class)); // Opens Online Section
+            }
+        });
+        Button btn_online = (Button) findViewById(R.id.btn_online);
+        btn_online.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(NewReleases.this, OnlineSection.class)); // Opens Online Section
             }
         });
 
@@ -143,13 +167,37 @@ public class NewReleases extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // go back to level 0 listview
     public void backButton(View view) {
         NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
             fragment.update();
         }
+
+        // disable level1 row
+        int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
+        linearLayout.getLayoutParams().height = px;
+        linearLayout.setVisibility(View.VISIBLE);
+
+        linearLayout = (LinearLayout) findViewById(R.id.level1);
+        linearLayout.getLayoutParams().height = px;
+
+        // enable back button
+        ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
+        ImageButton cancelButton = (ImageButton) findViewById(R.id.cancelbutton);
+        ImageButton backlevel0Button = (ImageButton) findViewById(R.id.backlevel0button);
+        backButton.setVisibility(View.VISIBLE);
+        cancelButton.setVisibility(View.GONE);
+        backlevel0Button.setVisibility(View.GONE);
     }
 
+    // go back to online page from new releases page
+    public void backToOnlinePage(View view) {
+        startActivity(new Intent(NewReleases.this, OnlineSection.class));
+    }
+
+    // download single song
     public void downloadSong(View view) {
         RelativeLayout vwButton = (RelativeLayout) view.getParent();
         LinearLayout vwRow = (LinearLayout) vwButton.getParent();
@@ -168,21 +216,79 @@ public class NewReleases extends AppCompatActivity {
         db.downloadSong(title.getText().toString(), artist.getText().toString());
     }
 
+    // download all selected songs
+    public void downloadSelectedSongs(View view) {
+//        RelativeLayout vwButton = (RelativeLayout) view.getParent();
+//        LinearLayout vwRow = (LinearLayout) vwButton.getParent();
+//
+//        TextView downloadCompleted = (TextView) vwButton.findViewById(R.id.downloadcompleted);
+//        downloadCompleted.setVisibility(View.VISIBLE);
+
+        // get database
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+
+        // get songAdapter and songList
+        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        OnlineSongAdapter songAdapter;
+        if (fragment != null) {
+            songAdapter = (OnlineSongAdapter) fragment.getListAdapter();
+            List<Song> songList = songAdapter.data;
+            int count = 0;
+            Song currentSong;
+            for (int i = 0; i < songList.size(); i++) {
+                currentSong = songList.get(i);
+                if (currentSong.getLocal() == 0) { // if the song is not local
+                    if (currentSong.isSelected()) { //if the song is selected
+                        db.downloadSong(currentSong.getTitle(), currentSong.getArtist());
+                        currentSong.setLocal(1);
+                        currentSong.setSelected(false);
+                    }
+                }
+            }
+            songAdapter.data = songList;
+            fragment.setListAdapter(songAdapter);
+
+            Toast.makeText(getApplicationContext(), "Download Completed", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(), "SONG " + title.getText().toString(), Toast.LENGTH_SHORT).show();
+
+            TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
+            numberDownload.setText("0 songs selected for download");
+        }
+    }
+
+    // when download multiple songs is selected
     public void downloadMultipleSongs(View view) {
         NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
-            fragment.selectSongsForDownload();
+            fragment.selectSongsForDownload(); // load listview with checkboxes
         }
-        int px = (int) (50.0 * Resources.getSystem().getDisplayMetrics().density);
+
+        // enable select all row
+        int px = (int) (60.0 * Resources.getSystem().getDisplayMetrics().density);
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
         linearLayout.getLayoutParams().height = px;
+        linearLayout.setVisibility(View.VISIBLE);
+
+        linearLayout = (LinearLayout) findViewById(R.id.level1);
+        linearLayout.getLayoutParams().height = px;
+        linearLayout.setVisibility(View.INVISIBLE);
+
 
         Button downloadMultiple = (Button) findViewById(R.id.downloadmultiple);
         Button downloadSelected = (Button) findViewById(R.id.downloadselected);
         downloadMultiple.setVisibility(View.GONE);
         downloadSelected.setVisibility(View.VISIBLE);
+
+        // enable cancel button
+        ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
+        ImageButton cancelButton = (ImageButton) findViewById(R.id.cancelbutton);
+        ImageButton backlevel0Button = (ImageButton) findViewById(R.id.backlevel0button);
+        backButton.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.VISIBLE);
+        backlevel0Button.setVisibility(View.GONE);
     }
 
+    // when only one checkbox is selected for downloading
     public void updateSelectedNumber(View view) {
         CheckBox cb = (CheckBox) view ;
         Song song = (Song) cb.getTag();
@@ -203,10 +309,92 @@ public class NewReleases extends AppCompatActivity {
             TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
             numberDownload.setText(count + " songs selected for download");
         }
+    }
 
+    // When the select all checkbox is selected for downloading
+    public void updateAll(View view) {
+        CheckBox cb = (CheckBox) view ;
 
+        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        OnlineSongAdapter songAdapter;
+        if (fragment != null) {
+            songAdapter = (OnlineSongAdapter) fragment.getListAdapter();
+            List<Song> songList = songAdapter.data;
+            int count = 0;
+            for (int i = 0; i < songList.size(); i++) {
+                if (songList.get(i).getLocal() == 0) {
+                    songList.get(i).setSelected(cb.isChecked());
+                    if (songList.get(i).isSelected()) {
+                        count++;
+                    }
+                }
+            }
+            songAdapter.data = songList;
+            fragment.setListAdapter(songAdapter);
+            TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
+            numberDownload.setText(count + " songs selected for download");
+        }
+    }
 
+    // when multiple download is cancelled
+    public void cancelDownloadMultiple(View view) {
+        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        if (fragment != null) {
+//            fragment.update(); // load listview with checkboxes
+            fragment.updateSongList();
 
+        }
+
+        // if it is the artist, album, genre pages, return to level 1
+        if (currentPage > 0) {
+
+            // disable select all row
+//            int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
+            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
+//            linearLayout.getLayoutParams().height = px;
+            linearLayout.setVisibility(View.INVISIBLE);
+
+            linearLayout = (LinearLayout) findViewById(R.id.level1);
+//            linearLayout.getLayoutParams().height = px;
+            linearLayout.setVisibility(View.VISIBLE);
+
+            Button downloadMultiple = (Button) findViewById(R.id.downloadmultiple);
+            Button downloadSelected = (Button) findViewById(R.id.downloadselected);
+            downloadMultiple.setVisibility(View.VISIBLE);
+            downloadSelected.setVisibility(View.GONE);
+
+            // enable cancel button
+            ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
+            ImageButton cancelButton = (ImageButton) findViewById(R.id.cancelbutton);
+            ImageButton backlevel0Button = (ImageButton) findViewById(R.id.backlevel0button);
+            backButton.setVisibility(View.GONE);
+            cancelButton.setVisibility(View.GONE);
+            backlevel0Button.setVisibility(View.VISIBLE);
+
+        } else { // if it is the song page, return to level 0
+            // disable select all row
+            int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
+            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
+            linearLayout.getLayoutParams().height = px;
+            linearLayout.setVisibility(View.VISIBLE);
+
+            linearLayout = (LinearLayout) findViewById(R.id.level1);
+            linearLayout.getLayoutParams().height = px;
+            linearLayout.setVisibility(View.VISIBLE);
+
+            Button downloadMultiple = (Button) findViewById(R.id.downloadmultiple);
+            Button downloadSelected = (Button) findViewById(R.id.downloadselected);
+            downloadMultiple.setVisibility(View.VISIBLE);
+            downloadSelected.setVisibility(View.GONE);
+
+            // enable cancel button
+            ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
+            ImageButton cancelButton = (ImageButton) findViewById(R.id.cancelbutton);
+            ImageButton backlevel0Button = (ImageButton) findViewById(R.id.backlevel0button);
+            backButton.setVisibility(View.VISIBLE);
+            cancelButton.setVisibility(View.GONE);
+            backlevel0Button.setVisibility(View.GONE);
+        }
 
     }
 
@@ -272,16 +460,18 @@ public class NewReleases extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             this.inflater = inflater;
             update();
-
-
+            Button downloadMultiple = (Button) getActivity().findViewById(R.id.downloadmultiple);
+            downloadMultiple.setVisibility(View.VISIBLE);
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
+        // return everything to level 0
         public void update() {
             setHasOptionsMenu(true);
 
             // Creating an array adapter to store the list of items
             OnlineSongAdapter songAdapter = null;
+            Button downloadMultiple = (Button) getActivity().findViewById(R.id.downloadmultiple);
 
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
@@ -299,6 +489,7 @@ public class NewReleases extends AppCompatActivity {
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
                     level = 0;
+                    downloadMultiple.setVisibility(View.VISIBLE);
                     break;
                 case 2:
                     List<Song> artists = db.getAllArtists(0);
@@ -306,6 +497,7 @@ public class NewReleases extends AppCompatActivity {
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
                     level = 0;
+                    downloadMultiple.setVisibility(View.GONE);
                     break;
                 case 3:
                     List<Song> albums = db.getAllAlbums(0);
@@ -313,6 +505,7 @@ public class NewReleases extends AppCompatActivity {
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
                     level = 0;
+                    downloadMultiple.setVisibility(View.GONE);
                     break;
                 case 4:
                     List<Song> genres = db.getAllGenres(0);
@@ -320,17 +513,72 @@ public class NewReleases extends AppCompatActivity {
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
                     level = 0;
+                    downloadMultiple.setVisibility(View.GONE);
                     break;
             }
 
         }
 
+        // go to song list view for each page (level 0 for song, level 1 for other pages)
+        public void updateSongList() {
+            setHasOptionsMenu(true);
+
+            // Creating an array adapter to store the list of items
+            OnlineSongAdapter songAdapter = null;
+            TextView level1name = (TextView) getActivity().findViewById(R.id.level1name);
+            DatabaseHandler db = new DatabaseHandler(inflater.getContext());
+
+            // ID number of the current section (label and id mapping may change)
+            //  Playlist = 1
+            //  Song = 2
+            //  Artist = 3
+            //  Album = 4
+            //  Genre = 5
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                case 1:
+                    List<Song> songs = db.getAllSongs(0);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
+                    // Setting the list adapter for the ListFragment
+                    setListAdapter(songAdapter);
+                    level = 0;
+                    break;
+                case 2:
+                    String artist = level1name.getText().toString();
+                    // create and set adapter
+                    List<Song> artistSongList = db.getAllSongsFromArtist(artist, 1);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 1, artistSongList, null);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 1;
+                    break;
+                case 3:
+                    String album = level1name.getText().toString();
+                    List<Song> albumSongList = db.getAllSongsFromAlbum(album, 1);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 1, albumSongList, null);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 1;
+                    break;
+                case 4:
+                    String genre = level1name.getText().toString();
+                    List<Song> genreSongList = db.getAllSongsFromGenre(genre, 1);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 1, genreSongList, null);
+                    // Setting the list adapter for the ListFragment
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 1;
+                    break;
+            }
+
+        }
+
+        // make checkbox lists for all song lists
         public void selectSongsForDownload() {
             setHasOptionsMenu(true);
 
             // Creating an array adapter to store the list of items
             OnlineSongAdapter songAdapter = null;
-
+            TextView level1name = (TextView) getActivity().findViewById(R.id.level1name);
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
             // ID number of the current section (label and id mapping may change)
@@ -346,28 +594,32 @@ public class NewReleases extends AppCompatActivity {
                     songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 2, songs, null);
                     // Setting the list adapter for the ListFragment
                     setListAdapter(songAdapter);
-                    level = 0;
+                    level = 2;
                     break;
                 case 2:
-                    List<Song> artists = db.getAllArtists(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, artists);
+                    String artist = level1name.getText().toString();
+                    // create and set adapter
+                    List<Song> artistSongList = db.getAllSongsFromArtist(artist, 1);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 2, artistSongList, null);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
-                    level = 0;
+                    level = 2;
                     break;
                 case 3:
-                    List<Song> albums = db.getAllAlbums(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, albums);
+                    String album = level1name.getText().toString();
+                    List<Song> albumSongList = db.getAllSongsFromAlbum(album, 1);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 2, albumSongList, null);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
-                    level = 0;
+                    level = 2;
                     break;
                 case 4:
-                    List<Song> genres = db.getAllGenres(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, genres);
+                    String genre = level1name.getText().toString();
+                    List<Song> genreSongList = db.getAllSongsFromGenre(genre, 1);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, 2, genreSongList, null);
                     // Setting the list adapter for the ListFragment
                     if (songAdapter != null) setListAdapter(songAdapter);
-                    level = 0;
+                    level = 2;
                     break;
             }
 
@@ -379,21 +631,45 @@ public class NewReleases extends AppCompatActivity {
             DatabaseHandler db = new DatabaseHandler(view.getContext());
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             TextView title = (TextView) view.findViewById(R.id.title);
+            TextView level1name = (TextView) getActivity().findViewById(R.id.level1name);
+            Button downloadMultiple = (Button) getActivity().findViewById(R.id.downloadmultiple);
+
             switch (sectionNumber) { // Depending current tab, different action
                 case 1:
                     Toast.makeText(getActivity(), "SONG " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     break;
-
                 case 2:
                     Toast.makeText(getActivity(), "ARTIST " + title.getText().toString(), Toast.LENGTH_SHORT).show();
                     if (level == 0) {
                         // get all songs from artist name
                         String artist = title.getText().toString();
                         List<Song> artistSongList = db.getAllSongsFromArtist(artist, 1);
+                        level1name.setText(artist);
                         // create and set adapter
                         OnlineSongAdapter songAdapter = new OnlineSongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
+
+                        // enable level1 row
+                        int px = (int) (60.0 * Resources.getSystem().getDisplayMetrics().density);
+                        LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.header2);
+                        linearLayout.getLayoutParams().height = px;
+                        linearLayout.setVisibility(View.INVISIBLE);
+
+                        linearLayout = (LinearLayout) getActivity().findViewById(R.id.level1);
+                        linearLayout.getLayoutParams().height = px;
+                        linearLayout.setVisibility(View.VISIBLE);
+
+                        // enable back button
+                        ImageButton backButton = (ImageButton) getActivity().findViewById(R.id.backbutton);
+                        ImageButton cancelButton = (ImageButton) getActivity().findViewById(R.id.cancelbutton);
+                        ImageButton backlevel0Button = (ImageButton) getActivity().findViewById(R.id.backlevel0button);
+                        backButton.setVisibility(View.GONE);
+                        cancelButton.setVisibility(View.GONE);
+                        backlevel0Button.setVisibility(View.VISIBLE);
+
+                        downloadMultiple.setVisibility(View.VISIBLE);
+
                     } else if (level == 1) {
                         if (pos == 0) {
                             // if back button was pressed?
@@ -407,10 +683,31 @@ public class NewReleases extends AppCompatActivity {
                         // get all songs from album name
                         String album = title.getText().toString();
                         List<Song> albumSongList = db.getAllSongsFromAlbum(album, 1);
+                        level1name.setText(album);
                         // create and set adapter
                         OnlineSongAdapter songAdapter = new OnlineSongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
+
+                        // enable level1 row
+                        int px = (int) (60.0 * Resources.getSystem().getDisplayMetrics().density);
+                        LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.header2);
+                        linearLayout.getLayoutParams().height = px;
+                        linearLayout.setVisibility(View.INVISIBLE);
+
+                        linearLayout = (LinearLayout) getActivity().findViewById(R.id.level1);
+                        linearLayout.getLayoutParams().height = px;
+                        linearLayout.setVisibility(View.VISIBLE);
+
+                        // enable back button
+                        ImageButton backButton = (ImageButton) getActivity().findViewById(R.id.backbutton);
+                        ImageButton cancelButton = (ImageButton) getActivity().findViewById(R.id.cancelbutton);
+                        ImageButton backlevel0Button = (ImageButton) getActivity().findViewById(R.id.backlevel0button);
+                        backButton.setVisibility(View.GONE);
+                        cancelButton.setVisibility(View.GONE);
+                        backlevel0Button.setVisibility(View.VISIBLE);
+
+                        downloadMultiple.setVisibility(View.VISIBLE);
                     } else if (level == 1) {
                         if (pos == 0) {
                             // if back button was pressed?
@@ -424,10 +721,31 @@ public class NewReleases extends AppCompatActivity {
                         // get all songs from artist name
                         String genre = title.getText().toString();
                         List<Song> genreSongList = db.getAllSongsFromGenre(genre, 1);
+                        level1name.setText(genre);
                         // create and set adapter
                         OnlineSongAdapter songAdapter = new OnlineSongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
+
+                        // enable level1 row
+                        int px = (int) (60.0 * Resources.getSystem().getDisplayMetrics().density);
+                        LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.header2);
+                        linearLayout.getLayoutParams().height = px;
+                        linearLayout.setVisibility(View.INVISIBLE);
+
+                        linearLayout = (LinearLayout) getActivity().findViewById(R.id.level1);
+                        linearLayout.getLayoutParams().height = px;
+                        linearLayout.setVisibility(View.VISIBLE);
+
+                        // enable back button
+                        ImageButton backButton = (ImageButton) getActivity().findViewById(R.id.backbutton);
+                        ImageButton cancelButton = (ImageButton) getActivity().findViewById(R.id.cancelbutton);
+                        ImageButton backlevel0Button = (ImageButton) getActivity().findViewById(R.id.backlevel0button);
+                        backButton.setVisibility(View.GONE);
+                        cancelButton.setVisibility(View.GONE);
+                        backlevel0Button.setVisibility(View.VISIBLE);
+
+                        downloadMultiple.setVisibility(View.VISIBLE);
                     } else if (level == 1) {
                         if (pos == 0) {
                             // if back button was pressed?

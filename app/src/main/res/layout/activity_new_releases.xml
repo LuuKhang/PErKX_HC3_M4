@@ -55,7 +55,29 @@
                 android:gravity="center"
                 android:src="@drawable/back"
                 android:background="@android:color/transparent"
+                android:onClick="backToOnlinePage"
+                />
+
+            <ImageButton
+                android:id="@+id/cancelbutton"
+                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:src="@drawable/back"
+                android:background="@android:color/transparent"
+                android:onClick="cancelDownloadMultiple"
+                android:visibility="gone"
+                />
+
+            <ImageButton
+                android:id="@+id/backlevel0button"
+                android:layout_height="fill_parent"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:src="@drawable/back"
+                android:background="@android:color/transparent"
                 android:onClick="backButton"
+                android:visibility="gone"
                 />
 
             <TextView
@@ -103,6 +125,47 @@
 
         </LinearLayout>
 
+        <!--level1-->
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/level1"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/list_selector"
+            android:orientation="horizontal"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip"
+            android:layout_below="@+id/header"
+            >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="3dip"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="5dip">
+
+                <ImageView
+                    android:layout_width="50dip"
+                    android:layout_height="50dip"
+                    />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/level1name"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Select All"
+                android:textColor="#040404"
+                android:typeface="sans"
+                android:textSize="20dip"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!--select all-->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/header2"
             android:layout_width="fill_parent"
@@ -127,6 +190,7 @@
                     android:layout_height="50dp"
                     android:button="@null"
                     android:background="@drawable/download_check"
+                    android:onClick="updateAll"
                     />
 
                 <ImageView
