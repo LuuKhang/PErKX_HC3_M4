@@ -81,6 +81,16 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     // -------------------------------------------------------------------------
 
 
+    public static int currentFilter;
+
+    // To keep track of the data in each list so that search can modify it
+    static SongAdapter songAdapterSongs;
+    static SongAdapter songAdapterArtists;
+    static SongAdapter songAdapterAlbums;
+    static SongAdapter songAdapterGenres;
+    static SongAdapter songAdapter; // General list for detailed inner lists (ex. selecting an artist)
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +113,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             // This method will be invoked when a new page becomes selected.
             @Override
             public void onPageSelected(int position) {
+                currentFilter = position;
+
                 SongList fragment = (SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
                 if (fragment != null) {
                     fragment.update();
@@ -182,7 +194,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         songsToPlay = new ArrayList<Song>();
         // Hard coded dummy list, this list isn't actually displayed, only for the music musicController
         songsToPlay.add(new Song("almost_easy", "Avenged Sevefold", "SongAlbum1", "SongArt1", "SongGenre1"));
-        songsToPlay.add(new Song("master_of_puppets", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
+        songsToPlay.add(new Song("cyanide", "Metallica", "SongAlbum1", "SongArt1", "SongGenre1"));
         songsToPlay.add(new Song("insomnia", "Kamelot", "SongAlbum1", "SongArt1", "SongGenre1"));
         songsToPlay.add(new Song("lets_see_it", "We Are Scientists", "SongAlbum1", "SongArt1", "SongGenre1"));
     }
@@ -411,7 +423,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             this.inflater = inflater;
             update();
 
-
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
@@ -419,7 +430,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             setHasOptionsMenu(true);
 
             // Creating an array adapter to store the list of items
-            SongAdapter songAdapter = null;
             PlaylistAdapter playlistAdapter = null;
 
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
@@ -443,33 +453,33 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     break;
                 case 2:
                     List<Song> songs = db.getAllSongs(1);
-                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, songs);
+                    songAdapterSongs = new SongAdapter(inflater.getContext(), sectionNumber, songs);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterSongs != null) setListAdapter(songAdapterSongs);
                     level = 0;
                     Log.d("page: ", "song");
                     break;
                 case 3:
                     List<Song> artists = db.getAllArtists(1);
-                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, artists);
+                    songAdapterArtists = new SongAdapter(inflater.getContext(), sectionNumber, artists);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterArtists != null) setListAdapter(songAdapterArtists);
                     level = 0;
                     Log.d("page: ", "artist");
                     break;
                 case 4:
                     List<Song> albums = db.getAllAlbums(1);
-                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, albums);
+                    songAdapterAlbums = new SongAdapter(inflater.getContext(), sectionNumber, albums);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterAlbums != null) setListAdapter(songAdapterAlbums);
                     level = 0;
                     Log.d("page: ", "album");
                     break;
                 case 5:
                     List<Song> genres = db.getAllGenres(1);
-                    songAdapter = new SongAdapter(inflater.getContext(), sectionNumber, genres);
+                    songAdapterGenres = new SongAdapter(inflater.getContext(), sectionNumber, genres);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterGenres != null) setListAdapter(songAdapterGenres);
                     level = 0;
                     Log.d("page: ", "genre");
                     break;
@@ -515,7 +525,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         String artist = title.getText().toString();
                         List<Song> artistSongList = db.getAllSongsFromArtist(artist, 1);
                         // create and set adapter
-                        SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
+                        songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
                     } else if (level == 1) {
@@ -532,7 +542,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         String album = title.getText().toString();
                         List<Song> albumSongList = db.getAllSongsFromAlbum(album, 1);
                         // create and set adapter
-                        SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
+                        songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
                     } else if (level == 1) {
@@ -549,7 +559,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         String genre = title.getText().toString();
                         List<Song> genreSongList = db.getAllSongsFromGenre(genre, 1);
                         // create and set adapter
-                        SongAdapter songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
+                        songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
                     } else if (level == 1) {
@@ -571,18 +581,66 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 // Function called on submit
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 // Function called while typing
                 @Override
                 public boolean onQueryTextChange(String searchQuery) {
-                    Toast.makeText(getContext(), searchQuery, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), searchQuery, Toast.LENGTH_SHORT).show();
+
+                    SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
+                    fragment.search(currentFilter, searchQuery);
+
                     return true;
                 }
             });
 
             super.onCreateOptionsMenu(menu, inflater);
+        }
+
+
+        public void search(int sectionNumber, String keyword) {
+            Log.d("Section", String.valueOf(sectionNumber));
+
+            PlaylistAdapter playlistAdapter = null;
+            DatabaseHandler db = new DatabaseHandler(inflater.getContext());
+            List<Song> results;
+
+            switch (sectionNumber) {
+                case 0:
+                    break;
+                case 1:
+                    results = db.searchSongs("title", keyword);
+                    if (songAdapterSongs != null) {
+                        songAdapterSongs.updateSongList(results);
+                        songAdapterSongs.notifyDataSetChanged();
+                    }
+                    break;
+                case 2:
+                    results = db.searchSongs("artist", keyword);
+                    if (songAdapterArtists != null) {
+                        songAdapterArtists.updateSongList(results);
+                        songAdapterArtists.notifyDataSetChanged();
+                    }
+                    break;
+                case 3:
+                    results = db.searchSongs("album", keyword);
+                    if (songAdapterAlbums != null) {
+                        songAdapterAlbums.updateSongList(results);
+                        songAdapterAlbums.notifyDataSetChanged();
+                    }
+                    break;
+                case 4:
+                    results = db.searchSongs("genre", keyword);
+                    if (songAdapterGenres != null) {
+                        songAdapterGenres.updateSongList(results);
+                        songAdapterGenres.notifyDataSetChanged();
+                    }
+                    break;
+            }
+
+            level = 0;
         }
     }
 }
