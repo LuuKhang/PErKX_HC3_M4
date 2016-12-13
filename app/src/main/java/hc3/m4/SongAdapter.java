@@ -84,6 +84,10 @@ public class SongAdapter extends BaseAdapter {
         return position;
     }
 
+    public List<Song> getAll() {
+        return data;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
@@ -99,7 +103,10 @@ public class SongAdapter extends BaseAdapter {
                             convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
 
                         } else {
+                            // song_listview: shows art, title, artist, and includes onClick()
                             convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                            convertView.setTag(position - 1);
 
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -110,6 +117,7 @@ public class SongAdapter extends BaseAdapter {
                         break;
                     // artist
                     case 3:
+                        // artist_listview: shows image, title, and does not includes onClick()
                         convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
@@ -118,7 +126,8 @@ public class SongAdapter extends BaseAdapter {
                         break;
                     // album
                     case 4:
-                        convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+                        // album_listview exact same as song_listview, but does not have the onClick()
+                        convertView = LayoutInflater.from(context).inflate(R.layout.album_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -128,6 +137,7 @@ public class SongAdapter extends BaseAdapter {
                         break;
                     // genre
                     case 5:
+                        // Genre very similar to artist, so reuse
                         convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
@@ -153,6 +163,8 @@ public class SongAdapter extends BaseAdapter {
                         } else {
                             convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
+                            convertView.setTag(position - 2);
+
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
@@ -173,6 +185,8 @@ public class SongAdapter extends BaseAdapter {
                         } else {
                             convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
+                            convertView.setTag(position - 2);
+
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
@@ -192,6 +206,8 @@ public class SongAdapter extends BaseAdapter {
                             convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
                         } else {
                             convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                            convertView.setTag(position - 2);
 
                             title = (TextView) convertView.findViewById(R.id.title); // title
                             artist = (TextView) convertView.findViewById(R.id.artist); // artist
