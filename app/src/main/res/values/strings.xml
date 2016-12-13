@@ -4,5 +4,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_play_page">Play Page</string>
     <string name="title_activity_online_section">Online Section</string>
+    <string name="title_activity_newreleases">New Releases</string>
+    <string name="title_activity_top100songs">Top 100 Songs</string>
+    <string name="title_activity_recommended">Recommended For You</string>
 
 </resources>

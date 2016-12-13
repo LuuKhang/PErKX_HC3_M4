@@ -74,11 +74,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(dbExist){
             // delete db file if already exists
-            File myFile = new File(DB_PATH+DB_NAME);
-            if(myFile.exists()) myFile.delete();
-            myFile = new File(DB_PATH+DB_NAME);
-            myDataBase = this.getReadableDatabase();
-            this.preLoadSongs();
+//            File myFile = new File(DB_PATH+DB_NAME);
+//            if(myFile.exists()) myFile.delete();
+//            myFile = new File(DB_PATH+DB_NAME);
+//            myDataBase = this.getReadableDatabase();
+//            this.preLoadSongs();
         } else {
             myDataBase = this.getReadableDatabase();
             this.preLoadSongs();
@@ -241,6 +241,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         // return contact
         return song;
+    }
+
+    // Update single song to local
+    void downloadSong(String title, String artist) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues newValues = new ContentValues();
+        newValues.put(KEY_LOCAL, "1");
+        String[] args = new String[]{title, artist};
+
+        db.update(TABLE_SONGS, newValues, "title=? AND artist=?", args);
+
+//        db.close();
     }
 
     // Getting All Playlists

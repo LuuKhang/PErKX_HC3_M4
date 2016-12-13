@@ -9,6 +9,7 @@ public class Song {
     private String album;
     private String genre;
     private int local;
+    private boolean selected = false;
 
     public Song() {
         id = -1;
@@ -73,4 +74,7 @@ public class Song {
     public void setAlbum(String album){this.album = album;}
     public void setGenre(String genre){this.genre = genre;}
     public void setLocal(int local){this.local = local;}
+
+    public boolean isSelected() { return this.selected; }
+    public void setSelected(boolean selected) { this.selected = selected; }
 }
