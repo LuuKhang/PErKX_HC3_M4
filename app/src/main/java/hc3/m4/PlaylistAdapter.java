@@ -16,15 +16,24 @@ public class PlaylistAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
     private List<Playlist> data;
+    private int level = 0;
 
-    public PlaylistAdapter(Context context, List<Playlist> data) {
+    public PlaylistAdapter(Context context, int level, List<Playlist> data) {
         this.context = context;
         this.data = data;
+        this.level = level;
     }
 
     @Override
     public int getCount() {
-        return data.size()+1;
+        switch (level) {
+            case 0:
+                return data.size()+1;
+            case 1:
+                return data.size()+3;
+            default:
+                return 0;
+        }
     }
 
     @Override
@@ -41,18 +50,31 @@ public class PlaylistAdapter extends BaseAdapter implements Filterable {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
+        switch (level) {
+            case 0:
+                if (position == 0) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.create_playlist_listview, null);
 
-        if (position == 0) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.create_playlist_listview, null);
+                } else {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
-        } else {
-            convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
+                    title = (TextView) convertView.findViewById(R.id.title); // title
 
-            title = (TextView) convertView.findViewById(R.id.title); // title
+                    title.setText(data.get(position-1).getName());
+                }
+                break;
+            case 1:
+                if (position == 0) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlistname, null);
+                } else if (position == 1) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_addsongs, null);
+                } else if (position == 2) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
+                } else {
 
-            title.setText(data.get(position-1).getName());
+                }
+                break;
         }
-
         return convertView;
     }
 
