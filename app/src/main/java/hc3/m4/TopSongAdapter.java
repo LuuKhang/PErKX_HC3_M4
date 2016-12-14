@@ -107,7 +107,7 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
 
                         title.setText(data.get(position).getTitle());
                         artist.setText(data.get(position).getArtist());
-                        number.setText(position + ")");
+                        number.setText((position+1) + ")");
 
                         if (data.get(position).getLocal() == 1) {
                             ImageButton downloadicon = (ImageButton) convertView.findViewById(R.id.download); // title
@@ -134,7 +134,7 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
 
                 title.setText(data.get(position).getTitle());
                 artist.setText(data.get(position).getArtist());
-                number.setText(position + ")");
+                number.setText((position+1) + ")");
 
                 if (data.get(position).getLocal() == 1) { // if the song is local
                     downloadcheckbox.setBackgroundResource(R.drawable.download_blocked);
