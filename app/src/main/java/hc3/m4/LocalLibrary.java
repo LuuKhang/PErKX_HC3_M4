@@ -251,37 +251,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
     }
 
-    public void selectPlaylist(View view) {
-        LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
-
-        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-
-        TextView title = (TextView) view.findViewById(R.id.title);
-        String playlistname = title.getText().toString();
-
-        List<Song> playlistSongs = db.getAllSongsInPlaylist(playlistname);
-
-        // add playlist page
-        playlistAdapter = new PlaylistAdapter(getApplicationContext(), 1, playlistSongs, playlistname);
-        if (playlistAdapter != null) fragment.setListAdapter(playlistAdapter);
-        fragment.level = 1;
-
-        RelativeLayout albumName = (RelativeLayout) findViewById(R.id.header1);
-        LinearLayout playlistName = (LinearLayout) findViewById(R.id.header2);
-        RelativeLayout createPlaylist = (RelativeLayout) findViewById(R.id.createplaylist);
-        RelativeLayout addSongs = (RelativeLayout) findViewById(R.id.addsongs);
-        RelativeLayout shuffleAll = (RelativeLayout) findViewById(R.id.shuffleall);
-
-        albumName.getLayoutParams().height = 0;
-        playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
-        createPlaylist.getLayoutParams().height = 0;
-        addSongs.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
-        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
-
-        TextView name = (TextView) playlistName.findViewById(R.id.title);
-        TextView nameEdit = (TextView) playlistName.findViewById(R.id.titleEdit);
-        name.setText(playlistname);
-        nameEdit.setText(playlistname);
+    public void selectPlaylist() {
 
     }
 
@@ -297,8 +267,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
         oldPlaylistName = name.getText().toString();
 
-//        TextView myTV = (TextView) switcher.findViewById(R.id.clickable_text_view);
-//        myTV.setText("value");
     }
 
     public void applyNameChange(View view) {
@@ -740,10 +708,22 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     if (level == 0) {
                         // existing playlist page
                         String playlistname = title.getText().toString();
-                        List<Song> playlistSongs = db.getAllSongsInPlaylist(pos+1);
+//                        List<Song> playlistSongs = db.getAllSongsInPlaylist(pos+1);
+                        List<Song> playlistSongs = db.getAllSongsInPlaylist(playlistname);
                         playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
                         if (playlistAdapter != null) setListAdapter(playlistAdapter);
                         level = 1;
+
+                        albumName.getLayoutParams().height = 0;
+                        playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        createPlaylist.getLayoutParams().height = 0;
+                        addSongs.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
+                        TextView name = (TextView) playlistName.findViewById(R.id.title);
+                        TextView nameEdit = (TextView) playlistName.findViewById(R.id.titleEdit);
+                        name.setText(playlistname);
+                        nameEdit.setText(playlistname);
                     }
                     else if (level == 1) {
 
