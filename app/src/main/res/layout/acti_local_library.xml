@@ -38,11 +38,51 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <include
+            layout="@layout/albumname_back_listview"
+            android:id="@+id/header1"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/appbar"
+            />
+
+        <include
+            layout="@layout/listview_playlistname"
+            android:id="@+id/header2"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/header1"
+            />
+
+        <include
+            layout="@layout/create_playlist_listview"
+            android:id="@+id/createplaylist"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/header2"
+            />
+
+        <include
+            layout="@layout/listview_addsongs"
+            android:id="@+id/addsongs"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/createplaylist"
+            />
+
+        <include
+            layout="@layout/shuffleall_listview"
+            android:id="@+id/shuffleall"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/addsongs"
+            />
+
         <android.support.v4.view.ViewPager
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/appbar"
+            android:layout_below="@+id/shuffleall"
             android:layout_above="@+id/gridLayout"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 

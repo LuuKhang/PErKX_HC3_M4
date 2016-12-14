@@ -75,11 +75,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(dbExist){
             // delete db file if already exists
-            File myFile = new File(DB_PATH+DB_NAME);
-            if(myFile.exists()) myFile.delete();
-            myFile = new File(DB_PATH+DB_NAME);
-            myDataBase = this.getReadableDatabase();
-            this.preLoadSongs();
+//            File myFile = new File(DB_PATH+DB_NAME);
+//            if(myFile.exists()) myFile.delete();
+//            myFile = new File(DB_PATH+DB_NAME);
+//            myDataBase = this.getReadableDatabase();
+//            this.preLoadSongs();
         } else {
             myDataBase = this.getReadableDatabase();
             this.preLoadSongs();
@@ -138,13 +138,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.addPlaylist("Hard coded heavy");
         this.addPlaylist("Workout set");
 
-        this.addSongToPlaylist(0, 5, 1);
-        this.addSongToPlaylist(0, 9, 2);
-        this.addSongToPlaylist(0, 12, 3);
-        this.addSongToPlaylist(0, 18, 4);
+        this.addSongToPlaylist(1, 5, 1);
+        this.addSongToPlaylist(1, 9, 2);
+        this.addSongToPlaylist(1, 12, 3);
+        this.addSongToPlaylist(1, 18, 4);
 
         for (int i = 1; i <= 10; i++) {
-            this.addSongToPlaylist(1, i, i);
+            this.addSongToPlaylist(2, i, i);
         }
 
     }
@@ -196,7 +196,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LOCAL + " NUMERIC" + ")";
         db.execSQL(CREATE_SONGS_TABLE);
         String CREATE_PLAYLISTS_TABLE = "CREATE TABLE " + TABLE_PLAYLISTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PLAYLIST_NAME + " TEXT"
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PLAYLIST_NAME + " TEXT NOT NULL UNIQUE"
                 + ")";
         db.execSQL(CREATE_PLAYLISTS_TABLE);
         String CREATE_PLAYLISTS_SONGS_TABLE = "CREATE TABLE " + TABLE_PLAYLISTS_SONGS + "("
@@ -239,12 +239,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
     // Add new playlists
-    void addPlaylist(String playlistName) {
+    long addPlaylist(String playlistName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_PLAYLIST_NAME, playlistName);
-        db.insert(TABLE_PLAYLISTS, null, values);
+        long result = db.insert(TABLE_PLAYLISTS, null, values);
         db.close();
+
+        return result;
     }
     void addSongToPlaylist (int playlistId, int songId, int songOrder){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -254,6 +256,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_SONG_ORDER, songOrder);
         db.insert(TABLE_PLAYLISTS_SONGS, null, values);
         db.close();
+    }
+    // update playlist name
+    int updatePlaylistName(String oldPlaylistName, String playlistName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_PLAYLIST_NAME, playlistName);
+
+        ContentValues newValues = new ContentValues();
+        newValues.put(KEY_PLAYLIST_NAME, playlistName);
+        String[] args = new String[]{oldPlaylistName};
+
+        int result = db.update(TABLE_PLAYLISTS, newValues, KEY_PLAYLIST_NAME + "=?", args);
+        db.close();
+
+        return result;
     }
 
     // Getting single song
@@ -311,12 +328,70 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return playlistList;
     }
 
+    // Function to get playlist id from playlist name
+    public int getPlaylistID(String playlistName) {
+        List<Song> playlistSongs = new ArrayList<Song>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_PLAYLISTS +
+                " WHERE " + KEY_PLAYLIST_NAME + "=\"" + playlistName + "\"";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        int pid = -1;
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                pid = Integer.parseInt(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return pid;
+    }
+
     // Function to get all songs in a given playlist
     public List<Song> getAllSongsInPlaylist(int playlistId) {
         List<Song> playlistSongs = new ArrayList<Song>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " a, " + TABLE_PLAYLISTS_SONGS + " b" +
                 " WHERE a." + KEY_ID + "=b." + KEY_SONG_ID + " AND b." + KEY_PLAYLIST_ID + "=" + playlistId + " ORDER BY b." + KEY_SONG_ORDER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setTitle(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setAlbum(cursor.getString(3));
+                song.setArt(cursor.getString(4));
+                song.setGenre(cursor.getString(5));
+                song.setLocal(Integer.parseInt(cursor.getString(6)));
+                // Adding song to list
+                playlistSongs.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return playlistSongs;
+    }
+
+    // Function to get all songs in a given playlist by name
+    public List<Song> getAllSongsInPlaylist(String playlistName) {
+        List<Song> playlistSongs = new ArrayList<Song>();
+        // Select All Query
+        String selectQuery = "SELECT a.id, a.title, a.artist, a.album, a.album_art, a.genre, a.local FROM " +
+                TABLE_SONGS + " a, " + TABLE_PLAYLISTS_SONGS + " b, " + TABLE_PLAYLISTS + " c" +
+                " WHERE a." + KEY_ID + "=b." + KEY_SONG_ID +
+                " AND c." + KEY_PLAYLIST_NAME + "=\"" + playlistName +
+                "\" AND b." + KEY_PLAYLIST_ID + "=c." + KEY_ID +
+                " ORDER BY b." + KEY_SONG_ORDER;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -351,6 +426,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             selectQuery = "SELECT  * FROM " + TABLE_SONGS + " ORDER BY LOWER(title)";
         } else {
             selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE local = 1 ORDER BY LOWER(title)";
+        }
+
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setTitle(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setAlbum(cursor.getString(3));
+                song.setArt(cursor.getString(4));
+                song.setGenre(cursor.getString(5));
+                song.setLocal(Integer.parseInt(cursor.getString(6)));
+                // Adding song to list
+                songList.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return songList;
+    }
+
+    // Getting All Songs
+    public List<Song> getAllSongsByID(int local) {
+        List<Song> songList = new ArrayList<Song>();
+        String selectQuery;
+        // Select All Query
+        if (local == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS;
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE local = 1";
         }
 
 
@@ -470,7 +581,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Song> getAllSongsFromArtist(String artist, int local) {
         List<Song> songList = new ArrayList<Song>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE artist=\"" + artist + "\" ORDER BY LOWER(title)";
+        String selectQuery;
+        if (local == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE artist=\"" + artist + "\" ORDER BY LOWER(title)";
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE artist=\"" + artist + "\" AND local = 1 ORDER BY LOWER(title)";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -500,7 +616,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Song> getAllSongsFromAlbum(String album, int local) {
         List<Song> songList = new ArrayList<Song>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE album=\"" + album + "\" ORDER BY LOWER(title)";
+        String selectQuery;
+        if (local == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE album=\"" + album + "\" ORDER BY LOWER(title)";
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE album=\"" + album + "\" AND local = 1 ORDER BY LOWER(title)";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -530,7 +651,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Song> getAllSongsFromGenre(String genre, int local) {
         List<Song> songList = new ArrayList<Song>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE genre=\"" + genre + "\" ORDER BY LOWER(title)";
+        String selectQuery;
+        if (local == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE genre=\"" + genre + "\" ORDER BY LOWER(title)";
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE genre=\"" + genre + "\" AND local = 1 ORDER BY LOWER(title)";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

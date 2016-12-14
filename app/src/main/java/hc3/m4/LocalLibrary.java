@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
@@ -21,6 +22,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +31,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 
@@ -40,9 +44,13 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.ViewSwitcher;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +91,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     // -------------------------------------------------------------------------
 
 
-    public static int currentFilter;
+    public static int currentFilter = 1;
 
     // To keep track of the data in each list so that search can modify it
     static SongAdapter songAdapterSongs;
@@ -93,6 +101,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     static SongAdapter songAdapter; // General list for detailed inner lists (ex. selecting an artist)
 
     static PlaylistAdapter playlistAdapter;
+//    static PlaylistAdapter playlistSongsAdapter;
 
 
     @Override
@@ -112,6 +121,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(1);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             // This method will be invoked when a new page becomes selected.
@@ -196,7 +206,172 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         }
     }
 
+    public void createPlaylist(View view) {
+        LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
 
+        // add playlist page
+        List<Playlist> playlists = new ArrayList<Playlist>();
+        playlistAdapter = new PlaylistAdapter(getApplicationContext(), 1, playlists);
+        if (playlistAdapter != null) fragment.setListAdapter(playlistAdapter);
+        fragment.level = 1;
+
+        RelativeLayout albumName = (RelativeLayout) findViewById(R.id.header1);
+        LinearLayout playlistName = (LinearLayout) findViewById(R.id.header2);
+        RelativeLayout createPlaylist = (RelativeLayout) findViewById(R.id.createplaylist);
+        RelativeLayout addSongs = (RelativeLayout) findViewById(R.id.addsongs);
+        RelativeLayout shuffleAll = (RelativeLayout) findViewById(R.id.shuffleall);
+
+        TextView name = (TextView) playlistName.findViewById(R.id.title);
+        TextView nameEdit = (TextView) playlistName.findViewById(R.id.titleEdit);
+        name.setText("Playlist Name");
+        nameEdit.setText("Playlist Name");
+
+        albumName.getLayoutParams().height = 0;
+        playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+        createPlaylist.getLayoutParams().height = 0;
+        addSongs.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
+        // add playlist to db
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        String playlistname = name.getText().toString();
+        String newplaylistname = playlistname;
+
+        long result = 0;
+        int count = 0;
+        while (true) {
+            result = db.addPlaylist(newplaylistname);
+            if (result == -1) {
+                count++;
+                name.setText(playlistname + String.valueOf(count));
+                newplaylistname = playlistname + String.valueOf(count);
+            } else {
+                break;
+            }
+        }
+
+    }
+
+    public void selectPlaylist(View view) {
+        LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+
+        TextView title = (TextView) view.findViewById(R.id.title);
+        String playlistname = title.getText().toString();
+
+        List<Song> playlistSongs = db.getAllSongsInPlaylist(playlistname);
+
+        // add playlist page
+        playlistAdapter = new PlaylistAdapter(getApplicationContext(), 1, playlistSongs, playlistname);
+        if (playlistAdapter != null) fragment.setListAdapter(playlistAdapter);
+        fragment.level = 1;
+
+        RelativeLayout albumName = (RelativeLayout) findViewById(R.id.header1);
+        LinearLayout playlistName = (LinearLayout) findViewById(R.id.header2);
+        RelativeLayout createPlaylist = (RelativeLayout) findViewById(R.id.createplaylist);
+        RelativeLayout addSongs = (RelativeLayout) findViewById(R.id.addsongs);
+        RelativeLayout shuffleAll = (RelativeLayout) findViewById(R.id.shuffleall);
+
+        albumName.getLayoutParams().height = 0;
+        playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+        createPlaylist.getLayoutParams().height = 0;
+        addSongs.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
+        TextView name = (TextView) playlistName.findViewById(R.id.title);
+        TextView nameEdit = (TextView) playlistName.findViewById(R.id.titleEdit);
+        name.setText(playlistname);
+        nameEdit.setText(playlistname);
+
+    }
+
+    public String oldPlaylistName;
+    public void changePlaylistName(View view) {
+        ViewSwitcher playlistnameSwitcher = (ViewSwitcher) findViewById(R.id.playlistnameSwitcher);
+        ViewSwitcher buttonSwitcher = (ViewSwitcher) findViewById(R.id.buttonSwitcher);
+
+        playlistnameSwitcher.showNext();
+        buttonSwitcher.showNext();
+
+        TextView name = (TextView) playlistnameSwitcher.findViewById(R.id.title);
+
+        oldPlaylistName = name.getText().toString();
+
+//        TextView myTV = (TextView) switcher.findViewById(R.id.clickable_text_view);
+//        myTV.setText("value");
+    }
+
+    public void applyNameChange(View view) {
+        ViewSwitcher playlistnameSwitcher = (ViewSwitcher) findViewById(R.id.playlistnameSwitcher);
+        ViewSwitcher buttonSwitcher = (ViewSwitcher) findViewById(R.id.buttonSwitcher);
+
+        TextView name = (TextView) playlistnameSwitcher.findViewById(R.id.title);
+        TextView nameEdit = (TextView) playlistnameSwitcher.findViewById(R.id.titleEdit);
+
+        name.setText(nameEdit.getText().toString());
+
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        // check if playlist name exists
+        int result = db.updatePlaylistName(oldPlaylistName, name.getText().toString());
+        if (result == 0) {
+            Toast.makeText(getApplicationContext(), "Playlist name already exists! Please change!", Toast.LENGTH_LONG).show();
+        } else { // update database with name change
+            playlistnameSwitcher.showNext();
+            buttonSwitcher.showNext();
+            oldPlaylistName = name.getText().toString();
+        }
+    }
+
+    public void addSongsToPlaylist(View view) {
+        ViewSwitcher playlistnameSwitcher = (ViewSwitcher) findViewById(R.id.playlistnameSwitcher);
+        TextView name = (TextView) playlistnameSwitcher.findViewById(R.id.title);
+
+        Intent myIntent = new Intent(LocalLibrary.this, AddSongs.class);
+        myIntent.putExtra("PlaylistName", name.getText().toString());
+//        myIntent.putExtra("PlaylistID", )
+        startActivityForResult(myIntent, 1); // Opens Add Songs
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) { // request code for adding songs to playlist
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+
+                String playlistname = data.getStringExtra("PlaylistName");
+                Toast.makeText(this, playlistname, Toast.LENGTH_LONG).show();
+
+                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+
+                List<Song> playlistSongs = db.getAllSongsInPlaylist(playlistname);
+
+                // add playlist page
+                playlistAdapter = new PlaylistAdapter(getApplicationContext(), 1, playlistSongs, playlistname);
+                if (playlistAdapter != null) fragment.setListAdapter(playlistAdapter);
+                fragment.level = 1;
+
+                RelativeLayout albumName = (RelativeLayout) findViewById(R.id.header1);
+                LinearLayout playlistName = (LinearLayout) findViewById(R.id.header2);
+                RelativeLayout createPlaylist = (RelativeLayout) findViewById(R.id.createplaylist);
+                RelativeLayout addSongs = (RelativeLayout) findViewById(R.id.addsongs);
+                RelativeLayout shuffleAll = (RelativeLayout) findViewById(R.id.shuffleall);
+
+                albumName.getLayoutParams().height = 0;
+                playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                createPlaylist.getLayoutParams().height = 0;
+                addSongs.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
+                TextView name = (TextView) playlistName.findViewById(R.id.title);
+                TextView nameEdit = (TextView) playlistName.findViewById(R.id.titleEdit);
+                name.setText(playlistname);
+                nameEdit.setText(playlistname);
+            }
+        }
+    }
 
     // Music Controller classes, to play/pause/control ------------------------
     public void songSelected(View view){
@@ -250,6 +425,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
         //musicController.show(0);
     }
+
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
         @Override
@@ -463,12 +639,20 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             this.inflater = inflater;
             update();
 
+            RelativeLayout shuffleAll = (RelativeLayout) getActivity().findViewById(R.id.shuffleall);
+            shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
         public void update() {
             setHasOptionsMenu(true);
 
+            RelativeLayout albumName = (RelativeLayout) getActivity().findViewById(R.id.header1);
+            LinearLayout playlistName = (LinearLayout) getActivity().findViewById(R.id.header2);
+            RelativeLayout createPlaylist = (RelativeLayout) getActivity().findViewById(R.id.createplaylist);
+            RelativeLayout addSongs = (RelativeLayout) getActivity().findViewById(R.id.addsongs);
+            RelativeLayout shuffleAll = (RelativeLayout) getActivity().findViewById(R.id.shuffleall);
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
 //            List<Song> songs = db.getAllSongs();
@@ -487,6 +671,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     if (playlistAdapter != null) setListAdapter(playlistAdapter);
                     level = 0;
                     Log.d("page: ", "playlist");
+                    albumName.getLayoutParams().height = 0;
+                    playlistName.getLayoutParams().height = 0;
+                    createPlaylist.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                    addSongs.getLayoutParams().height = 0;
+                    shuffleAll.getLayoutParams().height = 0;
                     break;
                 case 2:
                     List<Song> songs = db.getAllSongs(1);
@@ -494,7 +683,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     // Setting the list adapter for the ListFragment
                     if (songAdapterSongs != null) setListAdapter(songAdapterSongs);
                     level = 0;
-                    Log.d("page: ", "song");
+                    albumName.getLayoutParams().height = 0;
+                    playlistName.getLayoutParams().height = 0;
+                    createPlaylist.getLayoutParams().height = 0;
+                    addSongs.getLayoutParams().height = 0;
+                    shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
                     break;
                 case 3:
                     List<Song> artists = db.getAllArtists(1);
@@ -503,6 +696,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     if (songAdapterArtists != null) setListAdapter(songAdapterArtists);
                     level = 0;
                     Log.d("page: ", "artist");
+                    albumName.getLayoutParams().height = 0;
+                    playlistName.getLayoutParams().height = 0;
+                    createPlaylist.getLayoutParams().height = 0;
+                    addSongs.getLayoutParams().height = 0;
+                    shuffleAll.getLayoutParams().height = 0;
                     break;
                 case 4:
                     List<Song> albums = db.getAllAlbums(1);
@@ -511,6 +709,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     if (songAdapterAlbums != null) setListAdapter(songAdapterAlbums);
                     level = 0;
                     Log.d("page: ", "album");
+                    albumName.getLayoutParams().height = 0;
+                    playlistName.getLayoutParams().height = 0;
+                    createPlaylist.getLayoutParams().height = 0;
+                    addSongs.getLayoutParams().height = 0;
+                    shuffleAll.getLayoutParams().height = 0;
                     break;
                 case 5:
                     List<Song> genres = db.getAllGenres(1);
@@ -519,6 +722,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     if (songAdapterGenres != null) setListAdapter(songAdapterGenres);
                     level = 0;
                     Log.d("page: ", "genre");
+                    albumName.getLayoutParams().height = 0;
+                    playlistName.getLayoutParams().height = 0;
+                    createPlaylist.getLayoutParams().height = 0;
+                    addSongs.getLayoutParams().height = 0;
+                    shuffleAll.getLayoutParams().height = 0;
                     break;
             }
 
@@ -527,6 +735,14 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         // Function called when a tab's list view item is clicked
         @Override
         public void onListItemClick(ListView listview, View view, int pos, long id) {
+            RelativeLayout albumName = (RelativeLayout) getActivity().findViewById(R.id.header1);
+            LinearLayout playlistName = (LinearLayout) getActivity().findViewById(R.id.header2);
+            RelativeLayout createPlaylist = (RelativeLayout) getActivity().findViewById(R.id.createplaylist);
+            RelativeLayout addSongs = (RelativeLayout) getActivity().findViewById(R.id.addsongs);
+            RelativeLayout shuffleAll = (RelativeLayout) getActivity().findViewById(R.id.shuffleall);
+
+            TextView textView = (TextView) albumName.findViewById(R.id.title);
+
             DatabaseHandler db = new DatabaseHandler(view.getContext());
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             TextView title = (TextView) view.findViewById(R.id.title);
@@ -536,21 +752,16 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     if (level == 0) {
                         if (pos == 0) {
                             // add playlist page
-                            List<Playlist> playlists = new ArrayList<Playlist>();
-                            playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlists);
-                            if (playlistAdapter != null) setListAdapter(playlistAdapter);
-                            level = 1;
                         } else {
                             // existing playlist page
-                            String playlistName = title.getText().toString();
+                            String playlistname = title.getText().toString();
                             List<Song> playlistSongs = db.getAllSongsInPlaylist(pos-1);
-                            playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistName);
+                            playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
                             if (playlistAdapter != null) setListAdapter(playlistAdapter);
                             level = 1;
                         }
 
                     }
-
                     else if (level == 1) {
                         if (pos == 1) { // add songs button
 
@@ -572,6 +783,14 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
+
+                        albumName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        playlistName.getLayoutParams().height = 0;
+                        createPlaylist.getLayoutParams().height = 0;
+                        addSongs.getLayoutParams().height = 0;
+                        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
+                        textView.setText(artist);
                     }
                     // Songs inside an artist category
                     else if (level == 1) {
@@ -591,6 +810,13 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
+
+                        albumName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        playlistName.getLayoutParams().height = 0;
+                        createPlaylist.getLayoutParams().height = 0;
+                        addSongs.getLayoutParams().height = 0;
+                        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        textView.setText(album);
                     }
                     // Songs inside an album category
                     else if (level == 1) {
@@ -609,6 +835,13 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
                         if (songAdapter != null) setListAdapter(songAdapter);
                         level = 1;
+
+                        albumName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        playlistName.getLayoutParams().height = 0;
+                        createPlaylist.getLayoutParams().height = 0;
+                        addSongs.getLayoutParams().height = 0;
+                        shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+                        textView.setText(genre);
                     }
                     // Songs inside an genre category
                     else if (level == 1) {

@@ -16,30 +16,74 @@
         android:onClick="backButton"
         />
 
-    <TextView
-        android:id="@+id/title"
-        android:padding="5dip"
+    <ViewSwitcher
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/playlistnameSwitcher"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:gravity="center_vertical"
-        android:text="Playlist Name"
-        android:textColor="#040404"
-        android:typeface="sans"
-        android:textSize="20dip"
-        android:textStyle="bold"
-        android:layout_weight=".5"/>
+        android:layout_height="match_parent"
+        android:layout_weight="0.5
+        ">
 
-    <Button
-        android:id="@+id/changenamebutton"
-        android:textAllCaps="false"
+        <TextView
+            android:id="@+id/title"
+            android:padding="5dip"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:text="Playlist Name"
+            android:textColor="#040404"
+            android:typeface="sans"
+            android:textSize="20dip"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/titleEdit"
+            android:padding="5dip"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:text="Playlist Name"
+            android:textColor="#040404"
+            android:typeface="sans"
+            android:textSize="20dip"
+            android:textStyle="bold"
+            android:maxLines="1"
+            />
+    </ViewSwitcher>
+
+    <ViewSwitcher
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/buttonSwitcher"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:gravity="center"
-        android:text="Change Playlist Name"
-        android:textColor="#040404"
-        android:typeface="sans"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/title" />
+        >
+        <Button
+            android:id="@+id/changenamebutton"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Change Playlist Name"
+            android:textColor="#040404"
+            android:typeface="sans"
+            android:layout_alignParentTop="true"
+            android:onClick="changePlaylistName"
+            />
+
+        <Button
+            android:id="@+id/applybutton"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Apply Name Change"
+            android:textColor="#040404"
+            android:typeface="sans"
+            android:layout_alignParentTop="true"
+            android:onClick="applyNameChange"
+            />
+    </ViewSwitcher>
 
 </LinearLayout>
