@@ -738,26 +738,15 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 // Selecting a playlist
                 case 1:
                     if (level == 0) {
-                        if (pos == 0) {
-                            // add playlist page
-                        } else {
-                            // existing playlist page
-
-                            String playlistname = title.getText().toString();
-                            List<Song> playlistSongs = db.getAllSongsInPlaylist(pos-1);
-                            playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
-
-                            if (playlistAdapter != null) setListAdapter(playlistAdapter);
-
-                            categoryTitle = playlistname;
-                            level = 1;
-                        }
-
+                        // existing playlist page
+                        String playlistname = title.getText().toString();
+                        List<Song> playlistSongs = db.getAllSongsInPlaylist(pos+1);
+                        playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
+                        if (playlistAdapter != null) setListAdapter(playlistAdapter);
+                        level = 1;
                     }
                     else if (level == 1) {
-                        if (pos == 1) { // add songs button
 
-                        }
                     }
                     break;
 

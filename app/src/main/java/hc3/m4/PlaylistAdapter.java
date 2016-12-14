@@ -84,21 +84,6 @@ public class PlaylistAdapter extends BaseAdapter {
             // Once clicked on a playlist, shows options and songs
             case 1:
                 // First item shown is name row
-//                if (position == 0) {
-//                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlistname, null);
-//                    title = (TextView) convertView.findViewById(R.id.title);
-//                    title.setText(playlistName);
-//                }
-                // Second, "Add Songs" button
-//                else if (position == 1) {
-//                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_addsongs, null);
-//                }
-                // Third. "Shuffle All" button
-//                else if (position == 2) {
-//                    convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
-//                }
-                // All other positions list the songs in the current playlist
-//                else {
                     convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
                     convertView.setTag(position);

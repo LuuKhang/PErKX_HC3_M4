@@ -5,7 +5,8 @@
     android:background="@drawable/list_selector"
     android:orientation="horizontal"
     android:padding="5dip"
-    android:onClick="songSelected" android:tag="0">
+    android:onClick="songSelected"
+    >
     <!--clicking on a song plays music (might need to be revised)-->
 
     <!--  ListRow Left side Thumbnail image -->
