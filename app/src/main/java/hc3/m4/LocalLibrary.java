@@ -251,10 +251,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
     }
 
-    public void selectPlaylist() {
-
-    }
-
     public String oldPlaylistName;
     public void changePlaylistName(View view) {
         ViewSwitcher playlistnameSwitcher = (ViewSwitcher) findViewById(R.id.playlistnameSwitcher);
