@@ -389,18 +389,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 }
                 break;
             case 2:
-                if (songAdapter != null) {
-                    songsToPlay.addAll(songAdapter.getAll());
-                }
-                break;
             case 3:
-                if (songAdapterAlbums != null) {
-                    songsToPlay.addAll(songAdapterAlbums.getAll());
-                }
-                else if (songAdapter != null) {
-                    songsToPlay.addAll(songAdapter.getAll());
-                }
-                break;
             case 4:
                 if (songAdapter != null) {
                     songsToPlay.addAll(songAdapter.getAll());
@@ -753,9 +742,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                             // add playlist page
                         } else {
                             // existing playlist page
+
                             String playlistname = title.getText().toString();
                             List<Song> playlistSongs = db.getAllSongsInPlaylist(pos-1);
                             playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
+
                             if (playlistAdapter != null) setListAdapter(playlistAdapter);
 
                             categoryTitle = playlistname;
@@ -870,7 +861,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 // Function called on submit
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    // Nothing happens on submit besides closing the keyboard, filter handled while typing
+                    SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
+                    fragment.search(currentPage, query);
                     return false;
                 }
                 // Function called while typing

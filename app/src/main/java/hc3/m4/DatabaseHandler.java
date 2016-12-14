@@ -141,10 +141,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.addPlaylist("Hard coded heavy");
         this.addPlaylist("Workout set");
 
-        this.addSongToPlaylist(1, 5, 1);
-        this.addSongToPlaylist(1, 9, 2);
-        this.addSongToPlaylist(1, 12, 3);
-        this.addSongToPlaylist(1, 18, 4);
+        this.addSongToPlaylist(1, 45, 1);
+        this.addSongToPlaylist(1, 46, 2);
+        this.addSongToPlaylist(1, 47, 3);
+        this.addSongToPlaylist(1, 48, 4);
 
         for (int i = 1; i <= 10; i++) {
             this.addSongToPlaylist(2, i, i);
@@ -763,18 +763,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         String selectQuery = "";
         if (category == "playlist") {
-            //selectQuery =
-                    //"SELECT * FROM " + TABLE_SONGS + " a, " + TABLE_PLAYLISTS_SONGS + " b, " + TABLE_PLAYLISTS + " c" +
-                    //" WHERE a." + KEY_TITLE + " like \"%" + keyword + "%\" AND c." + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\" AND a." + KEY_ID + "=b." + KEY_SONG_ID + " AND c." + KEY_ID + "=b." + KEY_PLAYLIST_ID;
-                    //" WHERE a." + KEY_TITLE + " like \"%" + keyword + "%\" AND c." + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\" AND a." + KEY_ID + "=b." + KEY_SONG_ID + " AND c." + KEY_ID + "=b." + KEY_PLAYLIST_ID;
-
-            // lol, look at my shit query that does like 3 select statements
-
-            // shit... none of these work... i'll be back i guess
             selectQuery =
-            "SELECT * FROM "+TABLE_SONGS+" WHERE "+KEY_TITLE+"=\"%"+keyword+"%\" AND "+KEY_ID+" IN " +
-            "(SELECT " + KEY_SONG_ID + " FROM " + TABLE_PLAYLISTS_SONGS + " WHERE " + KEY_PLAYLIST_ID + " = " +
-            "(SELECT " + KEY_ID + " FROM " + TABLE_PLAYLISTS + " WHERE " + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\") )";
+                    "SELECT * FROM " + TABLE_SONGS + " a, " + TABLE_PLAYLISTS_SONGS + " b, " + TABLE_PLAYLISTS + " c" +
+                    " WHERE a." + KEY_TITLE + " like \"%" + keyword + "%\" AND c." + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\" AND a." + KEY_ID + "=b." + KEY_SONG_ID + " AND c." + KEY_ID + "=b." + KEY_PLAYLIST_ID;
         }
         else {
             selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE " + KEY_TITLE + " like \"%" + keyword + "%\" AND " + category + "=\"" + categoryKey + "\" ORDER BY LOWER (" + KEY_TITLE + ")";

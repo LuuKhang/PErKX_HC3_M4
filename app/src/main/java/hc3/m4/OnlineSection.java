@@ -2,8 +2,6 @@ package hc3.m4;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -40,7 +38,9 @@ public class OnlineSection extends AppCompatActivity {
         btn_newreleases.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(OnlineSection.this, NewReleases.class)); // Opens New Releases Page
+                Intent toNewRelease = new Intent(OnlineSection.this, NewReleasesRecommended.class);
+                toNewRelease.putExtra("label", "New Releases");
+                startActivity(toNewRelease); // Opens New Releases Page
             }
         });
         Button btn_top100songs = (Button) findViewById(R.id.btn_top100songs);
@@ -54,7 +54,9 @@ public class OnlineSection extends AppCompatActivity {
         btn_recommended.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(OnlineSection.this, RecommendedForYou.class)); // Opens New Releases Page
+                Intent toRecommended = new Intent(OnlineSection.this, NewReleasesRecommended.class);
+                toRecommended.putExtra("label", "Recommended");
+                startActivity(toRecommended); // Opens New Releases Page
             }
         });
 

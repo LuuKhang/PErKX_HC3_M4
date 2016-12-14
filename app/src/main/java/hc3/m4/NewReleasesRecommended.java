@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,11 +38,10 @@ import android.widget.MediaController.MediaPlayerControl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class NewReleases extends AppCompatActivity implements MediaPlayerControl  {
+public class NewReleasesRecommended extends AppCompatActivity implements MediaPlayerControl  {
 
-    private NewReleases.SectionsPagerAdapter mSectionsPagerAdapter;
+    private NewReleasesRecommended.SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -69,22 +67,31 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
 
     // To keep track of shown list
     public static String categoryTitle;
+    static OnlineSongAdapter songAdapterSongs;
+    static OnlineSongAdapter songAdapterArtists;
+    static OnlineSongAdapter songAdapterAlbums;
+    static OnlineSongAdapter songAdapterGenres;
+
     static OnlineSongAdapter songAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_releases);
+        setContentView(R.layout.activity_new_releases_recommended);
 
         // Initialize toolbar (top most portion of screen)
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("PErKX - New Releases"); // Set toolbar title
+
+        String label = getIntent().getStringExtra("label");
+        getSupportActionBar().setTitle("PErKX - " + label); // Set toolbar title
+        TextView titleLabel = (TextView) findViewById(R.id.title) ;
+        titleLabel.setText(label);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new NewReleases.SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new NewReleasesRecommended.SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -94,11 +101,19 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
             // This method will be invoked when a new page becomes selected.
             @Override
             public void onPageSelected(int position) {
-                NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
+                NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
                 if (fragment != null) {
                     fragment.update();
                 }
                 currentPage = position;
+
+                Button downloadMultiple = (Button) findViewById(R.id.downloadmultiple);
+                if (currentPage == 0) {
+                    downloadMultiple.setVisibility(View.VISIBLE);
+                }
+                else {
+                    downloadMultiple.setVisibility(View.GONE);
+                }
 
                 // disable select all row
                 int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
@@ -141,14 +156,14 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         btn_local.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(NewReleases.this, LocalLibrary.class)); // Opens Online Section
+                startActivity(new Intent(NewReleasesRecommended.this, LocalLibrary.class)); // Opens Online Section
             }
         });
         Button btn_online = (Button) findViewById(R.id.btn_online);
         btn_online.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(NewReleases.this, OnlineSection.class)); // Opens Online Section
+                startActivity(new Intent(NewReleasesRecommended.this, OnlineSection.class)); // Opens Online Section
             }
         });
 
@@ -179,9 +194,26 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         // Sets all the shown songs in the music player
         songsToPlay = new ArrayList<Song>();
         currentTrack = Integer.parseInt(view.getTag().toString());
-
-        if (songAdapter != null) {
-            songsToPlay.addAll(songAdapter.getAll());
+        switch (currentPage) {
+            case 0:
+                if (songAdapterSongs != null) {
+                    songsToPlay.addAll(songAdapterSongs.getAll());
+                }
+            case 1:
+                if (songAdapter != null) {
+                    songsToPlay.addAll(songAdapter.getAll());
+                }
+                break;
+            case 2:
+                if (songAdapter != null) {
+                    songsToPlay.addAll(songAdapter.getAll());
+                }
+                break;
+            case 3:
+                if (songAdapter != null) {
+                    songsToPlay.addAll(songAdapter.getAll());
+                }
+                break;
         }
 
         musicService.setSong(currentTrack);
@@ -324,7 +356,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
     // Function used to show play page
     // Current set to open new activity, but I think that's horrible practice. Might switch to play page = fragment
     public void openPlayPage() {
-        Intent playPage = new Intent(NewReleases.this, PlayPage.class);
+        Intent playPage = new Intent(NewReleasesRecommended.this, PlayPage.class);
         playPage.putExtra("playlistSize", songsToPlay.size());
         playPage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
         playPage.putExtra("playlistSongs", songsToPlay);
@@ -362,9 +394,17 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
 
     // go back to level 0 listview
     public void backButton(View view) {
-        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
             fragment.update();
+        }
+
+        Button downloadMultiple = (Button) findViewById(R.id.downloadmultiple);
+        if (currentPage == 0) {
+            downloadMultiple.setVisibility(View.VISIBLE);
+        }
+        else {
+            downloadMultiple.setVisibility(View.GONE);
         }
 
         // disable level1 row
@@ -387,7 +427,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
 
     // go back to online page from new releases page
     public void backToOnlinePage(View view) {
-        startActivity(new Intent(NewReleases.this, OnlineSection.class));
+        startActivity(new Intent(NewReleasesRecommended.this, OnlineSection.class));
     }
 
     // download single song
@@ -421,10 +461,10 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 
         // get songAdapter and songList
-        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
             songAdapter = (OnlineSongAdapter) fragment.getListAdapter();
-            List<Song> songList = songAdapter.data;
+            List<Song> songList = songAdapter.getAll();
             int count = 0;
             Song currentSong;
             for (int i = 0; i < songList.size(); i++) {
@@ -437,7 +477,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
                     }
                 }
             }
-            songAdapter.data = songList;
+            songAdapter.updateSongList(songList);
             fragment.setListAdapter(songAdapter);
 
             Toast.makeText(getApplicationContext(), "Download Completed", Toast.LENGTH_LONG).show();
@@ -450,7 +490,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
 
     // when download multiple songs is selected
     public void downloadMultipleSongs(View view) {
-        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
             fragment.selectSongsForDownload(); // load listview with checkboxes
         }
@@ -486,10 +526,10 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         Song song = (Song) cb.getTag();
         song.setSelected(cb.isChecked());
 
-        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
             songAdapter = (OnlineSongAdapter) fragment.getListAdapter();
-            List<Song> songList = songAdapter.data;
+            List<Song> songList = songAdapter.getAll();
             int count = 0;
             for (int i = 0; i < songList.size(); i++) {
                 if (songList.get(i).isSelected()) {
@@ -506,10 +546,10 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
     public void updateAll(View view) {
         CheckBox cb = (CheckBox) view ;
 
-        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
             songAdapter = (OnlineSongAdapter) fragment.getListAdapter();
-            List<Song> songList = songAdapter.data;
+            List<Song> songList = songAdapter.getAll();
             int count = 0;
             for (int i = 0; i < songList.size(); i++) {
                 if (songList.get(i).getLocal() == 0) {
@@ -519,7 +559,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
                     }
                 }
             }
-            songAdapter.data = songList;
+            songAdapter.updateSongList(songList);
             fragment.setListAdapter(songAdapter);
             TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
             numberDownload.setText(count + " songs selected for download");
@@ -528,7 +568,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
 
     // when multiple download is cancelled
     public void cancelDownloadMultiple(View view) {
-        NewReleases.SongList fragment = (NewReleases.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        NewReleasesRecommended.SongList fragment = (NewReleasesRecommended.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (fragment != null) {
 //            fragment.update(); // load listview with checkboxes
             fragment.updateSongList();
@@ -602,7 +642,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return NewReleases.SongList.newInstance(position + 1);
+            return NewReleasesRecommended.SongList.newInstance(position + 1);
         }
 
         @Override
@@ -635,8 +675,8 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         private static LayoutInflater inflater;
 
         // Returns a new instance of this fragment for the given section number.
-        public static NewReleases.SongList newInstance(int sectionNumber) {
-            NewReleases.SongList fragment = new NewReleases.SongList();
+        public static NewReleasesRecommended.SongList newInstance(int sectionNumber) {
+            NewReleasesRecommended.SongList fragment = new NewReleasesRecommended.SongList();
 
             // Arguments/parameters that each tab/section/fragment will have, example: ID
             Bundle args = new Bundle();
@@ -650,17 +690,12 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             this.inflater = inflater;
             update();
-            Button downloadMultiple = (Button) getActivity().findViewById(R.id.downloadmultiple);
-            downloadMultiple.setVisibility(View.VISIBLE);
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
         // return everything to level 0
         public void update() {
             setHasOptionsMenu(true);
-
-            // Creating an array adapter to store the list of items
-            Button downloadMultiple = (Button) getActivity().findViewById(R.id.downloadmultiple);
 
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
@@ -674,35 +709,31 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
                     List<Song> songs = db.getAllSongs(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
+                    songAdapterSongs = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterSongs != null) setListAdapter(songAdapterSongs);
                     level = 0;
-                    downloadMultiple.setVisibility(View.VISIBLE);
                     break;
                 case 2:
                     List<Song> artists = db.getAllArtists(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, artists);
+                    songAdapterArtists = new OnlineSongAdapter(inflater.getContext(), sectionNumber, artists);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterArtists != null) setListAdapter(songAdapterArtists);
                     level = 0;
-                    downloadMultiple.setVisibility(View.GONE);
                     break;
                 case 3:
                     List<Song> albums = db.getAllAlbums(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, albums);
+                    songAdapterAlbums = new OnlineSongAdapter(inflater.getContext(), sectionNumber, albums);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterAlbums != null) setListAdapter(songAdapterAlbums);
                     level = 0;
-                    downloadMultiple.setVisibility(View.GONE);
                     break;
                 case 4:
                     List<Song> genres = db.getAllGenres(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, genres);
+                    songAdapterGenres = new OnlineSongAdapter(inflater.getContext(), sectionNumber, genres);
                     // Setting the list adapter for the ListFragment
-                    if (songAdapter != null) setListAdapter(songAdapter);
+                    if (songAdapterGenres != null) setListAdapter(songAdapterGenres);
                     level = 0;
-                    downloadMultiple.setVisibility(View.GONE);
                     break;
             }
 
@@ -726,7 +757,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
                     List<Song> songs = db.getAllSongs(0);
-                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
+                    songAdapterSongs = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
                     // Setting the list adapter for the ListFragment
                     setListAdapter(songAdapter);
                     level = 0;
@@ -958,7 +989,8 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    // Nothing happens on submit besides closing the keyboard, filter handled while typing
+                    SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
+                    fragment.search(currentPage, query);
                     return false;
                 }
                 // Function called while typing
@@ -977,7 +1009,7 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
         // wow i use switch cases a lot, our software profs would murder me
         public void search(int sectionNumber, String keyword) {
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
-            List<Song> results = null;
+            List<Song> results;
 
             // Query and adapter differs for each section
             if (level == 0) {
@@ -985,21 +1017,37 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
                     // Songs
                     case 0:
                         results = db.searchSongs("title", keyword);
+                        if (songAdapterSongs != null) {
+                            songAdapterSongs.updateSongList(results);
+                            songAdapterSongs.notifyDataSetChanged();
+                        }
                         break;
 
-                    // Artist
+                    // Artists
                     case 1:
                         results = db.searchSongs("artist", keyword);
+                        if (songAdapterArtists != null) {
+                            songAdapterArtists.updateSongList(results);
+                            songAdapterArtists.notifyDataSetChanged();
+                        }
                         break;
 
-                    // Album
+                    // Albums
                     case 2:
                         results = db.searchSongs("album", keyword);
+                        if (songAdapterAlbums != null) {
+                            songAdapterAlbums.updateSongList(results);
+                            songAdapterAlbums.notifyDataSetChanged();
+                        }
                         break;
 
-                    // Genre
+                    // Genres
                     case 3:
                         results = db.searchSongs("genre", keyword);
+                        if (songAdapterGenres != null) {
+                            songAdapterGenres.updateSongList(results);
+                            songAdapterGenres.notifyDataSetChanged();
+                        }
                         break;
                 }
             }
@@ -1017,11 +1065,10 @@ public class NewReleases extends AppCompatActivity implements MediaPlayerControl
                         break;
                 }
                 results = db.searchSongsInCategory(category, categoryTitle, keyword);
-            }
-
-            if (songAdapter != null) {
-                songAdapter.updateSongList(results);
-                songAdapter.notifyDataSetChanged();
+                if (songAdapter != null) {
+                    songAdapter.updateSongList(results);
+                    songAdapter.notifyDataSetChanged();
+                }
             }
         }
     }
