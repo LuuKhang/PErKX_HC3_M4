@@ -40,12 +40,8 @@
             android:label="@string/title_activity_online_section"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".NewReleases"
+        <activity android:name=".NewReleasesRecommended"
             android:label="@string/title_activity_newreleases"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".RecommendedForYou"
-            android:label="@string/title_activity_recommended"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".Top100Songs"

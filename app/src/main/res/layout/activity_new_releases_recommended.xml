@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="hc3.m4.NewReleases">
+    tools:context="hc3.m4.NewReleasesRecommended">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -86,7 +86,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
-                android:text="Recommended For You"
+                android:text="New Releases"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:textSize="20dip"
@@ -201,29 +201,29 @@
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/selectall"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="Select All"
-                android:textColor="#040404"
-                android:typeface="sans"
-                android:textSize="20dip"
-                android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/selectall"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Select All"
+                    android:textColor="#040404"
+                    android:typeface="sans"
+                    android:textSize="20dip"
+                    android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/numberdownload"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:textAlignment="textEnd"
-                android:gravity="center_vertical"
-                android:text="0 songs selected for download"
-                android:textColor="#040404"
-                android:typeface="sans"
-                android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/numberdownload"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:textAlignment="textEnd"
+                    android:gravity="center_vertical"
+                    android:text="0 songs selected for download"
+                    android:textColor="#040404"
+                    android:typeface="sans"
+                    android:textStyle="bold"/>
         </LinearLayout>
 
         <android.support.v4.view.ViewPager
