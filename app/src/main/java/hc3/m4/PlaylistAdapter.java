@@ -42,12 +42,12 @@ public class PlaylistAdapter extends BaseAdapter {
     public int getCount() {
         switch (level) {
             case 0:
-                return playlistList.size()+1;
+                return playlistList.size();
             case 1:
                 if (songsInPlaylist != null)
-                    return songsInPlaylist.size()+3;
+                    return songsInPlaylist.size();
                 else
-                    return 3;
+                    return 0;
             default:
                 return 0;
         }
@@ -74,46 +74,41 @@ public class PlaylistAdapter extends BaseAdapter {
         switch (level) {
             // List showing all playlists
             case 0:
-                // First position is the "Create New Playlist" button
-                if (position == 0) {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.create_playlist_listview, null);
-                }
-                // Afterwards, lists all playlists
-                else {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
-                    title = (TextView) convertView.findViewById(R.id.title); // title
-                    title.setText(playlistList.get(position-1).getName());
-                }
+                // Lists all playlists
+                convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlist, null);
+                title = (TextView) convertView.findViewById(R.id.title); // title
+                title.setText(playlistList.get(position).getName());
+                convertView.setTag(position);
                 break;
 
             // Once clicked on a playlist, shows options and songs
             case 1:
                 // First item shown is name row
-                if (position == 0) {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlistname, null);
-                    title = (TextView) convertView.findViewById(R.id.title);
-                    title.setText(playlistName);
-                }
+//                if (position == 0) {
+//                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlistname, null);
+//                    title = (TextView) convertView.findViewById(R.id.title);
+//                    title.setText(playlistName);
+//                }
                 // Second, "Add Songs" button
-                else if (position == 1) {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_addsongs, null);
-                }
+//                else if (position == 1) {
+//                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_addsongs, null);
+//                }
                 // Third. "Shuffle All" button
-                else if (position == 2) {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
-                }
+//                else if (position == 2) {
+//                    convertView = LayoutInflater.from(context).inflate(R.layout.shuffleall_listview, null);
+//                }
                 // All other positions list the songs in the current playlist
-                else {
+//                else {
                     convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
-                    convertView.setTag(position - 3);
+                    convertView.setTag(position);
 
                     title = (TextView) convertView.findViewById(R.id.title); // title
                     artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                    title.setText(songsInPlaylist.get(position - 3).getTitle());
-                    artist.setText(songsInPlaylist.get(position - 3).getArtist());
-                }
+                    title.setText(songsInPlaylist.get(position).getTitle());
+                    artist.setText(songsInPlaylist.get(position).getArtist());
+//                }
                 break;
         }
         return convertView;

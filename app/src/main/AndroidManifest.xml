@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hc3.m4">
-    <uses-sdk android:minSdkVersion="15"/>
 
+    <uses-sdk android:minSdkVersion="15" />
     // Permission required to play music outside of current page
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +16,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         // Local library - our "main" page
         <activity
             android:name=".LocalLibrary"
@@ -22,34 +24,40 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        // Music service to play music, seperate from the pages so that it can keep playing while we switch
+        // Music service to play music, seperate from the pages so that it can keep playing while we
+        switch
         <service android:name=".MusicService" />
 
         <activity
             android:name=".PlayPage"
             android:label="@string/title_activity_play_page"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
-
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".OnlineSection"
             android:label="@string/title_activity_online_section"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".NewReleases"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".NewReleases"
             android:label="@string/title_activity_newreleases"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".RecommendedForYou"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".RecommendedForYou"
             android:label="@string/title_activity_recommended"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".Top100Songs"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Top100Songs"
             android:label="@string/title_activity_top100songs"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".AddSongs"
+            android:label="@string/title_activity_addsongs"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan"></activity>
     </application>

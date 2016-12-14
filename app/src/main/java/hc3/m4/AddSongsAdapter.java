@@ -6,32 +6,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
 
-import hc3.m4.DatabaseHandler;
-import hc3.m4.R;
-import hc3.m4.Song;
-
-public class SongAdapter extends BaseAdapter {
+public class AddSongsAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
-    private List<Song> data;
+    public List<Song> data;
     private int sectionNumber;
     private int level = 0;
     private String levelName;
+    public int totalSelected = 0;
 
-    public SongAdapter(Context context, int sectionNumber, List<Song> data) {
+    public AddSongsAdapter(Context context, int sectionNumber, List<Song> data) {
         this.context = context;
         this.data = data;
         this.sectionNumber = sectionNumber;
     }
 
-    public SongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
+    public AddSongsAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
         this.context = context;
         this.data = data;
         this.sectionNumber = sectionNumber;
@@ -39,9 +37,13 @@ public class SongAdapter extends BaseAdapter {
         this.levelName = name;
     }
 
-    // Function called to update the current list
-    public void updateSongList(List<Song> newSongs) {
-        this.data = newSongs;
+    public AddSongsAdapter(Context context, int sectionNumber, int level, List<Song> data, String name, int totalSelected) {
+        this.context = context;
+        this.data = data;
+        this.sectionNumber = sectionNumber;
+        this.level = level;
+        this.levelName = name;
+        this.totalSelected = totalSelected;
     }
 
     @Override
@@ -49,24 +51,25 @@ public class SongAdapter extends BaseAdapter {
         switch (level) {
             case 0:
                 switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                    case 1:
                     case 2:
-                        return data.size();
                     case 3:
                     case 4:
-                    case 5:
                         return data.size();
                     default:
                         return 0;
                 }
             case 1:
                 switch (sectionNumber) { // Switch case to populate list, depends on category of tab
+                    case 2:
                     case 3:
                     case 4:
-                    case 5:
                         return data.size();
                     default:
                         return 0;
                 }
+            case 2:
+                return data.size();
             default:
                 return 0;
         }
@@ -84,10 +87,6 @@ public class SongAdapter extends BaseAdapter {
         return position;
     }
 
-    public List<Song> getAll() {
-        return data;
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
@@ -98,21 +97,30 @@ public class SongAdapter extends BaseAdapter {
             case 0:
                 switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                     // song
-                    case 2:
-                        // song_listview: shows art, title, artist, and includes onClick()
-                        convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
-
-                        convertView.setTag(position);
+                    case 1:
+                        convertView = LayoutInflater.from(context).inflate(R.layout.listview_add_song_checkbox, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
                         title.setText(data.get(position).getTitle());
                         artist.setText(data.get(position).getArtist());
+
+                        CheckBox cb = (CheckBox) convertView.findViewById(R.id.addcheckbox);
+//                        cb.setChecked(true);
+                        cb.setTag(data.get(position));
+
+                        if (data.get(position).isSelected()) {
+                            cb.setChecked(true);
+//                            ImageButton downloadicon = (ImageButton) convertView.findViewById(R.id.download); // title
+//                            downloadicon.setVisibility(View.INVISIBLE);
+//                            TextView downloadCompleted = (TextView) convertView.findViewById(R.id.downloadcompleted);
+//                            downloadCompleted.setVisibility(View.VISIBLE);
+//                            downloadCompleted.setText("Downloaded");
+                        }
                         break;
                     // artist
-                    case 3:
-                        // artist_listview: shows image, title, and does not includes onClick()
+                    case 2:
                         convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
@@ -120,8 +128,7 @@ public class SongAdapter extends BaseAdapter {
                         title.setText(data.get(position).getArtist());
                         break;
                     // album
-                    case 4:
-                        // album_listview exact same as song_listview, but does not have the onClick()
+                    case 3:
                         convertView = LayoutInflater.from(context).inflate(R.layout.album_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
@@ -131,8 +138,7 @@ public class SongAdapter extends BaseAdapter {
                         artist.setText(data.get(position).getArtist());
                         break;
                     // genre
-                    case 5:
-                        // Genre very similar to artist, so reuse
+                    case 4:
                         convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
@@ -143,31 +149,35 @@ public class SongAdapter extends BaseAdapter {
                         break;
                 }
                 break;
-            case 1:
-                switch (sectionNumber) { // Switch case to populate list, depends on category of tab
-                    // artist, album, genre
-                    case 3:
-                    case 4:
-                    case 5:
-                        convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+            case 1: // for second view after selecting artist, album or genre
+                convertView = LayoutInflater.from(context).inflate(R.layout.listview_add_song_checkbox, null);
 
-                        convertView.setTag(position);
+                title = (TextView) convertView.findViewById(R.id.title); // title
+                artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                        title = (TextView) convertView.findViewById(R.id.title); // title
-                        artist = (TextView) convertView.findViewById(R.id.artist); // artist
+                title.setText(data.get(position).getTitle());
+                artist.setText(data.get(position).getArtist());
 
-                        title.setText(data.get(position).getTitle());
-                        artist.setText(data.get(position).getArtist());
-                        break;
-                    default:
-                        break;
+                CheckBox cb = (CheckBox) convertView.findViewById(R.id.addcheckbox);
+                cb.setTag(data.get(position));
+
+                if (data.get(position).isSelected()) {
+                    cb.setChecked(true);
                 }
+                break;
+            case 2: // for download songs
                 break;
             default:
                 break;
         }
 
-
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        //test
+        Log.d("TEST", "test");
+        return null;
     }
 }

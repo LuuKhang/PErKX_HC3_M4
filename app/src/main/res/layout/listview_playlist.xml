@@ -5,7 +5,7 @@
     android:background="@drawable/list_selector"
     android:orientation="horizontal"
     android:padding="5dip"
-    android:onClick="addSongsToPlaylist">
+    android:onClick="selectPlaylist" >
 
     <!--  ListRow Left side Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
@@ -13,14 +13,13 @@
         android:layout_height="wrap_content"
         android:padding="3dip"
         android:layout_alignParentLeft="true"
+        android:background="@drawable/image_bg"
         android:layout_marginRight="5dip">
 
         <ImageView
             android:id="@+id/list_image"
-            android:layout_width="25dip"
-            android:layout_height="25dip"
-            android:src="@drawable/add_circle"
-            android:background="@android:color/transparent"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
             />
 
     </LinearLayout>
@@ -32,21 +31,21 @@
         android:padding="5dip"
         android:layout_toRightOf="@+id/thumbnail"
         android:layout_centerVertical="true">
-        <!-- Title Of Song-->
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <!-- Title Of Song-->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
-            android:gravity="center"
-            android:text="Add Songs"
-            android:textColor="#040404"
-            android:typeface="sans"
-            android:textSize="20dip"
-            android:textStyle="bold"/>
+        android:gravity="center"
+        android:text="Playlist"
+        android:textColor="#040404"
+        android:typeface="sans"
+        android:textSize="20dip"
+        android:textStyle="bold"/>
 
-        <!-- Rightend Duration -->
-        <!--<TextView-->
+    <!-- Rightend Duration -->
+    <!--<TextView-->
         <!--android:id="@+id/duration"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
@@ -59,8 +58,8 @@
         <!--android:textColor="#10bcc9"-->
         <!--android:textStyle="bold"/>-->
 
-        <!--&lt;!&ndash; Rightend Arrow &ndash;&gt;-->
-        <!--<ImageView android:layout_width="wrap_content"-->
+    <!--&lt;!&ndash; Rightend Arrow &ndash;&gt;-->
+    <!--<ImageView android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:src="@drawable/arrow"-->
         <!--android:layout_alignParentRight="true"-->

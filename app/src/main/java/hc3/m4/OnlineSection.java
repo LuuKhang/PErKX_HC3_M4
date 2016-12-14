@@ -47,7 +47,7 @@ public class OnlineSection extends AppCompatActivity {
         btn_top100songs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(OnlineSection.this, NewReleases.class)); // Opens New Releases Page
+                startActivity(new Intent(OnlineSection.this, Top100Songs.class)); // Opens New Releases Page
             }
         });
         Button btn_recommended = (Button) findViewById(R.id.btn_recommended);

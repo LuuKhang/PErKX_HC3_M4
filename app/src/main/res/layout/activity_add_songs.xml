@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="hc3.m4.Top100Songs">
+    tools:context="hc3.m4.AddSongs">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -55,18 +55,7 @@
                 android:gravity="center"
                 android:src="@drawable/back"
                 android:background="@android:color/transparent"
-                android:onClick="backToOnlinePage"
-                />
-
-            <ImageButton
-                android:id="@+id/cancelbutton"
-                android:layout_height="fill_parent"
-                android:layout_width="wrap_content"
-                android:gravity="center"
-                android:src="@drawable/back"
-                android:background="@android:color/transparent"
-                android:onClick="cancelDownloadMultiple"
-                android:visibility="gone"
+                android:onClick="backToLocalPage"
                 />
 
             <ImageButton
@@ -86,7 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
-                android:text="Top 100 Songs"
+                android:text="New Releases"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:textSize="20dip"
@@ -100,28 +89,12 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="0.4"
                 android:gravity="center"
-                android:text="Download Multiple Songs"
+                android:text="Add Selected Songs"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/title"
-                android:onClick="downloadMultipleSongs"/>
-
-            <Button
-                android:id="@+id/downloadselected"
-                android:textAllCaps="false"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="0.4"
-                android:gravity="center"
-                android:text="Download Selected Songs"
-                android:textColor="#040404"
-                android:typeface="sans"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/title"
-                android:onClick="downloadSelectedSongs"
-                android:visibility="gone"
-                />
+                android:onClick="addSelectedSongs"/>
 
         </LinearLayout>
 
@@ -157,7 +130,7 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Select All"
+                android:text="Level 1 Name"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:textSize="20dip"
@@ -169,12 +142,12 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/header2"
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
+            android:layout_height="60dp"
             android:background="@drawable/list_selector"
             android:orientation="horizontal"
             android:paddingLeft="5dip"
             android:paddingRight="5dip"
-            android:layout_below="@+id/header"
+            android:layout_below="@+id/level1"
             >
 
             <RelativeLayout android:id="@+id/thumbnail"
@@ -220,7 +193,7 @@
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
                 android:gravity="center_vertical"
-                android:text="0 songs selected for download"
+                android:text="0 songs selected to add to"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:textStyle="bold"/>
