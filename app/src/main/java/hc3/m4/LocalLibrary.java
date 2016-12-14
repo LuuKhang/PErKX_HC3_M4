@@ -73,7 +73,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private static int currentPage = 0;
+    private static int currentPage = 1;
 
 
     // Music service, to play music in the background ---------------------------
