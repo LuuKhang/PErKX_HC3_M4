@@ -1,11 +1,14 @@
 <resources>
 
     <!-- Base application theme. -->
+    <style name="AppBaseTheme" parent="android:Theme.Light"></style>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_holo</item>
+        <item name="android:fastScrollOverlayPosition">atThumb</item>
+        <item name="android:fastScrollTextColor">@color/apptheme_color</item>
+        <item name="android:fastScrollTrackDrawable">@drawable/lettered_scrollbar</item>
+        <item name="android:fastScrollPreviewBackgroundRight">@drawable/fastscroll_thumb_default_holo</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -22,5 +25,6 @@
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
+
 
 </resources>

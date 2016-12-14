@@ -517,6 +517,16 @@ public class Top100Songs extends AppCompatActivity {
 
         }
 
+
+        // Attempts at scrollbar ----------------------------------------------------------------
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState) {
+            this.getListView().setFastScrollEnabled(true);
+            this.getListView().setFastScrollAlwaysVisible(true);
+        }
+        //--------------------------------------------------------------------------------------
+
+
         // Function called when a tab's list view item is clicked
         @Override
         public void onListItemClick(ListView listview, View view, int pos, long id) {

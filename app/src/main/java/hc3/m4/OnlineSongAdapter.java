@@ -11,11 +11,23 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
-public class OnlineSongAdapter extends BaseAdapter implements Filterable {
+public class OnlineSongAdapter extends BaseAdapter implements SectionIndexer {
+
+    // Attempts at scrollbar ---------
+    HashMap<String, Integer> mapIndex;
+    String[] sections;
+    //---------------------------------
 
     private Context context;
     public List<Song> data;
@@ -28,6 +40,32 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
         this.context = context;
         this.data = data;
         this.sectionNumber = sectionNumber;
+
+        // Attempts at scrollbar --------------------------------------------------------------------------------
+        mapIndex = new LinkedHashMap<String, Integer>();
+
+        for (int i = 0; i < data.size(); i++) {
+            String song = data.get(i).getTitle();
+            if (song==null || song.length() == 0) {
+                song = data.get(i).getArtist();
+                if (song==null || song.length() == 0) {
+                    song = data.get(i).getGenre();
+                }
+            }
+
+            String ch = song.substring(0, 1);
+            ch = ch.toUpperCase(Locale.US);
+            mapIndex.put(ch, i); // HashMap will prevent duplicates
+        }
+
+        Set<String> sectionLetters = mapIndex.keySet();
+        // create a list from the set to sort
+        ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+        Collections.sort(sectionList);
+        sections = new String[sectionList.size()];
+        sectionList.toArray(sections);
+        Log.d("sectionList", sectionList.toString());
+        //----------------------------------------------------------------------------------------------------
     }
 
     public OnlineSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
@@ -203,10 +241,19 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
         return convertView;
     }
 
-    @Override
-    public Filter getFilter() {
-        //test
-        Log.d("TEST", "test");
-        return null;
+    // Attempts at scrollbar --------------------------------------------------------------------------------
+    public int getPositionForSection(int section) {
+        Log.d("section", "" + section);
+        return mapIndex.get(sections[section]);
     }
+
+    public int getSectionForPosition(int position) {
+        Log.d("position", "" + position);
+        return 0;
+    }
+
+    public Object[] getSections() {
+        return sections;
+    }
+    //-------------------------------------------------------------------------------------------------------
 }

@@ -53,6 +53,7 @@ import android.widget.ViewSwitcher;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -89,7 +90,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     private TextView curArtist;
     private ToggleButton playPauseButton;
     // -------------------------------------------------------------------------
-
 
 
     public static String categoryTitle;
@@ -525,7 +525,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     // ----------------------------------------------------------------------------------------
 
 
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -683,6 +682,15 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             }
 
         }
+
+
+        // Attempts at scrollbar ----------------------------------------------------------------
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState) {
+            this.getListView().setFastScrollEnabled(true);
+            this.getListView().setFastScrollAlwaysVisible(true);
+        }
+        //--------------------------------------------------------------------------------------
 
         // Function called when a tab's list view item is clicked
         @Override

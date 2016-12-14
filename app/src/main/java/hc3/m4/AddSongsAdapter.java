@@ -10,11 +10,18 @@ import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
 
-public class AddSongsAdapter extends BaseAdapter implements Filterable {
+public class AddSongsAdapter extends BaseAdapter implements SectionIndexer {
+
+    // Attempts at scrollbar ---------
+    HashMap<String, Integer> mapIndex;
+    String[] sections;
+    //---------------------------------
 
     private Context context;
     public List<Song> data;
@@ -174,10 +181,20 @@ public class AddSongsAdapter extends BaseAdapter implements Filterable {
         return convertView;
     }
 
-    @Override
-    public Filter getFilter() {
-        //test
-        Log.d("TEST", "test");
-        return null;
+
+    // Attempts at scrollbar --------------------------------------------------------------------------------
+    public int getPositionForSection(int section) {
+        Log.d("section", "" + section);
+        return mapIndex.get(sections[section]);
     }
+
+    public int getSectionForPosition(int position) {
+        Log.d("position", "" + position);
+        return 0;
+    }
+
+    public Object[] getSections() {
+        return sections;
+    }
+    //-------------------------------------------------------------------------------------------------------
 }
