@@ -758,7 +758,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                             playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
                             if (playlistAdapter != null) setListAdapter(playlistAdapter);
 
-                            categoryTitle = playlistName;
+                            categoryTitle = playlistname;
                             level = 1;
                         }
 
