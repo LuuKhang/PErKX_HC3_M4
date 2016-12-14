@@ -131,6 +131,7 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
+        ImageView artwork;
 
         // Setting all values in listview
         switch (level) {
@@ -140,6 +141,10 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
                     case 2:
                         // song_listview: shows art, title, artist, and includes onClick()
                         convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                        // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                        artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                        artwork.setImageResource(R.drawable.cross);
 
                         convertView.setTag(position);
 
@@ -154,6 +159,10 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
                         // artist_listview: shows image, title, and does not includes onClick()
                         convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
 
+                        // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                        artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                        artwork.setImageResource(R.drawable.cross);
+
                         title = (TextView) convertView.findViewById(R.id.title); // title
 
                         title.setText(data.get(position).getArtist());
@@ -162,6 +171,10 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
                     case 4:
                         // album_listview exact same as song_listview, but does not have the onClick()
                         convertView = LayoutInflater.from(context).inflate(R.layout.album_listview, null);
+
+                        // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                        artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                        artwork.setImageResource(R.drawable.cross);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -173,6 +186,10 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
                     case 5:
                         // Genre very similar to artist, so reuse
                         convertView = LayoutInflater.from(context).inflate(R.layout.artist_listview, null);
+
+                        // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                        artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                        artwork.setImageResource(R.drawable.cross);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
 
@@ -189,6 +206,10 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
                     case 4:
                     case 5:
                         convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+
+                        // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                        artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                        artwork.setImageResource(R.drawable.cross);
 
                         convertView.setTag(position);
 

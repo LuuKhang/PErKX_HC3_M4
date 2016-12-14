@@ -32,6 +32,12 @@ public class MusicController_Simple extends Fragment {
                 else if (getContext() instanceof NewReleasesRecommended) {
                     ((NewReleasesRecommended)getActivity()).openPlayPage();
                 }
+                else if (getContext() instanceof OnlineSection) {
+                    ((OnlineSection)getActivity()).openPlayPage();
+                }
+                else if (getContext() instanceof Top100Songs) {
+                    ((Top100Songs)getActivity()).openPlayPage();
+                }
             }
         });
 
@@ -48,6 +54,14 @@ public class MusicController_Simple extends Fragment {
                 else if (getContext() instanceof NewReleasesRecommended) {
                     ((NewReleasesRecommended)getActivity()).playPrev();
                     ((NewReleasesRecommended)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof OnlineSection) {
+                    ((OnlineSection)getActivity()).playPrev();
+                    ((OnlineSection)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof Top100Songs) {
+                    ((Top100Songs)getActivity()).playPrev();
+                    ((Top100Songs)getActivity()).updateCurTrack(true);
                 }
             }
         });
@@ -66,6 +80,14 @@ public class MusicController_Simple extends Fragment {
                     ((NewReleasesRecommended)getActivity()).playNext();
                     ((NewReleasesRecommended)getActivity()).updateCurTrack(true);
                 }
+                else if (getContext() instanceof OnlineSection) {
+                    ((OnlineSection)getActivity()).playNext();
+                    ((OnlineSection)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof Top100Songs) {
+                    ((Top100Songs)getActivity()).playNext();
+                    ((Top100Songs)getActivity()).updateCurTrack(true);
+                }
             }
         });
 
@@ -82,6 +104,12 @@ public class MusicController_Simple extends Fragment {
                     else if (getContext() instanceof NewReleasesRecommended) {
                         ((NewReleasesRecommended)getActivity()).start();
                     }
+                    else if (getContext() instanceof OnlineSection) {
+                        ((OnlineSection)getActivity()).start();
+                    }
+                    else if (getContext() instanceof Top100Songs) {
+                        ((Top100Songs)getActivity()).start();
+                    }
                 }
                 else {
                     Log.d("Test", "Pause");
@@ -91,6 +119,12 @@ public class MusicController_Simple extends Fragment {
                     }
                     else if (getContext() instanceof NewReleasesRecommended) {
                         ((NewReleasesRecommended)getActivity()).pause();
+                    }
+                    else if (getContext() instanceof OnlineSection) {
+                        ((OnlineSection)getActivity()).pause();
+                    }
+                    else if (getContext() instanceof Top100Songs) {
+                        ((Top100Songs)getActivity()).pause();
                     }
                 }
             }

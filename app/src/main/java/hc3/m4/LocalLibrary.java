@@ -158,7 +158,11 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         btn_online.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LocalLibrary.this, OnlineSection.class)); // Opens Online Section
+                Intent mainOnlinePage = new Intent(LocalLibrary.this, OnlineSection.class);
+                mainOnlinePage.putExtra("playlistSize", songsToPlay.size());
+                mainOnlinePage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                mainOnlinePage.putExtra("playlistSongs", songsToPlay);
+                startActivity(mainOnlinePage); // Opens Play Page
             }
         });
 
@@ -169,6 +173,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
 
         // Music Controller set up --------------------------------------------
+        songsToPlay = (ArrayList<Song>) getIntent().getSerializableExtra("playlistSongs");
+
         curSongTitle = (TextView) findViewById(R.id.songTitle);
         curArtist = (TextView) findViewById(R.id.artistName);
         playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);

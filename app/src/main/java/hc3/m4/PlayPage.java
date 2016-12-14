@@ -67,19 +67,20 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Adds back button to top left of header bar
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent localLibrary = new Intent(PlayPage.this, LocalLibrary.class);
-                localLibrary.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
-                localLibrary.putExtra("playlistSongs", songsToPlay);
-                startActivity(localLibrary); // Opens Local Library
-
-                //finish(); // Functions similar to back button
-                // finish blows everything up... clearly I implemented the music player badly, but too late to fix... my bad
-            }
-        });
+        // for ref, we used this a temp back button
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent localLibrary = new Intent(PlayPage.this, LocalLibrary.class);
+//                localLibrary.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+//                localLibrary.putExtra("playlistSongs", songsToPlay);
+//                startActivity(localLibrary); // Opens Local Library
+//
+//                //finish(); // Functions similar to back button
+//                // finish blows everything up... clearly I implemented the music player badly, but too late to fix... my bad
+//            }
+//        });
 
 
 

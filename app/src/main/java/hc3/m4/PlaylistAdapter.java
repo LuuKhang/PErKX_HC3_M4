@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -124,11 +125,18 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
+        ImageView artwork;
+
         switch (level) {
             // List showing all playlists
             case 0:
                 // Lists all playlists
                 convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlist, null);
+
+                // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                artwork.setImageResource(R.drawable.cross);
+
                 title = (TextView) convertView.findViewById(R.id.title); // title
                 title.setText(playlistList.get(position).getName());
                 convertView.setTag(position);
@@ -137,15 +145,19 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
             // Once clicked on a playlist, shows options and songs
             case 1:
                 // First item shown is name row
-                    convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+                convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
 
-                    convertView.setTag(position);
+                // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                artwork.setImageResource(R.drawable.cross);
 
-                    title = (TextView) convertView.findViewById(R.id.title); // title
-                    artist = (TextView) convertView.findViewById(R.id.artist); // artist
+                convertView.setTag(position);
 
-                    title.setText(songsInPlaylist.get(position).getTitle());
-                    artist.setText(songsInPlaylist.get(position).getArtist());
+                title = (TextView) convertView.findViewById(R.id.title); // title
+                artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+                title.setText(songsInPlaylist.get(position).getTitle());
+                artist.setText(songsInPlaylist.get(position).getArtist());
 //                }
                 break;
         }

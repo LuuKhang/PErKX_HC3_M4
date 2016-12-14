@@ -1,6 +1,7 @@
 package hc3.m4;
 
 import android.content.Context;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -87,11 +89,16 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
         return position;
     }
 
+    public List<Song> getAll() {
+        return data;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
         TextView number;
+        ImageView artwork;
 
         // Setting all values in listview
         switch (level) {
@@ -100,6 +107,12 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
                     // song
                     case 1:
                         convertView = LayoutInflater.from(context).inflate(R.layout.listview_download_top_song, null);
+
+                        // place holder image, can be replaced with real image (lol, we're never gonna get to that)
+                        artwork = (ImageView) convertView.findViewById(R.id.list_image);
+                        artwork.setImageResource(R.drawable.cross);
+
+                        convertView.setTag(position);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist

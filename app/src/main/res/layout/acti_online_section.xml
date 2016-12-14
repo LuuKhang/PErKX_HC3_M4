@@ -27,15 +27,16 @@
         </android.support.design.widget.AppBarLayout>
 
         <!--local, online and play buttons-->
+
         <GridLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="50dp"
             android:columnCount="2"
-            android:rowCount="2"
+            android:rowCount="1"
+            android:id="@+id/gridLayout"
+            android:layout_marginBottom="100dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/gridLayout2">
+            android:layout_alignParentStart="true">
 
             <Button
                 android:text="Local"
@@ -43,7 +44,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_local"
                 android:layout_columnWeight="1"
-                android:layout_rowWeight="1" />
+                android:layout_rowWeight="1"
+                />
 
             <Button
                 android:text="Online"
@@ -51,15 +53,11 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_online"
                 android:layout_columnWeight="1"
-                android:layout_rowWeight="1"/>
+                android:layout_rowWeight="1"
+                android:textColor="@android:color/holo_red_dark"
+                android:clickable="false"
+                android:textStyle="normal|bold"/>
 
-            <Button
-                android:text="Play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btn_play"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1" />
         </GridLayout>
 
         <!--online buttons-->
@@ -68,7 +66,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_below="@+id/appbar"
-            android:layout_above="@+id/gridLayout2">
+            android:layout_above="@+id/gridLayout">
 
             <Button
                 android:text="New Releases"
@@ -95,5 +93,12 @@
                 android:layout_rowWeight="1" />
         </LinearLayout>
     </RelativeLayout>
+
+    <fragment
+        android:name="hc3.m4.MusicController_Simple"
+        tools:layout="@layout/frag_music_controller_simple"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/musicController" />
 
 </android.support.design.widget.CoordinatorLayout>

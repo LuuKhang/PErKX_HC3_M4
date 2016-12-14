@@ -156,14 +156,22 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
         btn_local.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(NewReleasesRecommended.this, LocalLibrary.class)); // Opens Online Section
+                Intent localLibrary = new Intent(NewReleasesRecommended.this, LocalLibrary.class);
+                localLibrary.putExtra("playlistSize", songsToPlay.size());
+                localLibrary.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                localLibrary.putExtra("playlistSongs", songsToPlay);
+                startActivity(localLibrary); // Opens Local Library
             }
         });
         Button btn_online = (Button) findViewById(R.id.btn_online);
         btn_online.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(NewReleasesRecommended.this, OnlineSection.class)); // Opens Online Section
+                Intent mainOnlinePage = new Intent(NewReleasesRecommended.this, OnlineSection.class);
+                mainOnlinePage.putExtra("playlistSize", songsToPlay.size());
+                mainOnlinePage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+                mainOnlinePage.putExtra("playlistSongs", songsToPlay);
+                startActivity(mainOnlinePage); // Opens Online Section
             }
         });
 
@@ -174,6 +182,8 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
 
 
         // Music Controller set up --------------------------------------------
+        songsToPlay = (ArrayList<Song>) getIntent().getSerializableExtra("playlistSongs");
+
         curSongTitle = (TextView) findViewById(R.id.songTitle);
         curArtist = (TextView) findViewById(R.id.artistName);
         playPauseButton = (ToggleButton) findViewById(R.id.playPauseButton);
@@ -427,7 +437,11 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
 
     // go back to online page from new releases page
     public void backToOnlinePage(View view) {
-        startActivity(new Intent(NewReleasesRecommended.this, OnlineSection.class));
+        Intent mainOnlinePage = new Intent(NewReleasesRecommended.this, OnlineSection.class);
+        mainOnlinePage.putExtra("playlistSize", songsToPlay.size());
+        mainOnlinePage.putExtra("currentTrackNumber", musicService.getCurrentTrackNumber());
+        mainOnlinePage.putExtra("playlistSongs", songsToPlay);
+        startActivity(mainOnlinePage); // Opens Online Section
     }
 
     // download single song

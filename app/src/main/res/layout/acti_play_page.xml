@@ -43,17 +43,18 @@
 
         <include layout="@layout/content_play_page" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            app:srcCompat="@android:drawable/ic_dialog_email"
-            android:layout_marginLeft="@dimen/fab_margin"
-            android:layout_marginRight="@dimen/fab_margin"
-            android:layout_below="@+id/pager_container"
-            android:layout_alignParentEnd="true"
-            />
+        <!--for ref, we used this a temp back button-->
+        <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/fab"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|end"-->
+            <!--app:srcCompat="@android:drawable/ic_dialog_email"-->
+            <!--android:layout_marginLeft="@dimen/fab_margin"-->
+            <!--android:layout_marginRight="@dimen/fab_margin"-->
+            <!--android:layout_below="@+id/pager_container"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--/>-->
 
     </RelativeLayout>
 
