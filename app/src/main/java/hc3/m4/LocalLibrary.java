@@ -65,7 +65,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private int currentPage = 0;
+    private static int currentPage = 0;
 
 
     // Music service, to play music in the background ---------------------------
@@ -83,7 +83,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     // -------------------------------------------------------------------------
 
 
-    public static int currentFilter;
+
+    public static String categoryTitle;
 
     // To keep track of the data in each list so that search can modify it
     static SongAdapter songAdapterSongs;
@@ -93,6 +94,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
     static SongAdapter songAdapter; // General list for detailed inner lists (ex. selecting an artist)
 
     static PlaylistAdapter playlistAdapter;
+
 
 
     @Override
@@ -117,8 +119,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             // This method will be invoked when a new page becomes selected.
             @Override
             public void onPageSelected(int position) {
-                currentFilter = position;
-
                 SongList fragment = (SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
                 if (fragment != null) {
                     fragment.update();
@@ -203,7 +203,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         // Sets all the shown songs in the music player
         songsToPlay = new ArrayList<Song>();
         currentTrack = Integer.parseInt(view.getTag().toString());
-        switch (currentFilter) {
+        switch (currentPage) {
             case 0:
                 if (playlistAdapter != null) {
                     songsToPlay.addAll(playlistAdapter.getAllSongs());
@@ -546,6 +546,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                             List<Song> playlistSongs = db.getAllSongsInPlaylist(pos-1);
                             playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistName);
                             if (playlistAdapter != null) setListAdapter(playlistAdapter);
+
+                            categoryTitle = playlistName;
                             level = 1;
                         }
 
@@ -571,6 +573,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         // create and set adapter
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, artistSongList, artist);
                         if (songAdapter != null) setListAdapter(songAdapter);
+
+                        categoryTitle = artist;
                         level = 1;
                     }
                     // Songs inside an artist category
@@ -590,6 +594,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         // create and set adapter
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, albumSongList, album);
                         if (songAdapter != null) setListAdapter(songAdapter);
+
+                        categoryTitle = album;
                         level = 1;
                     }
                     // Songs inside an album category
@@ -608,6 +614,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         // create and set adapter
                         songAdapter = new SongAdapter(view.getContext(), sectionNumber, 1, genreSongList, genre);
                         if (songAdapter != null) setListAdapter(songAdapter);
+
+                        categoryTitle = genre;
                         level = 1;
                     }
                     // Songs inside an genre category
@@ -637,7 +645,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 @Override
                 public boolean onQueryTextChange(String searchQuery) {
                     SongList fragment = (SongList) getFragmentManager().findFragmentById(R.id.container);
-                    fragment.search(currentFilter, searchQuery);
+                    fragment.search(currentPage, searchQuery);
                     return true;
                 }
             });
@@ -647,60 +655,85 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
 
         // Search function called when typing in the search bar (magnifying glass)
-        // Note, currently does not work for playlists and detailed lists
+        // wow i use switch cases a lot, our software profs would murder me
         public void search(int sectionNumber, String keyword) {
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
             List<Song> results;
 
             // Query and adapter differs for each section
-            switch (sectionNumber) {
-                // Playlists
-                case 0:
-                    List<Playlist> playlistResults = db.searchPlaylists(keyword);
-                    if (playlistAdapter != null) {
-                        playlistAdapter.updatePlaylistList(playlistResults);
-                        playlistAdapter.notifyDataSetChanged();
-                    }
-                    break;
+            if (level == 0) {
+                switch (sectionNumber) {
+                    // Playlists
+                    case 0:
+                        List<Playlist> playlistResults = db.searchPlaylists(keyword);
+                        if (playlistAdapter != null) {
+                            playlistAdapter.updatePlaylistList(playlistResults);
+                            playlistAdapter.notifyDataSetChanged();
+                        }
+                        break;
 
-                // Songs
-                case 1:
-                    results = db.searchSongs("title", keyword);
-                    if (songAdapterSongs != null) {
-                        songAdapterSongs.updateSongList(results);
-                        songAdapterSongs.notifyDataSetChanged();
-                    }
-                    break;
+                    // Songs
+                    case 1:
+                        results = db.searchSongs("title", keyword);
+                        if (songAdapterSongs != null) {
+                            songAdapterSongs.updateSongList(results);
+                            songAdapterSongs.notifyDataSetChanged();
+                        }
+                        break;
 
-                // Artists
-                case 2:
-                    results = db.searchSongs("artist", keyword);
-                    if (songAdapterArtists != null) {
-                        songAdapterArtists.updateSongList(results);
-                        songAdapterArtists.notifyDataSetChanged();
-                    }
-                    break;
+                    // Artists
+                    case 2:
+                        results = db.searchSongs("artist", keyword);
+                        if (songAdapterArtists != null) {
+                            songAdapterArtists.updateSongList(results);
+                            songAdapterArtists.notifyDataSetChanged();
+                        }
+                        break;
 
-                // Albums
-                case 3:
-                    results = db.searchSongs("album", keyword);
-                    if (songAdapterAlbums != null) {
-                        songAdapterAlbums.updateSongList(results);
-                        songAdapterAlbums.notifyDataSetChanged();
-                    }
-                    break;
+                    // Albums
+                    case 3:
+                        results = db.searchSongs("album", keyword);
+                        if (songAdapterAlbums != null) {
+                            songAdapterAlbums.updateSongList(results);
+                            songAdapterAlbums.notifyDataSetChanged();
+                        }
+                        break;
 
-                // Genres
-                case 4:
-                    results = db.searchSongs("genre", keyword);
-                    if (songAdapterGenres != null) {
-                        songAdapterGenres.updateSongList(results);
-                        songAdapterGenres.notifyDataSetChanged();
-                    }
-                    break;
+                    // Genres
+                    case 4:
+                        results = db.searchSongs("genre", keyword);
+                        if (songAdapterGenres != null) {
+                            songAdapterGenres.updateSongList(results);
+                            songAdapterGenres.notifyDataSetChanged();
+                        }
+                        break;
+                }
             }
-
-            level = 0;
+            else if (level == 1) {
+                String category = "";
+                switch (sectionNumber) {
+                    case 0:
+                        category = "playlist";
+                        results = db.searchSongsInCategory(category, categoryTitle, keyword);
+                        playlistAdapter.updateSongsList(results);
+                        playlistAdapter.notifyDataSetChanged();
+                        break;
+                    case 2:
+                        category = "artist";
+                        break;
+                    case 3:
+                        category = "album";
+                        break;
+                    case 4:
+                        category = "genre";
+                        break;
+                }
+                results = db.searchSongsInCategory(category, categoryTitle, keyword);
+                if (songAdapter != null) {
+                    songAdapter.updateSongList(results);
+                    songAdapter.notifyDataSetChanged();
+                }
+            }
         }
     }
 }

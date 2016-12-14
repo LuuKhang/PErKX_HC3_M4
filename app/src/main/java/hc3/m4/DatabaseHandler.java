@@ -133,7 +133,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.addSong(new Song("Party Monster", "The Weekend","Starboy", "SongPic", "Rock", 1));
         this.addSong(new Song("Better Off Now", "The Katherines","Better Off Now", "SongPic", "Electronic", 0));
         this.addSong(new Song("Distance Future", "Sleepy Tom","Distance Future", "SongPic", "Blues", 1));
-        this.addSong(new Song("No Lies", "Sean Paul","No Lie", "SongPic", "Popular", 1));
+        this.addSong(new Song("Buried Alive", "Avenged Sevenfold","Nightmare", "SongPic", "Metal", 1));
+        this.addSong(new Song("God Hates Us", "Avenged Sevenfold","Nightmare", "SongPic", "Metal", 1));
+        this.addSong(new Song("Welcome to the Family", "Avenged Sevenfold","Nightmare", "SongPic", "Metal", 1));
+        this.addSong(new Song("Nightmare", "Avenged Sevenfold","Nightmare", "SongPic", "Metal", 1));
 
         this.addPlaylist("Hard coded heavy");
         this.addPlaylist("Workout set");
@@ -606,6 +609,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE " + category + " like \"%" + keyword + "%\"" +
                 " GROUP BY " + category + " ORDER BY LOWER(" + category +")";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setTitle(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setAlbum(cursor.getString(3));
+                song.setArt(cursor.getString(4));
+                song.setGenre(cursor.getString(5));
+                // Adding song to list
+                songList.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return song list
+        return songList;
+    }
+    public List<Song> searchSongsInCategory (String category, String categoryKey, String keyword) {
+        List<Song> songList = new ArrayList<Song>();
+        // Select All Query
+        String selectQuery = "";
+        if (category == "playlist") {
+            //selectQuery =
+                    //"SELECT * FROM " + TABLE_SONGS + " a, " + TABLE_PLAYLISTS_SONGS + " b, " + TABLE_PLAYLISTS + " c" +
+                    //" WHERE a." + KEY_TITLE + " like \"%" + keyword + "%\" AND c." + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\" AND a." + KEY_ID + "=b." + KEY_SONG_ID + " AND c." + KEY_ID + "=b." + KEY_PLAYLIST_ID;
+                    //" WHERE a." + KEY_TITLE + " like \"%" + keyword + "%\" AND c." + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\" AND a." + KEY_ID + "=b." + KEY_SONG_ID + " AND c." + KEY_ID + "=b." + KEY_PLAYLIST_ID;
+
+            // lol, look at my shit query that does like 3 select statements
+
+            // shit... none of these work... i'll be back i guess
+            selectQuery =
+            "SELECT * FROM "+TABLE_SONGS+" WHERE "+KEY_TITLE+"=\"%"+keyword+"%\" AND "+KEY_ID+" IN " +
+            "(SELECT " + KEY_SONG_ID + " FROM " + TABLE_PLAYLISTS_SONGS + " WHERE " + KEY_PLAYLIST_ID + " = " +
+            "(SELECT " + KEY_ID + " FROM " + TABLE_PLAYLISTS + " WHERE " + KEY_PLAYLIST_NAME + "=\"" + categoryKey + "\") )";
+        }
+        else {
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS + " WHERE " + KEY_TITLE + " like \"%" + keyword + "%\" AND " + category + "=\"" + categoryKey + "\" ORDER BY LOWER (" + KEY_TITLE + ")";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

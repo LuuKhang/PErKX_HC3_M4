@@ -34,6 +34,9 @@ public class PlaylistAdapter extends BaseAdapter {
     public void updatePlaylistList(List<Playlist> newPlaylists) {
         this.playlistList = newPlaylists;
     }
+    public void updateSongsList(List<Song> newSongs) {
+        this.songsInPlaylist = newSongs;
+    }
 
     @Override
     public int getCount() {

@@ -47,6 +47,11 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
         this.totalSelected = totalSelected;
     }
 
+    // Function called to update the current list
+    public void updateSongList(List<Song> newSongs) {
+        this.data = newSongs;
+    }
+
     @Override
     public int getCount() {
         switch (level) {
@@ -77,6 +82,9 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
 
     }
 
+    public List<Song> getAll() {
+        return data;
+    }
 
     @Override
     public Object getItem(int position) {
@@ -100,6 +108,8 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
                     // song
                     case 1:
                         convertView = LayoutInflater.from(context).inflate(R.layout.listview_download_song, null);
+
+                        convertView.setTag(position);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -125,7 +135,7 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
                         break;
                     // album
                     case 3:
-                        convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+                        convertView = LayoutInflater.from(context).inflate(R.layout.album_listview, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -147,6 +157,8 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
                 break;
             case 1: // for second view after selecting artist, album or genre
                 convertView = LayoutInflater.from(context).inflate(R.layout.listview_download_song, null);
+
+                convertView.setTag(position);
 
                 title = (TextView) convertView.findViewById(R.id.title); // title
                 artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -170,6 +182,8 @@ public class OnlineSongAdapter extends BaseAdapter implements Filterable {
                 CheckBox downloadcheckbox = (CheckBox) convertView.findViewById(R.id.downloadcheckbox); // download checkbox
 
                 downloadcheckbox.setTag(data.get(position));
+
+                convertView.setTag(position);
 
                 title.setText(data.get(position).getTitle());
                 artist.setText(data.get(position).getArtist());

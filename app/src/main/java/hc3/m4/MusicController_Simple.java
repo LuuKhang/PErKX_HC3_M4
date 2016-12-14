@@ -25,7 +25,16 @@ public class MusicController_Simple extends Fragment {
             public void onClick(View view) {
                 Log.d("Test", "Open play page");
 
-                ((LocalLibrary)getActivity()).openPlayPage();
+
+                if (getContext() instanceof LocalLibrary) {
+                    ((LocalLibrary)getActivity()).openPlayPage();
+                }
+                else if (getContext() instanceof NewReleases) {
+                    ((NewReleases)getActivity()).openPlayPage();
+                }
+                else if (getContext() instanceof RecommendedForYou) {
+
+                }
             }
         });
 
@@ -35,8 +44,17 @@ public class MusicController_Simple extends Fragment {
             public void onClick(View view) {
                 Log.d("Test", "Previous");
 
-                ((LocalLibrary)getActivity()).playPrev();
-                ((LocalLibrary)getActivity()).updateCurTrack(true);
+                if (getContext() instanceof LocalLibrary) {
+                    ((LocalLibrary)getActivity()).playPrev();
+                    ((LocalLibrary)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof NewReleases) {
+                    ((NewReleases)getActivity()).playPrev();
+                    ((NewReleases)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof RecommendedForYou) {
+
+                }
             }
         });
 
@@ -46,8 +64,17 @@ public class MusicController_Simple extends Fragment {
             public void onClick(View view) {
                 Log.d("Test", "Next");
 
-                ((LocalLibrary)getActivity()).playNext();
-                ((LocalLibrary)getActivity()).updateCurTrack(true);
+                if (getContext() instanceof LocalLibrary) {
+                    ((LocalLibrary)getActivity()).playNext();
+                    ((LocalLibrary)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof NewReleases) {
+                    ((NewReleases)getActivity()).playNext();
+                    ((NewReleases)getActivity()).updateCurTrack(true);
+                }
+                else if (getContext() instanceof RecommendedForYou) {
+
+                }
             }
         });
 
@@ -58,12 +85,28 @@ public class MusicController_Simple extends Fragment {
                 if (playPauseButton.isChecked()){
                     Log.d("Test", "Play");
 
-                    ((LocalLibrary)getActivity()).start();
+                    if (getContext() instanceof LocalLibrary) {
+                        ((LocalLibrary)getActivity()).start();
+                    }
+                    else if (getContext() instanceof NewReleases) {
+                        ((NewReleases)getActivity()).start();
+                    }
+                    else if (getContext() instanceof RecommendedForYou) {
+
+                    }
                 }
                 else {
                     Log.d("Test", "Pause");
 
-                    ((LocalLibrary)getActivity()).pause();
+                    if (getContext() instanceof LocalLibrary) {
+                        ((LocalLibrary)getActivity()).pause();
+                    }
+                    else if (getContext() instanceof NewReleases) {
+                        ((NewReleases)getActivity()).pause();
+                    }
+                    else if (getContext() instanceof RecommendedForYou) {
+
+                    }
                 }
             }
         });
