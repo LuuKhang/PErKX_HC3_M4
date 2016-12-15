@@ -63,7 +63,7 @@
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
                 android:gravity="center"
-                android:src="@drawable/back"
+                android:src="@drawable/cancel"
                 android:background="@android:color/transparent"
                 android:onClick="cancelDownloadMultiple"
                 android:visibility="gone"
@@ -254,7 +254,7 @@
 
         </RelativeLayout>
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:columnCount="2"
@@ -262,15 +262,15 @@
             android:id="@+id/gridLayout"
             android:layout_marginBottom="100dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            >
 
             <Button
                 android:text="Local"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_local"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
+                android:layout_weight="1"
                 />
 
             <Button
@@ -278,13 +278,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_online"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
                 android:textColor="@android:color/holo_red_dark"
                 android:clickable="false"
-                android:textStyle="normal|bold"/>
+                android:textStyle="normal|bold"
+                android:layout_weight="1"
+                />
 
-        </GridLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 

@@ -13,13 +13,13 @@
         android:layout_height="wrap_content"
         android:padding="3dip"
         android:layout_alignParentLeft="true"
-        android:background="@drawable/image_bg"
         android:layout_marginRight="5dip">
 
         <ImageView
             android:id="@+id/list_image"
             android:layout_width="25dip"
             android:layout_height="25dip"
+            android:src="@drawable/shuffle_icon_on"
             />
 
     </LinearLayout>

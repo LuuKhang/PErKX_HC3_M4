@@ -414,6 +414,10 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
             fragment.update();
         }
 
+        LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
+        OnlineSongAdapter song = (OnlineSongAdapter) fragment.getListAdapter();
+        song.displayIndex(indexLayout);
+
         Button downloadMultiple = (Button) findViewById(R.id.downloadmultiple);
         if (currentPage == 0) {
             downloadMultiple.setVisibility(View.VISIBLE);
@@ -789,7 +793,7 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
                     List<Song> songs = db.getAllSongs(0);
-                    songAdapterSongs = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
+                    songAdapter = new OnlineSongAdapter(inflater.getContext(), sectionNumber, songs);
                     // Setting the list adapter for the ListFragment
                     setListAdapter(songAdapter);
                     level = 0;
@@ -820,6 +824,10 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
                     level = 1;
                     break;
             }
+
+            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+            OnlineSongAdapter song = (OnlineSongAdapter) getListAdapter();
+            song.displayIndex(indexLayout);
 
         }
 
@@ -872,6 +880,9 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
                     level = 2;
                     break;
             }
+            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+            OnlineSongAdapter song = (OnlineSongAdapter) getListAdapter();
+            song.displayIndex(indexLayout);
 
         }
 
@@ -1020,6 +1031,9 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
                     }
                     break;
             }
+            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+            OnlineSongAdapter song = (OnlineSongAdapter) getListAdapter();
+            song.displayIndex(indexLayout);
         }
 
         @Override

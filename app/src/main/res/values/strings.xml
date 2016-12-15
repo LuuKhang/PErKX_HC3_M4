@@ -10,5 +10,6 @@
     <string name="title_activity_addsongs">Add Songs</string>
     <string name="title_activity_deletepage">Delete Songs</string>
     <string name="title_activity_deleteplaylistpage">Delete Playlists</string>
+    <string name="title_activity_deleteplaylistsongpage">Delete Playlist Songs</string>
 
 </resources>

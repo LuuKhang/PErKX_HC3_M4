@@ -724,6 +724,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Deleting single contact
+    public void deletePlaylistSong(Song song) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String[] args = new String[] { String.valueOf(song.getID()) };
+
+        db.delete(TABLE_PLAYLISTS_SONGS, KEY_SONG_ID + " = ?", args);
+        db.close();
+    }
+
 
 
     // Getting contacts Count

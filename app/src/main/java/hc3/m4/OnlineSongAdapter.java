@@ -41,24 +41,55 @@ public class OnlineSongAdapter extends BaseAdapter implements SectionIndexer {
         this.context = context;
         this.data = data;
         this.sectionNumber = sectionNumber;
+        level = 0;
+        getHashMap();
+    }
 
+    public OnlineSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
+        this.context = context;
+        this.data = data;
+        this.sectionNumber = sectionNumber;
+        this.level = level;
+        this.levelName = name;
+        getHashMap();
+    }
+
+    public OnlineSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name, int totalSelected) {
+        this.context = context;
+        this.data = data;
+        this.sectionNumber = sectionNumber;
+        this.level = level;
+        this.levelName = name;
+        this.totalSelected = totalSelected;
+        getHashMap();
+    }
+
+    public void getHashMap() {
         // Attempts at scrollbar --------------------------------------------------------------------------------
         mapIndex = new LinkedHashMap<String, Integer>();
 
         String song = "";
         for (int i = 0; i < data.size(); i++) {
-            switch (sectionNumber) {
+            switch (level) {
+                case 0:
+                case 2:
+                    switch (sectionNumber) {
+                        case 1:
+                            song = data.get(i).getTitle();
+                            break;
+                        case 2:
+                            song = data.get(i).getArtist();
+                            break;
+                        case 3:
+                            song = data.get(i).getAlbum();
+                            break;
+                        case 4:
+                            song = data.get(i).getGenre();
+                            break;
+                    }
+                    break;
                 case 1:
                     song = data.get(i).getTitle();
-                    break;
-                case 2:
-                    song = data.get(i).getArtist();
-                    break;
-                case 3:
-                    song = data.get(i).getAlbum();
-                    break;
-                case 4:
-                    song = data.get(i).getGenre();
                     break;
             }
 
@@ -78,23 +109,6 @@ public class OnlineSongAdapter extends BaseAdapter implements SectionIndexer {
         sectionList.toArray(sections);
         Log.d("sectionList", sectionList.toString());
         //----------------------------------------------------------------------------------------------------
-    }
-
-    public OnlineSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
-        this.context = context;
-        this.data = data;
-        this.sectionNumber = sectionNumber;
-        this.level = level;
-        this.levelName = name;
-    }
-
-    public OnlineSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name, int totalSelected) {
-        this.context = context;
-        this.data = data;
-        this.sectionNumber = sectionNumber;
-        this.level = level;
-        this.levelName = name;
-        this.totalSelected = totalSelected;
     }
 
     // Function called to update the current list
@@ -277,6 +291,7 @@ public class OnlineSongAdapter extends BaseAdapter implements SectionIndexer {
     // Attempts at scrollbar --------------------------------------------------------------------------------
     public int getPositionForSection(int section) {
         Log.d("section", "" + section);
+        Log.d("sectionsize", "" + sections.length);
         return mapIndex.get(sections[section]);
     }
 

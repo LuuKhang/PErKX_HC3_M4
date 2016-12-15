@@ -7,11 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class DeleteAdapter extends BaseAdapter implements SectionIndexer {
 
@@ -31,6 +37,7 @@ public class DeleteAdapter extends BaseAdapter implements SectionIndexer {
         this.context = context;
         this.data = data;
         this.sectionNumber = sectionNumber;
+        getHashMap();
     }
 
     public DeleteAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
@@ -39,6 +46,7 @@ public class DeleteAdapter extends BaseAdapter implements SectionIndexer {
         this.sectionNumber = sectionNumber;
         this.level = level;
         this.levelName = name;
+        getHashMap();
     }
 
     public DeleteAdapter(Context context, int sectionNumber, int level, List<Song> data, String name, int totalSelected) {
@@ -48,6 +56,53 @@ public class DeleteAdapter extends BaseAdapter implements SectionIndexer {
         this.level = level;
         this.levelName = name;
         this.totalSelected = totalSelected;
+        getHashMap();
+    }
+
+    public void getHashMap() {
+        // Attempts at scrollbar --------------------------------------------------------------------------------
+        mapIndex = new LinkedHashMap<String, Integer>();
+
+        String song = "";
+        for (int i = 0; i < data.size(); i++) {
+            switch (level) {
+                case 0:
+                    switch (sectionNumber) {
+                        case 1:
+                            song = data.get(i).getTitle();
+                            break;
+                        case 2:
+                            song = data.get(i).getArtist();
+                            break;
+                        case 3:
+                            song = data.get(i).getAlbum();
+                            break;
+                        case 4:
+                            song = data.get(i).getGenre();
+                            break;
+                    }
+                    break;
+                case 1:
+                    song = data.get(i).getTitle();
+                    break;
+            }
+
+            String ch = song.substring(0, 1);
+            ch = ch.toUpperCase(Locale.US);
+            if (!mapIndex.containsKey(ch)) {
+                mapIndex.put(ch, i); // HashMap will prevent duplicates
+            } else {
+            }
+        }
+
+        Set<String> sectionLetters = mapIndex.keySet();
+        // create a list from the set to sort
+        ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+        Collections.sort(sectionList);
+        sections = new String[sectionList.size()];
+        sectionList.toArray(sections);
+        Log.d("sectionList", sectionList.toString());
+        //----------------------------------------------------------------------------------------------------
     }
 
     @Override
@@ -102,7 +157,7 @@ public class DeleteAdapter extends BaseAdapter implements SectionIndexer {
                 switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                     // song
                     case 1:
-                        convertView = LayoutInflater.from(context).inflate(R.layout.listview_add_song_checkbox, null);
+                        convertView = LayoutInflater.from(context).inflate(R.layout.listview_delete_song_checkbox, null);
 
                         title = (TextView) convertView.findViewById(R.id.title); // title
                         artist = (TextView) convertView.findViewById(R.id.artist); // artist
@@ -192,6 +247,22 @@ public class DeleteAdapter extends BaseAdapter implements SectionIndexer {
 
     public Object[] getSections() {
         return sections;
+    }
+
+    public void displayIndex(LinearLayout indexLayout) {
+
+        indexLayout.removeAllViews();
+
+        TextView textView;
+        List<String> indexList = new ArrayList<String>(mapIndex.keySet());
+        for (String index : indexList) {
+            textView = (TextView) LayoutInflater.from(context).inflate(
+                    R.layout.scroll_item, null);
+            textView.setText(index);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
+//                textView.setOnClickListener(this);
+            indexLayout.addView(textView);
+        }
     }
     //-------------------------------------------------------------------------------------------------------
 }

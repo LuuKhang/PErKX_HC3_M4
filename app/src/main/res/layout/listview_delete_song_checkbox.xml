@@ -5,7 +5,7 @@
     android:background="@drawable/list_selector"
     android:orientation="horizontal"
     android:padding="5dip"
-    android:onClick="songSelected" android:tag="0">
+    android:onClick="checkSelectedSong">
     <!--clicking on a song plays music (might need to be revised)-->
 
     <!--  ListRow Left side Thumbnail image -->
@@ -14,8 +14,16 @@
         android:layout_height="wrap_content"
         android:padding="3dip"
         android:layout_alignParentLeft="true"
-        android:background="@drawable/image_bg"
         android:layout_marginRight="5dip">
+
+        <CheckBox
+            android:id="@+id/addcheckbox"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:button="@null"
+            android:background="@drawable/delete_check"
+            android:onClick="updateSelectedNumber"
+            />
 
         <ImageView
             android:id="@+id/list_image"
@@ -27,7 +35,7 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_weight="1"
         android:orientation="horizontal"
         android:padding="5dip"
@@ -38,8 +46,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:gravity="center_vertical"
+            android:textAlignment="textStart"
             android:text="Song"
             android:textColor="#040404"
             android:typeface="sans"
@@ -52,6 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/title"
+            android:textAlignment="textStart"
             android:textColor="#343434"
             android:textSize="15dip"
             android:layout_marginTop="1dip"
@@ -62,31 +70,18 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="0.4"
-        android:layout_marginRight="50dp"
+        android:layout_weight="0.2"
         android:orientation="horizontal"
         android:padding="5dip">
 
-        <ImageButton
-            android:id="@+id/download"
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:src="@drawable/download"
-            android:background="@android:color/transparent"
-            android:layout_alignParentRight="true"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:onClick="downloadSong"
-            />
-
         <TextView
-            android:id="@+id/downloadcompleted"
-            android:text="Download Completed"
-            android:layout_width="match_parent"
+            android:id="@+id/numSongs"
+            android:text=""
+            android:layout_width="fill_parent"
             android:layout_height="50dp"
-            android:textAlignment="viewEnd"
-            android:visibility="invisible"
+            android:gravity="center"
             />
 
     </RelativeLayout>
+
 </LinearLayout>

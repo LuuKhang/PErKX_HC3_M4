@@ -40,7 +40,7 @@ public class DeletePage extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private int currentPage = 0;
+    public static int currentPage = 0;
 
     public static String playlistName;
     public static List<Song> songslist;
@@ -100,6 +100,9 @@ public class DeletePage extends AppCompatActivity {
                     LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
                     linearLayout.getLayoutParams().height = px;
                 }
+                LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
+                DeleteAdapter song = (DeleteAdapter) fragment.getListAdapter();
+                song.displayIndex(indexLayout);
 
                 // enable cancel button
                 ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
@@ -181,6 +184,10 @@ public class DeletePage extends AppCompatActivity {
         if (fragment != null) {
             fragment.update();
         }
+
+        LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
+        DeleteAdapter song = (DeleteAdapter) fragment.getListAdapter();
+        song.displayIndex(indexLayout);
 
         // disable level1 row
         int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
@@ -374,6 +381,15 @@ public class DeletePage extends AppCompatActivity {
             this.inflater = inflater;
             update();
 
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            if (sectionNumber == currentPage+1){
+                LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                DeleteAdapter song = (DeleteAdapter) getListAdapter();
+                song.displayIndex(indexLayout);
+            } else {
+
+            }
+
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
@@ -429,6 +445,14 @@ public class DeletePage extends AppCompatActivity {
             }
 
         }
+
+        // Attempts at scrollbar ----------------------------------------------------------------
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState) {
+            this.getListView().setFastScrollEnabled(true);
+            this.getListView().setFastScrollAlwaysVisible(true);
+        }
+        //--------------------------------------------------------------------------------------
 
 
         // Function called when a tab's list view item is clicked
@@ -546,6 +570,10 @@ public class DeletePage extends AppCompatActivity {
                     }
                     break;
             }
+
+            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+            DeleteAdapter song = (DeleteAdapter) getListAdapter();
+            song.displayIndex(indexLayout);
         }
 
         @Override

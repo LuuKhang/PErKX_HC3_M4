@@ -316,23 +316,37 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 
     public void deleteSongs(View view) {
         if (currentPage == 0) {
-            startActivity(new Intent(LocalLibrary.this, DeletePlaylistPage.class)); // Opens Delete Section
+            LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+            if (fragment.level == 1) {
+                ViewSwitcher playlistnameSwitcher = (ViewSwitcher) findViewById(R.id.playlistnameSwitcher);
+                TextView name = (TextView) playlistnameSwitcher.findViewById(R.id.title);
+
+                Intent myIntent = new Intent(LocalLibrary.this, DeletePlaylistSongPage.class);
+                myIntent.putExtra("PlaylistName", name.getText().toString());
+                startActivityForResult(myIntent, 1); // Opens Add Songs
+            } else {
+                startActivityForResult(new Intent(LocalLibrary.this, DeletePlaylistPage.class), 2); // Open delete playlist page
+            }
         } else {
-            startActivity(new Intent(LocalLibrary.this, DeletePage.class)); // Opens Delete Section
+            startActivityForResult(new Intent(LocalLibrary.this, DeletePage.class), 2); // Open delete playlist page
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        RelativeLayout albumName = (RelativeLayout) findViewById(R.id.header1);
+        LinearLayout playlistName = (LinearLayout) findViewById(R.id.header2);
+        RelativeLayout createPlaylist = (RelativeLayout) findViewById(R.id.createplaylist);
+        RelativeLayout addSongs = (RelativeLayout) findViewById(R.id.addsongs);
+        RelativeLayout shuffleAll = (RelativeLayout) findViewById(R.id.shuffleall);
+
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+
+        LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
         if (requestCode == 1) { // request code for adding songs to playlist
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                LocalLibrary.SongList fragment = (LocalLibrary.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
-
                 String playlistname = data.getStringExtra("PlaylistName");
-                Toast.makeText(this, playlistname, Toast.LENGTH_LONG).show();
-
-                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 
                 List<Song> playlistSongs = db.getAllSongsInPlaylist(playlistname);
 
@@ -340,12 +354,6 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 playlistAdapter = new PlaylistAdapter(getApplicationContext(), 1, playlistSongs, playlistname);
                 if (playlistAdapter != null) fragment.setListAdapter(playlistAdapter);
                 fragment.level = 1;
-
-                RelativeLayout albumName = (RelativeLayout) findViewById(R.id.header1);
-                LinearLayout playlistName = (LinearLayout) findViewById(R.id.header2);
-                RelativeLayout createPlaylist = (RelativeLayout) findViewById(R.id.createplaylist);
-                RelativeLayout addSongs = (RelativeLayout) findViewById(R.id.addsongs);
-                RelativeLayout shuffleAll = (RelativeLayout) findViewById(R.id.shuffleall);
 
                 albumName.getLayoutParams().height = 0;
                 playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
@@ -358,6 +366,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                 name.setText(playlistname);
                 nameEdit.setText(playlistname);
             }
+        } else {
+            fragment.update();
         }
     }
 

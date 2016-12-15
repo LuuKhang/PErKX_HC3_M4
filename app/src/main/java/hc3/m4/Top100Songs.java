@@ -96,6 +96,10 @@ public class Top100Songs extends AppCompatActivity implements MediaPlayerControl
                 }
                 currentPage = position;
 
+                LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
+                TopSongAdapter song = (TopSongAdapter) fragment.getListAdapter();
+                song.displayIndex(indexLayout);
+
                 // disable select all row
                 int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
                 LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
@@ -652,6 +656,11 @@ public class Top100Songs extends AppCompatActivity implements MediaPlayerControl
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             this.inflater = inflater;
             update();
+
+            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+            TopSongAdapter song = (TopSongAdapter) getListAdapter();
+            song.displayIndex(indexLayout);
+
             Button downloadMultiple = (Button) getActivity().findViewById(R.id.downloadmultiple);
             downloadMultiple.setVisibility(View.VISIBLE);
             return super.onCreateView(inflater, container, savedInstanceState);

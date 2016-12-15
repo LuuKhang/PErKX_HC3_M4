@@ -59,6 +59,10 @@
             android:label="@string/title_activity_deleteplaylistpage"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan"></activity>
+        <activity android:name=".DeletePlaylistSongPage"
+            android:label="@string/title_activity_deleteplaylistsongpage"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"></activity>
     </application>
 
 </manifest>

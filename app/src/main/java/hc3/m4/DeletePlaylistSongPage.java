@@ -1,7 +1,6 @@
 package hc3.m4;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -32,9 +31,9 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeletePlaylistPage extends AppCompatActivity {
+public class DeletePlaylistSongPage extends AppCompatActivity {
 
-    private DeletePlaylistPage.SectionsPagerAdapter mSectionsPagerAdapter;
+    private DeletePlaylistSongPage.SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -62,7 +61,7 @@ public class DeletePlaylistPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_delete_playlist);
+        setContentView(R.layout.activity_delete_playlist_song);
 
         // Initialize toolbar (top most portion of screen)
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -71,52 +70,11 @@ public class DeletePlaylistPage extends AppCompatActivity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new DeletePlaylistPage.SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new DeletePlaylistSongPage.SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            // This method will be invoked when a new page becomes selected.
-            @Override
-            public void onPageSelected(int position) {
-                DeletePlaylistPage.SongList fragment = (DeletePlaylistPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, position);
-                if (fragment != null) {
-                    fragment.update();
-                }
-                currentPage = position;
-
-                LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
-                DeletePlaylistAdapter song = (DeletePlaylistAdapter) fragment.getListAdapter();
-                song.displayIndex(indexLayout);
-
-                // enable select all row
-
-                TextView level1name = (TextView) findViewById(R.id.level1name);
-                level1name.setText("");
-
-                // enable cancel button
-                ImageButton backButton = (ImageButton) findViewById(R.id.backbutton);
-                ImageButton backlevel0Button = (ImageButton) findViewById(R.id.backlevel0button);
-                backButton.setVisibility(View.VISIBLE);
-                backlevel0Button.setVisibility(View.GONE);
-
-            }
-
-            // This method will be invoked when the current page is scrolled
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // Code goes here
-            }
-
-            // Called when the scroll state changes:
-            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // Code goes here
-            }
-        });
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -124,27 +82,30 @@ public class DeletePlaylistPage extends AppCompatActivity {
         TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
         numberDownload.setText("0 items selected to delete");
 
+        TextView title = (TextView) findViewById(R.id.level1name);
+        playlistName = getIntent().getStringExtra("PlaylistName");
+        title.setText(playlistName);
+
         // Common navigation buttons along buttom
-        Button btn_local = (Button) findViewById(R.id.btn_local);
-        btn_local.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(DeletePlaylistPage.this, LocalLibrary.class)); // Opens Online Section
-            }
-        });
-        Button btn_online = (Button) findViewById(R.id.btn_online);
-        btn_online.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(DeletePlaylistPage.this, OnlineSection.class)); // Opens Online Section
-            }
-        });
+//        Button btn_local = (Button) findViewById(R.id.btn_local);
+//        btn_local.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(DeletePlaylistSongPage.this, LocalLibrary.class)); // Opens Online Section
+//            }
+//        });
+//        Button btn_online = (Button) findViewById(R.id.btn_online);
+//        btn_online.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(DeletePlaylistSongPage.this, OnlineSection.class)); // Opens Online Section
+//            }
+//        });
 
         // Database handler
         DatabaseHandler db = new DatabaseHandler(this);
         db.createDataBase();
 
-        songslist = db.getAllSongsByID(0);
         // Music Controller set up --------------------------------------------
 //        curSongTitle = (TextView) findViewById(R.id.songTitle);
 //        curArtist = (TextView) findViewById(R.id.artistName);
@@ -182,23 +143,23 @@ public class DeletePlaylistPage extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 
         // get songAdapter and songList
-        DeletePlaylistPage.SongList fragment = (DeletePlaylistPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
-        DeletePlaylistAdapter playlistAdapter;
+        DeletePlaylistSongPage.SongList fragment = (DeletePlaylistSongPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        DeletePlaylistSongAdapter songAdapter;
         if (fragment != null) {
-            playlistAdapter = (DeletePlaylistAdapter) fragment.getListAdapter();
-            List<Playlist> playlistList = playlistAdapter.playlistList;
+            songAdapter = (DeletePlaylistSongAdapter) fragment.getListAdapter();
+            List<Song> songList = songAdapter.getAllSongs();
             int count = 1;
-            Playlist currentPlaylist;
+            Song currentSong;
 
-            for (int i = 0; i < playlistList.size(); i++) {
-                currentPlaylist = playlistList.get(i);
-                if (currentPlaylist.isSelected()) { //if the song is selected
-                    db.deletePlaylist(currentPlaylist);
+            for (int i = 0; i < songList.size(); i++) {
+                currentSong = songList.get(i);
+                if (currentSong.isSelected()) { //if the song is selected
+                    db.deletePlaylistSong(currentSong);
                     count++;
                 }
             }
-            playlistAdapter.playlistList = playlistList;
-            fragment.setListAdapter(playlistAdapter);
+            songAdapter.setAllSongs(songList);
+            fragment.setListAdapter(songAdapter);
 
             Intent returnIntent = new Intent();
             returnIntent.putExtra("PlaylistName", playlistName);
@@ -210,21 +171,23 @@ public class DeletePlaylistPage extends AppCompatActivity {
     // when only one checkbox is selected for downloading
     public void updateSelectedNumber(View view) {
         CheckBox cb = (CheckBox) view.findViewById(R.id.addcheckbox) ;
-        Playlist playlist = (Playlist) cb.getTag();
-        playlist.setSelected(cb.isChecked());
+        Song song = (Song) cb.getTag();
+        song.setSelected(cb.isChecked());
 
-        DeletePlaylistPage.SongList fragment = (DeletePlaylistPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        DeletePlaylistSongPage.SongList fragment = (DeletePlaylistSongPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
 
-        DeletePlaylistAdapter playlistAdapter;
+        DeletePlaylistSongAdapter songAdapter;
         if (fragment != null) {
-            playlistAdapter = (DeletePlaylistAdapter) fragment.getListAdapter();
-            List<Playlist> playlistList = playlistAdapter.playlistList;
+            songAdapter = (DeletePlaylistSongAdapter) fragment.getListAdapter();
+            List<Song> songList = songAdapter.getAllSongs();
             int count = 0;
-            for (int i = 0; i < playlistList.size(); i++) {
-                if (playlistList.get(i).isSelected()) {
+            for (int i = 0; i < songList.size(); i++) {
+                if (songList.get(i).isSelected()) {
                     count++;
                 }
             }
+
+//            songAdapter.setAllSongs(songList);
 
             TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
             numberDownload.setText(count + " items selected to delete");
@@ -234,9 +197,9 @@ public class DeletePlaylistPage extends AppCompatActivity {
     // check selected song if the row was clicked but not the checkbox
     public void checkSelectedSong(View view) {
         CheckBox cb = (CheckBox) view.findViewById(R.id.addcheckbox) ;
-        Playlist playlist = (Playlist) cb.getTag();
+        Song song = (Song) cb.getTag();
         cb.setChecked(true);
-        playlist.setSelected(cb.isChecked());
+        song.setSelected(cb.isChecked());
 
         updateSelectedNumber(view);
     }
@@ -246,23 +209,22 @@ public class DeletePlaylistPage extends AppCompatActivity {
         CheckBox cb = (CheckBox) view ;
         boolean isCheck = cb.isChecked();
 
-        DeletePlaylistPage.SongList fragment = (DeletePlaylistPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
+        DeletePlaylistSongPage.SongList fragment = (DeletePlaylistSongPage.SongList) mSectionsPagerAdapter.instantiateItem(mViewPager, currentPage);
 
-        DeletePlaylistAdapter playlistAdapter;
+        DeletePlaylistSongAdapter songAdapter;
         if (fragment != null) {
-            playlistAdapter = (DeletePlaylistAdapter) fragment.getListAdapter();
-            List<Playlist> playlistList = playlistAdapter.playlistList;
+            songAdapter = (DeletePlaylistSongAdapter) fragment.getListAdapter();
+            List<Song> songList = songAdapter.getAllSongs();
             int count = 0;
-            for (int i = 0; i < playlistList.size(); i++) {
-                playlistList.get(i).setSelected(isCheck);
-                if (playlistList.get(i).isSelected()) {
+            for (int i = 0; i < songList.size(); i++) {
+                songList.get(i).setSelected(isCheck);
+                if (songList.get(i).isSelected()) {
                     count++;
                 }
             }
 
-            playlistAdapter.playlistList = playlistList;
-            fragment.setListAdapter(playlistAdapter);
-
+            songAdapter.setAllSongs(songList);
+            fragment.setListAdapter(songAdapter);
             TextView numberDownload = (TextView) findViewById(R.id.numberdownload);
             numberDownload.setText(count + " items selected to delete");
         }
@@ -284,7 +246,7 @@ public class DeletePlaylistPage extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return DeletePlaylistPage.SongList.newInstance(position + 1);
+            return DeletePlaylistSongPage.SongList.newInstance(position + 1);
         }
 
         @Override
@@ -311,8 +273,8 @@ public class DeletePlaylistPage extends AppCompatActivity {
         private static LayoutInflater inflater;
 
         // Returns a new instance of this fragment for the given section number.
-        public static DeletePlaylistPage.SongList newInstance(int sectionNumber) {
-            DeletePlaylistPage.SongList fragment = new DeletePlaylistPage.SongList();
+        public static DeletePlaylistSongPage.SongList newInstance(int sectionNumber) {
+            DeletePlaylistSongPage.SongList fragment = new DeletePlaylistSongPage.SongList();
 
             // Arguments/parameters that each tab/section/fragment will have, example: ID
             Bundle args = new Bundle();
@@ -327,10 +289,6 @@ public class DeletePlaylistPage extends AppCompatActivity {
             this.inflater = inflater;
             update();
 
-            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
-            DeletePlaylistAdapter song = (DeletePlaylistAdapter) getListAdapter();
-            song.displayIndex(indexLayout);
-
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
@@ -339,8 +297,7 @@ public class DeletePlaylistPage extends AppCompatActivity {
             setHasOptionsMenu(true);
 
             // Creating an array adapter to store the list of items
-            DeletePlaylistAdapter songAdapter = null;
-            DeletePlaylistAdapter playlistAdapter = null;
+            DeletePlaylistSongAdapter songAdapter = null;
 
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
@@ -353,24 +310,18 @@ public class DeletePlaylistPage extends AppCompatActivity {
             int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
             switch (sectionNumber) { // Switch case to populate list, depends on category of tab
                 case 1:
-                    List<Playlist> playlists = db.getAllPlaylists();
-                    playlistAdapter = new DeletePlaylistAdapter(inflater.getContext(), 0, playlists);
-                    if (playlistAdapter != null) setListAdapter(playlistAdapter);
-                    level = 0;
+                    // existing playlist page
+//                        List<Song> playlistSongs = db.getAllSongsInPlaylist(pos+1);
+                    List<Song> playlistSongs = db.getAllSongsInPlaylist(playlistName);
+                    songAdapter = new DeletePlaylistSongAdapter(inflater.getContext(), 1, playlistSongs, playlistName);
+                    if (songAdapter != null) setListAdapter(songAdapter);
+                    level = 1;
+
                     break;
 
             }
 
         }
-
-        // Attempts at scrollbar ----------------------------------------------------------------
-        @Override
-        public void onViewCreated(View view, Bundle savedInstanceState) {
-            this.getListView().setFastScrollEnabled(true);
-            this.getListView().setFastScrollAlwaysVisible(true);
-        }
-        //--------------------------------------------------------------------------------------
-
 
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

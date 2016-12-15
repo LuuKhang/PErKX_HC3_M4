@@ -12,11 +12,23 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class TopSongAdapter extends BaseAdapter implements Filterable {
+
+    // Attempts at scrollbar ---------
+    HashMap<String, Integer> mapIndex;
+    String[] sections;
+    //---------------------------------
 
     private Context context;
     public List<Song> data;
@@ -29,6 +41,7 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
         this.context = context;
         this.data = data;
         this.sectionNumber = sectionNumber;
+        getHashMap();
     }
 
     public TopSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
@@ -37,6 +50,7 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
         this.sectionNumber = sectionNumber;
         this.level = level;
         this.levelName = name;
+        getHashMap();
     }
 
     public TopSongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name, int totalSelected) {
@@ -46,6 +60,35 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
         this.level = level;
         this.levelName = name;
         this.totalSelected = totalSelected;
+        getHashMap();
+    }
+
+    public void getHashMap() {
+        // Attempts at scrollbar --------------------------------------------------------------------------------
+        mapIndex = new LinkedHashMap<String, Integer>();
+
+        for (int i = 0; i < data.size(); i++) {
+            if ((i%5) == 0) {
+                mapIndex.put(String.valueOf(i+1), i); // HashMap will prevent duplicates
+            }
+
+//            if (!mapIndex.containsKey(ch)) {
+//                mapIndex.put(ch, i); // HashMap will prevent duplicates
+//            } else {
+//            }
+//            String ch = song.substring(0, 1);
+//            ch = ch.toUpperCase(Locale.US);
+
+        }
+
+        Set<String> sectionLetters = mapIndex.keySet();
+        // create a list from the set to sort
+        ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+        Collections.sort(sectionList);
+        sections = new String[sectionList.size()];
+        sectionList.toArray(sections);
+        Log.d("sectionList", sectionList.toString());
+        //----------------------------------------------------------------------------------------------------
     }
 
     @Override
@@ -170,4 +213,37 @@ public class TopSongAdapter extends BaseAdapter implements Filterable {
         Log.d("TEST", "test");
         return null;
     }
+
+    // Attempts at scrollbar --------------------------------------------------------------------------------
+    public int getPositionForSection(int section) {
+        Log.d("section", "" + section);
+        return mapIndex.get(sections[section]);
+    }
+
+    public int getSectionForPosition(int position) {
+        Log.d("position", "" + position);
+        return 0;
+    }
+
+    public Object[] getSections() {
+        return sections;
+    }
+
+
+    public void displayIndex(LinearLayout indexLayout) {
+
+        indexLayout.removeAllViews();
+
+        TextView textView;
+        List<String> indexList = new ArrayList<String>(mapIndex.keySet());
+        for (String index : indexList) {
+            textView = (TextView) LayoutInflater.from(context).inflate(
+                    R.layout.scroll_item, null);
+            textView.setText(index);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
+//                textView.setOnClickListener(this);
+            indexLayout.addView(textView);
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------
 }

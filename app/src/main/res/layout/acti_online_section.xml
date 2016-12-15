@@ -28,23 +28,21 @@
 
         <!--local, online and play buttons-->
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:columnCount="2"
-            android:rowCount="1"
             android:id="@+id/gridLayout"
             android:layout_marginBottom="100dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            >
 
             <Button
                 android:text="Local"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_local"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
+                android:layout_weight="1"
                 />
 
             <Button
@@ -52,13 +50,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_online"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
                 android:textColor="@android:color/holo_red_dark"
                 android:clickable="false"
-                android:textStyle="normal|bold"/>
+                android:textStyle="normal|bold"
+                android:layout_weight="1"
+                />
 
-        </GridLayout>
+        </LinearLayout>
 
         <!--online buttons-->
         <LinearLayout
@@ -66,31 +64,33 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_below="@+id/appbar"
-            android:layout_above="@+id/gridLayout">
+            android:layout_above="@+id/gridLayout"
+            android:gravity="center"
+            >
 
             <Button
                 android:text="New Releases"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:id="@+id/btn_newreleases"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1" />
+                android:textSize="20dp"
+                />
 
             <Button
                 android:text="Top 100 Songs"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:id="@+id/btn_top100songs"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"/>
+                android:textSize="20dp"
+                />
 
             <Button
                 android:text="Recommended For You"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:id="@+id/btn_recommended"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1" />
+                android:textSize="20dp"
+                />
         </LinearLayout>
     </RelativeLayout>
 

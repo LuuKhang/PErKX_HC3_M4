@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class DeletePlaylistAdapter extends BaseAdapter implements SectionIndexer {
+public class DeletePlaylistSongAdapter extends BaseAdapter implements SectionIndexer {
 
     // Attempts at scrollbar ---------
     HashMap<String, Integer> mapIndex;
@@ -32,14 +31,11 @@ public class DeletePlaylistAdapter extends BaseAdapter implements SectionIndexer
     private List<Song> songsInPlaylist;
     private int level = 0;
 
-    public DeletePlaylistAdapter(Context context, int level, List<Playlist> playlistLists) {
+    public DeletePlaylistSongAdapter(Context context, int level, List<Playlist> playlistLists) {
         this.context = context;
         this.playlistList = playlistLists;
         this.level = level;
-        getHashMap();
-    }
 
-    public void getHashMap() {
         // Attempts at scrollbar --------------------------------------------------------------------------------
         mapIndex = new LinkedHashMap<String, Integer>();
 
@@ -48,10 +44,34 @@ public class DeletePlaylistAdapter extends BaseAdapter implements SectionIndexer
 
             String ch = song.substring(0, 1);
             ch = ch.toUpperCase(Locale.US);
-            if (!mapIndex.containsKey(ch)) {
-                mapIndex.put(ch, i); // HashMap will prevent duplicates
-            } else {
-            }
+            mapIndex.put(ch, i); // HashMap will prevent duplicates
+        }
+
+        Set<String> sectionLetters = mapIndex.keySet();
+        // create a list from the set to sort
+        ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+        Collections.sort(sectionList);
+        sections = new String[sectionList.size()];
+        sectionList.toArray(sections);
+        Log.d("sectionList", sectionList.toString());
+        //----------------------------------------------------------------------------------------------------
+    }
+
+    public DeletePlaylistSongAdapter(Context context, int level, List<Song> songs, String playlistName) {
+        this.context = context;
+        this.playlistName = playlistName;
+        this.songsInPlaylist = songs;
+        this.level = level;
+
+        // Attempts at scrollbar --------------------------------------------------------------------------------
+        mapIndex = new LinkedHashMap<String, Integer>();
+
+        for (int i = 0; i < songsInPlaylist.size(); i++) {
+            String song = songsInPlaylist.get(i).getTitle();
+
+            String ch = song.substring(0, 1);
+            ch = ch.toUpperCase(Locale.US);
+            mapIndex.put(ch, i); // HashMap will prevent duplicates
         }
 
         Set<String> sectionLetters = mapIndex.keySet();
@@ -100,28 +120,35 @@ public class DeletePlaylistAdapter extends BaseAdapter implements SectionIndexer
     public List<Song> getAllSongs() {
         return songsInPlaylist;
     }
+    public void setAllSongs(List<Song> s) {
+        songsInPlaylist = s;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
         switch (level) {
-            // List showing all playlists
-            case 0:
-                // Lists all playlists
-                convertView = LayoutInflater.from(context).inflate(R.layout.listview_delete_playlist_checkbox, null);
-                title = (TextView) convertView.findViewById(R.id.title); // title
-                title.setText(playlistList.get(position).getName());
-
-                CheckBox cb = (CheckBox) convertView.findViewById(R.id.addcheckbox);
-                cb.setTag(playlistList.get(position));
-
-                if (playlistList.get(position).isSelected()) {
-                    cb.setChecked(true);
-                }
-                break;
 
             // Once clicked on a playlist, shows options and songs
+            case 1:
+                // First item shown is name row
+                convertView = LayoutInflater.from(context).inflate(R.layout.listview_delete_song_checkbox, null);
+
+                CheckBox cb = (CheckBox) convertView.findViewById(R.id.addcheckbox);
+                cb.setTag(songsInPlaylist.get(position));
+
+                if (songsInPlaylist.get(position).isSelected()) {
+                    cb.setChecked(true);
+                }
+
+                title = (TextView) convertView.findViewById(R.id.title); // title
+                artist = (TextView) convertView.findViewById(R.id.artist); // artist
+
+                title.setText(songsInPlaylist.get(position).getTitle());
+                artist.setText(songsInPlaylist.get(position).getArtist());
+//                }
+                break;
         }
         return convertView;
     }
@@ -139,23 +166,6 @@ public class DeletePlaylistAdapter extends BaseAdapter implements SectionIndexer
 
     public Object[] getSections() {
         return sections;
-    }
-
-
-    public void displayIndex(LinearLayout indexLayout) {
-
-        indexLayout.removeAllViews();
-
-        TextView textView;
-        List<String> indexList = new ArrayList<String>(mapIndex.keySet());
-        for (String index : indexList) {
-            textView = (TextView) LayoutInflater.from(context).inflate(
-                    R.layout.scroll_item, null);
-            textView.setText(index);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
-//                textView.setOnClickListener(this);
-            indexLayout.addView(textView);
-        }
     }
     //-------------------------------------------------------------------------------------------------------
 }
