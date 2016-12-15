@@ -701,10 +701,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Deleting single contact
     public void deleteSong(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_SONGS, KEY_ID + " = ?",
-                new String[] { String.valueOf(song.getID()) });
+
+        ContentValues newValues = new ContentValues();
+        newValues.put(KEY_LOCAL, 0);
+        String[] args = new String[] { String.valueOf(song.getID()) };
+
+        db.update(TABLE_SONGS, newValues, KEY_ID + " = ?", args);
+        db.delete(TABLE_PLAYLISTS_SONGS, KEY_SONG_ID + " = ?", new String[] { String.valueOf(song.getID()) } );
         db.close();
     }
+
+    // Deleting single contact
+    public void deletePlaylist(Playlist playlist) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues newValues = new ContentValues();
+        newValues.put(KEY_LOCAL, 0);
+        String[] args = new String[] { String.valueOf(playlist.getID()) };
+
+        db.delete(TABLE_PLAYLISTS, KEY_ID + " = ?", args);
+        db.delete(TABLE_PLAYLISTS_SONGS, KEY_PLAYLIST_ID + " = ?", args);
+        db.close();
+    }
+
 
 
     // Getting contacts Count

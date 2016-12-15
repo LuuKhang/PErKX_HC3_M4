@@ -115,6 +115,10 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
                     downloadMultiple.setVisibility(View.GONE);
                 }
 
+                LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
+                OnlineSongAdapter song = (OnlineSongAdapter) fragment.getListAdapter();
+                song.displayIndex(indexLayout);
+
                 // disable select all row
                 int px = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
                 LinearLayout linearLayout = (LinearLayout) findViewById(R.id.header2);
@@ -690,6 +694,19 @@ public class NewReleasesRecommended extends AppCompatActivity implements MediaPl
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             this.inflater = inflater;
             update();
+
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            if (sectionNumber == currentPage+1){
+                LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                OnlineSongAdapter song = (OnlineSongAdapter) getListAdapter();
+                song.displayIndex(indexLayout);
+            } else {
+
+            }
+//            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+//            OnlineSongAdapter song = (OnlineSongAdapter) getListAdapter();
+//            song.displayIndex(indexLayout);
+
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 

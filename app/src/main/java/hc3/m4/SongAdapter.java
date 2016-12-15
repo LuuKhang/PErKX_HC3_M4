@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
     // Attempts at scrollbar ---------
     HashMap<String, Integer> mapIndex;
     String[] sections;
+//    List<Float> weights = new ArrayList<Float>();
     //---------------------------------
 
     public SongAdapter(Context context, int sectionNumber, List<Song> data) {
@@ -42,23 +44,63 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
         this.data = data;
         this.sectionNumber = sectionNumber;
 
+        getHashMap();
 
+    }
+
+    public SongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
+        this.context = context;
+        this.data = data;
+        this.sectionNumber = sectionNumber;
+        this.level = level;
+        this.levelName = name;
+
+        getHashMap();
+    }
+
+    public void getHashMap() {
         // Attempts at scrollbar --------------------------------------------------------------------------------
         mapIndex = new LinkedHashMap<String, Integer>();
+        String song = "";
 
-        for (int i = 0; i < data.size(); i++) {
-            String song = data.get(i).getTitle();
-            if (song==null || song.length() == 0) {
-                song = data.get(i).getArtist();
-                if (song==null || song.length() == 0) {
-                    song = data.get(i).getGenre();
+        if (level == 1) {
+            for (int i = 0; i < data.size(); i++) {
+                song = data.get(i).getTitle();
+
+                String ch = song.substring(0, 1);
+                ch = ch.toUpperCase(Locale.US);
+                if (!mapIndex.containsKey(ch)) {
+                    mapIndex.put(ch, i); // HashMap will prevent duplicates
+                } else {
                 }
             }
+        } else {
+            for (int i = 0; i < data.size(); i++) {
+                switch (sectionNumber) {
+                    case 2:
+                        song = data.get(i).getTitle();
+                        break;
+                    case 3:
+                        song = data.get(i).getArtist();
+                        break;
+                    case 4:
+                        song = data.get(i).getAlbum();
+                        break;
+                    case 5:
+                        song = data.get(i).getGenre();
+                        break;
+                }
 
-            String ch = song.substring(0, 1);
-            ch = ch.toUpperCase(Locale.US);
-            mapIndex.put(ch, i); // HashMap will prevent duplicates
+                String ch = song.substring(0, 1);
+                ch = ch.toUpperCase(Locale.US);
+                if (!mapIndex.containsKey(ch)) {
+                    mapIndex.put(ch, i); // HashMap will prevent duplicates
+                } else {
+                }
+            }
         }
+
+
 
         Set<String> sectionLetters = mapIndex.keySet();
         // create a list from the set to sort
@@ -68,14 +110,6 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
         sectionList.toArray(sections);
         Log.d("sectionList", sectionList.toString());
         //----------------------------------------------------------------------------------------------------
-    }
-
-    public SongAdapter(Context context, int sectionNumber, int level, List<Song> data, String name) {
-        this.context = context;
-        this.data = data;
-        this.sectionNumber = sectionNumber;
-        this.level = level;
-        this.levelName = name;
     }
 
     // Function called to update the current list
@@ -219,11 +253,33 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
 
     public int getSectionForPosition(int position) {
         Log.d("position", "" + position);
+        for(int i = sections.length - 1; i >= 0; i--) {
+            if(position > mapIndex.get(sections[i]))
+                return i;
+        }
         return 0;
     }
 
     public Object[] getSections() {
         return sections;
+    }
+
+    public void displayIndex(LinearLayout indexLayout) {
+
+        indexLayout.removeAllViews();
+
+        TextView textView;
+        List<String> indexList = new ArrayList<String>(mapIndex.keySet());
+        int count = 0;
+        for (String index : indexList) {
+            textView = (TextView) LayoutInflater.from(context).inflate(
+                    R.layout.scroll_item, null);
+            textView.setText(index);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
+//                textView.setOnClickListener(this);
+            indexLayout.addView(textView);
+            count++;
+        }
     }
     //-------------------------------------------------------------------------------------------------------
 }
