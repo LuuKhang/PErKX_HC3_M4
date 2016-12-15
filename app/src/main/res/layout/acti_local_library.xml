@@ -104,7 +104,7 @@
             </LinearLayout>
 
             <android.support.design.widget.FloatingActionButton
-                android:src="@drawable/download"
+                android:src="@drawable/delete"
                 app:fabSize="auto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
