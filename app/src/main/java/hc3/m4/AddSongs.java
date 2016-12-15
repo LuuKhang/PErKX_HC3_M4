@@ -128,6 +128,7 @@ public class AddSongs extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 // Code goes here
+                onPageSelected(position);
             }
 
             // Called when the scroll state changes:
