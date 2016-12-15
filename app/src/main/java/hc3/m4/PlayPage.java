@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -177,6 +178,10 @@ public class PlayPage extends AppCompatActivity implements MediaPlayerControl {
         }else{
             pager.setPageMargin(30);
         }
+    }
+
+    public void goToHelp(View view) {
+        startActivity(new Intent(PlayPage.this, HelpPage.class));
     }
 
     private class MyPagerAdapter extends PagerAdapter {
