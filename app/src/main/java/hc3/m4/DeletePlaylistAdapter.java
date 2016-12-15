@@ -6,8 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.CheckBox;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
+public class DeletePlaylistAdapter extends BaseAdapter implements SectionIndexer {
 
     // Attempts at scrollbar ---------
     HashMap<String, Integer> mapIndex;
@@ -28,11 +27,11 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
 
     private Context context;
     private String playlistName;
-    private List<Playlist> playlistList;
+    public List<Playlist> playlistList;
     private List<Song> songsInPlaylist;
     private int level = 0;
 
-    public PlaylistAdapter(Context context, int level, List<Playlist> playlistLists) {
+    public DeletePlaylistAdapter(Context context, int level, List<Playlist> playlistLists) {
         this.context = context;
         this.playlistList = playlistLists;
         this.level = level;
@@ -45,10 +44,7 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
 
             String ch = song.substring(0, 1);
             ch = ch.toUpperCase(Locale.US);
-            if (!mapIndex.containsKey(ch)) {
-                mapIndex.put(ch, i); // HashMap will prevent duplicates
-            } else {
-            }
+            mapIndex.put(ch, i); // HashMap will prevent duplicates
         }
 
         Set<String> sectionLetters = mapIndex.keySet();
@@ -61,7 +57,7 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
         //----------------------------------------------------------------------------------------------------
     }
 
-    public PlaylistAdapter(Context context, int level, List<Song> songs, String playlistName) {
+    public DeletePlaylistAdapter(Context context, int level, List<Song> songs, String playlistName) {
         this.context = context;
         this.playlistName = playlistName;
         this.songsInPlaylist = songs;
@@ -129,39 +125,30 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView title;
         TextView artist;
-        ImageView artwork;
-
         switch (level) {
             // List showing all playlists
             case 0:
                 // Lists all playlists
-                convertView = LayoutInflater.from(context).inflate(R.layout.listview_playlist, null);
-
-                // place holder image, can be replaced with real image (lol, we're never gonna get to that)
-                artwork = (ImageView) convertView.findViewById(R.id.list_image);
-                artwork.setImageResource(R.drawable.cross);
-
+                convertView = LayoutInflater.from(context).inflate(R.layout.listview_delete_playlist_checkbox, null);
                 title = (TextView) convertView.findViewById(R.id.title); // title
                 title.setText(playlistList.get(position).getName());
-                convertView.setTag(position);
+
+                CheckBox cb = (CheckBox) convertView.findViewById(R.id.addcheckbox);
+                cb.setTag(playlistList.get(position));
                 break;
 
             // Once clicked on a playlist, shows options and songs
             case 1:
                 // First item shown is name row
-                convertView = LayoutInflater.from(context).inflate(R.layout.song_listview, null);
+                    convertView = LayoutInflater.from(context).inflate(R.layout.listview_add_song_checkbox, null);
 
-                // place holder image, can be replaced with real image (lol, we're never gonna get to that)
-                artwork = (ImageView) convertView.findViewById(R.id.list_image);
-                artwork.setImageResource(R.drawable.cross);
+                    convertView.setTag(position);
 
-                convertView.setTag(position);
+                    title = (TextView) convertView.findViewById(R.id.title); // title
+                    artist = (TextView) convertView.findViewById(R.id.artist); // artist
 
-                title = (TextView) convertView.findViewById(R.id.title); // title
-                artist = (TextView) convertView.findViewById(R.id.artist); // artist
-
-                title.setText(songsInPlaylist.get(position).getTitle());
-                artist.setText(songsInPlaylist.get(position).getArtist());
+                    title.setText(songsInPlaylist.get(position).getTitle());
+                    artist.setText(songsInPlaylist.get(position).getArtist());
 //                }
                 break;
         }
@@ -181,24 +168,6 @@ public class PlaylistAdapter extends BaseAdapter implements SectionIndexer {
 
     public Object[] getSections() {
         return sections;
-    }
-
-    public void displayIndex(LinearLayout indexLayout) {
-
-        indexLayout.removeAllViews();
-
-        TextView textView;
-        List<String> indexList = new ArrayList<String>(mapIndex.keySet());
-        int count = 0;
-        for (String index : indexList) {
-            textView = (TextView) LayoutInflater.from(context).inflate(
-                    R.layout.scroll_item, null);
-            textView.setText(index);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
-//                textView.setOnClickListener(this);
-            indexLayout.addView(textView);
-            count++;
-        }
     }
     //-------------------------------------------------------------------------------------------------------
 }

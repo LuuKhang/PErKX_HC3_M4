@@ -11,6 +11,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -44,18 +45,29 @@ public class OnlineSongAdapter extends BaseAdapter implements SectionIndexer {
         // Attempts at scrollbar --------------------------------------------------------------------------------
         mapIndex = new LinkedHashMap<String, Integer>();
 
+        String song = "";
         for (int i = 0; i < data.size(); i++) {
-            String song = data.get(i).getTitle();
-            if (song==null || song.length() == 0) {
-                song = data.get(i).getArtist();
-                if (song==null || song.length() == 0) {
+            switch (sectionNumber) {
+                case 1:
+                    song = data.get(i).getTitle();
+                    break;
+                case 2:
+                    song = data.get(i).getArtist();
+                    break;
+                case 3:
+                    song = data.get(i).getAlbum();
+                    break;
+                case 4:
                     song = data.get(i).getGenre();
-                }
+                    break;
             }
 
             String ch = song.substring(0, 1);
             ch = ch.toUpperCase(Locale.US);
-            mapIndex.put(ch, i); // HashMap will prevent duplicates
+            if (!mapIndex.containsKey(ch)) {
+                mapIndex.put(ch, i); // HashMap will prevent duplicates
+            } else {
+            }
         }
 
         Set<String> sectionLetters = mapIndex.keySet();
@@ -275,6 +287,22 @@ public class OnlineSongAdapter extends BaseAdapter implements SectionIndexer {
 
     public Object[] getSections() {
         return sections;
+    }
+
+    public void displayIndex(LinearLayout indexLayout) {
+
+        indexLayout.removeAllViews();
+
+        TextView textView;
+        List<String> indexList = new ArrayList<String>(mapIndex.keySet());
+        for (String index : indexList) {
+            textView = (TextView) LayoutInflater.from(context).inflate(
+                    R.layout.scroll_item, null);
+            textView.setText(index);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
+//                textView.setOnClickListener(this);
+            indexLayout.addView(textView);
+        }
     }
     //-------------------------------------------------------------------------------------------------------
 }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="hc3.m4.AddSongs">
+    tools:context="hc3.m4.DeletePage">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -70,12 +70,12 @@
                 />
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/level1name"
                 android:padding="5dip"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
-                android:text="New Releases"
+                android:text=""
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:textSize="20dip"
@@ -89,52 +89,12 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="0.4"
                 android:gravity="center"
-                android:text="Add Selected Songs"
+                android:text="Delete Selected Songs"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/title"
                 android:onClick="addSelectedSongs"/>
-
-        </LinearLayout>
-
-        <!--level1-->
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/level1"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/list_selector"
-            android:orientation="horizontal"
-            android:paddingLeft="5dip"
-            android:paddingRight="5dip"
-            android:layout_below="@+id/header"
-            >
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="3dip"
-                android:layout_alignParentLeft="true"
-                android:layout_marginRight="5dip">
-
-                <ImageView
-                    android:layout_width="50dip"
-                    android:layout_height="50dip"
-                    />
-
-            </RelativeLayout>
-
-            <TextView
-                android:id="@+id/level1name"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="Level 1 Name"
-                android:textColor="#040404"
-                android:typeface="sans"
-                android:textSize="20dip"
-                android:textStyle="bold"/>
 
         </LinearLayout>
 
@@ -147,7 +107,7 @@
             android:orientation="horizontal"
             android:paddingLeft="5dip"
             android:paddingRight="5dip"
-            android:layout_below="@+id/level1"
+            android:layout_below="@+id/header"
             >
 
             <RelativeLayout android:id="@+id/thumbnail"
@@ -193,40 +153,19 @@
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
                 android:gravity="center_vertical"
-                android:text="0 songs selected to add to"
+                android:text="0 songs selected to delete"
                 android:textColor="#040404"
                 android:typeface="sans"
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <RelativeLayout
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/header2"
             android:layout_above="@+id/gridLayout"
-            android:orientation="horizontal"
-            >
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-
-            <LinearLayout
-                android:id="@+id/side_index"
-                android:layout_width="50dp"
-                android:layout_height="fill_parent"
-                android:background="#c3c3c3"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:layout_alignParentRight="true"
-                >
-            </LinearLayout>
-
-        </RelativeLayout>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <GridLayout
             android:layout_width="match_parent"

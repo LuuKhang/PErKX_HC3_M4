@@ -133,6 +133,15 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     fragment.update();
                 }
                 currentPage = position;
+
+                LinearLayout indexLayout = (LinearLayout) findViewById(R.id.side_index);
+                if (currentPage == 0){
+                    PlaylistAdapter playlist = (PlaylistAdapter) fragment.getListAdapter();
+                    playlist.displayIndex(indexLayout);
+                } else {
+                    SongAdapter song = (SongAdapter) fragment.getListAdapter();
+                    song.displayIndex(indexLayout);
+                }
             }
 
             // This method will be invoked when the current page is scrolled
@@ -209,6 +218,7 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         if (fragment != null) {
             fragment.update();
         }
+
     }
 
     public void createPlaylist(View view) {
@@ -301,6 +311,14 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
 //        myIntent.putExtra("PlaylistID", )
         startActivityForResult(myIntent, 1); // Opens Add Songs
 
+    }
+
+    public void deleteSongs(View view) {
+        if (currentPage == 0) {
+            startActivity(new Intent(LocalLibrary.this, DeletePlaylistPage.class)); // Opens Delete Section
+        } else {
+            startActivity(new Intent(LocalLibrary.this, DeletePage.class)); // Opens Delete Section
+        }
     }
 
     @Override
@@ -599,6 +617,19 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             RelativeLayout shuffleAll = (RelativeLayout) getActivity().findViewById(R.id.shuffleall);
             shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
 
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            if (sectionNumber == 1){
+//                LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+//                SongAdapter song = (SongAdapter) getListAdapter();
+//                song.displayIndex(indexLayout);
+            } else {
+                LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                SongAdapter song = (SongAdapter) getListAdapter();
+                song.displayIndex(indexLayout);
+            }
+
+
+
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
@@ -612,8 +643,12 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
             RelativeLayout shuffleAll = (RelativeLayout) getActivity().findViewById(R.id.shuffleall);
             DatabaseHandler db = new DatabaseHandler(inflater.getContext());
 
-//            List<Song> songs = db.getAllSongs();
-            Log.d("level: ", String.valueOf(level));
+
+            int px = (int) (50.0 * Resources.getSystem().getDisplayMetrics().density);
+            LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+            indexLayout.getLayoutParams().width = px;
+            SongAdapter song;
+
             // ID number of the current section (label and id mapping may change)
             //  Playlist = 1
             //  Song = 2
@@ -645,6 +680,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     createPlaylist.getLayoutParams().height = 0;
                     addSongs.getLayoutParams().height = 0;
                     shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
+
+                    song = (SongAdapter) getListAdapter();
+                    song.displayIndex(indexLayout);
                     break;
                 case 3:
                     List<Song> artists = db.getAllArtists(1);
@@ -658,6 +696,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     createPlaylist.getLayoutParams().height = 0;
                     addSongs.getLayoutParams().height = 0;
                     shuffleAll.getLayoutParams().height = 0;
+                    song = (SongAdapter) getListAdapter();
+                    song.displayIndex(indexLayout);
                     break;
                 case 4:
                     List<Song> albums = db.getAllAlbums(1);
@@ -671,6 +711,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     createPlaylist.getLayoutParams().height = 0;
                     addSongs.getLayoutParams().height = 0;
                     shuffleAll.getLayoutParams().height = 0;
+                    song = (SongAdapter) getListAdapter();
+                    song.displayIndex(indexLayout);
                     break;
                 case 5:
                     List<Song> genres = db.getAllGenres(1);
@@ -684,6 +726,8 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                     createPlaylist.getLayoutParams().height = 0;
                     addSongs.getLayoutParams().height = 0;
                     shuffleAll.getLayoutParams().height = 0;
+                    song = (SongAdapter) getListAdapter();
+                    song.displayIndex(indexLayout);
                     break;
             }
 
@@ -693,8 +737,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
         // Attempts at scrollbar ----------------------------------------------------------------
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
-            this.getListView().setFastScrollEnabled(true);
-            this.getListView().setFastScrollAlwaysVisible(true);
+            getListView().setFastScrollEnabled(true);
+            getListView().setFastScrollAlwaysVisible(true);
+
         }
         //--------------------------------------------------------------------------------------
 
@@ -723,6 +768,9 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         playlistAdapter = new PlaylistAdapter(inflater.getContext(), 1, playlistSongs, playlistname);
                         if (playlistAdapter != null) setListAdapter(playlistAdapter);
                         level = 1;
+
+                        LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                        indexLayout.getLayoutParams().width = 0;
 
                         albumName.getLayoutParams().height = 0;
                         playlistName.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
@@ -764,6 +812,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
 
                         textView.setText(artist);
+
+                        LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                        SongAdapter song = (SongAdapter) getListAdapter();
+                        song.displayIndex(indexLayout);
                     }
                     // Songs inside an artist category
                     else if (level == 1) {
@@ -792,6 +844,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         addSongs.getLayoutParams().height = 0;
                         shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
                         textView.setText(album);
+
+                        LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                        SongAdapter song = (SongAdapter) getListAdapter();
+                        song.displayIndex(indexLayout);
                     }
                     // Songs inside an album category
                     else if (level == 1) {
@@ -819,6 +875,10 @@ public class LocalLibrary extends AppCompatActivity implements MediaPlayerContro
                         addSongs.getLayoutParams().height = 0;
                         shuffleAll.getLayoutParams().height = ViewPager.LayoutParams.WRAP_CONTENT;
                         textView.setText(genre);
+
+                        LinearLayout indexLayout = (LinearLayout) getActivity().findViewById(R.id.side_index);
+                        SongAdapter song = (SongAdapter) getListAdapter();
+                        song.displayIndex(indexLayout);
                     }
                     // Songs inside an genre category
                     else if (level == 1) {
