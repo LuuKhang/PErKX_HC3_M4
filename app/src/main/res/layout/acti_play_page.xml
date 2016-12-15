@@ -33,6 +33,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             >
+            <Button
+                android:text="HELP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button"
+                app:layout_anchor="@+id/musicController"
+                app:layout_anchorGravity="top|right"
+                android:layout_gravity="bottom|right"
+                android:onClick="goToHelp"
+                />
 
             <hc3.m4.coverflow.PagerContainer
                 android:id="@+id/pager_container"
@@ -94,15 +104,6 @@
         android:layout_height="match_parent"
         android:id="@+id/musicController" />
 
-    <Button
-        android:text="HELP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button"
-        app:layout_anchor="@+id/musicController"
-        app:layout_anchorGravity="top|right"
-        android:layout_gravity="bottom|left"
-        android:onClick="goToHelp"
-        />
+
 
 </android.support.design.widget.CoordinatorLayout>
